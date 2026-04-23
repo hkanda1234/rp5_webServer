@@ -1,0 +1,24 @@
+{
+  "name": "html",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hkanda1234/rp5_webServer.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hkanda1234/rp5_webServer/issues"
+  },
+  "homepage": "https://github.com/hkanda1234/rp5_webServer#readme",
+  "dependencies": {
+    "express": "^5.2.1",
+    "pm2": "^6.0.14"
+  }
+}
