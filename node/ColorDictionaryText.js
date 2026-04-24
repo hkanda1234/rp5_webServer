@@ -1,14 +1,14 @@
-import { process } from 'process';
-import { express } from 'express';
+import process from 'process';
+import express from 'express';
 import { z } from 'zod';
-import { zodToJsonSchema } from 'zodToJsonSchema';
+import { zodToJsonSchema } from 'zod-to-json-schema';
 import { GoogleGenAI } from '@google/genai';
 
 const port = 3000;
 const app = express();
 const ai = new GoogleGenAI({});
 
-app.get('/colorAnalyze', (req, res) => {
+app.get('/colorAnalyze', async(req, res) => {
     let color = "#ffffff";
     let prompt;
 
@@ -36,7 +36,7 @@ app.get('/colorAnalyze', (req, res) => {
         model: "gemini-3-flash-preview",
         contents: prompt,
         config: {
-            responseMymeType: "application/json",
+            responseMimeType: "application/json",
             responseJsonSchema: zodToJsonSchema(analyzeSchema)
         },
     });

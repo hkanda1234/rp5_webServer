@@ -19,7 +19,11 @@
   },
   "homepage": "https://github.com/hkanda1234/rp5_webServer#readme",
   "dependencies": {
+    "@google/genai": "^1.50.1",
+    "await": "^0.2.6",
     "express": "^5.2.1",
-    "pm2": "^6.0.14"
+    "pm2": "^6.0.14",
+    "zod": "^4.3.6",
+    "zod-to-json-schema": "^3.25.2"
   }
 }
