@@ -1,7 +1,6 @@
 import process from 'process';
 import express from 'express';
 import { z } from 'zod';
-import { zodToJsonSchema } from 'zod-to-json-schema';
 import { GoogleGenAI } from '@google/genai';
 
 const port = 3000;
@@ -20,7 +19,7 @@ app.get('/colorAnalyze', async(req, res) => {
 
     const analyzeSchema = z.object({
         things : thingSchema.array().describe(`ユーザが指定した色 ${color} から想起されるものとその詳細、根拠の配列。`),
-        bestMaching : thingSchema.describe(`ユーザが指定した色 ${color} から想起されるもののうち、最も関連性が高いもの。`)
+        bestMatching : thingSchema.describe(`ユーザが指定した色 ${color} から想起されるもののうち、最も関連性が高いもの。`)
     });
 
     prompt = 
@@ -30,20 +29,28 @@ app.get('/colorAnalyze', async(req, res) => {
     -各項目には、その事物の名前、その色から想起される理由と詳細を含めてください。
     -最も関連性が高いものを一つ選んでください。
     -回答は日本語で行ってください。
+    -指定スキーマに厳密に従ってください。
     `;
 
+    console.log(z.toJSONSchema(analyzeSchema));
     const response = await ai.models.generateContent({
         model: "gemini-3-flash-preview",
         contents: prompt,
         config: {
             responseMimeType: "application/json",
-            responseJsonSchema: zodToJsonSchema(analyzeSchema)
+            responseJsonSchema: z.toJSONSchema(analyzeSchema)
         },
     });
 
-    const answer = JSON.parse(response.text);
+    const raw = response.text ?? response.candidates?.[0]?.content?.parts?.[0];
+    if(!raw) {
+        throw new Error("response text is empty");
+    }
 
-    res.send(answer);
+    const parsed = JSON.parse(raw);
+    const answer = analyzeSchema.parse(parsed);
+
+    res.json(answer);
 
 });
 
