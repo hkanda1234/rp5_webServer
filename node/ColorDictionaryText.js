@@ -25,8 +25,25 @@ app.get('/colorAnalyze', (req, res) => {
 
     prompt = 
     `ユーザが指定した色 ${color} から想起される事物について、下記のテキストに沿って述べてください。
+    条件：
+    -想起されるものを６つ挙げてください。
+    -各項目には、その事物の名前、その色から想起される理由と詳細を含めてください。
+    -最も関連性が高いものを一つ選んでください。
+    -回答は日本語で行ってください。
     `;
-    
+
+    const response = await ai.models.generateContent({
+        model: "gemini-3-flash-preview",
+        contents: prompt,
+        config: {
+            responseMymeType: "application/json",
+            responseJsonSchema: zodToJsonSchema(analyzeSchema)
+        },
+    });
+
+    const answer = JSON.parse(response.text);
+
+    res.send(answer);
 
 });
 
