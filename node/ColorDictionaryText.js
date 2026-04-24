@@ -2,12 +2,13 @@ const process = require('process');
 const express = require('express');
 const port = 3000;
 const app = express();
-const API_KEY = process.env.GEMINI_API_KEY;
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 app.get('/colorAnalyze', (req, res) => {
-    res.send(GEMINI_API_KEY);
+    let color = req;
+    
 });
 
 app.listen(port, () => {
-    console.log("hello.");
+    console.log("localhost running on port 3000");
 });
