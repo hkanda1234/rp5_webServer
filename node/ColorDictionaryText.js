@@ -1,11 +1,12 @@
-import { prosess } from 'process';
+import { process } from 'process';
 import { express } from 'express';
 import { z } from 'zod';
-import { z2j } from 'zodToJsonSchema';
+import { zodToJsonSchema } from 'zodToJsonSchema';
+import { GoogleGenAI } from '@google/genai';
 
 const port = 3000;
 const app = express();
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const ai = new GoogleGenAI({});
 
 app.get('/colorAnalyze', (req, res) => {
     let color = "#ffffff";
