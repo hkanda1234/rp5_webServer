@@ -1,0 +1,44 @@
+body {
+    --backgroundColor: #f0f0f0;
+    --textColor: #333333;
+
+    --colorPickerContainerWidth: 100%;
+    --colorPickerContainerHeight: 100vh;
+
+    margin: 0px;
+}
+
+header{
+    position: fixed;
+    top:0;
+    color: white;
+}
+footer {
+    position: fixed;
+    bottom: 0;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+h1 {
+    font-family:'Courier New', Courier, monospace;
+    font-size: 3rem;
+    font-weight: 900;
+    color: var(--textColor);
+}
+
+.ColorPickerContainer {
+    display: flex;
+    flex-direction: column;
+    width: var(--colorPickerContainerWidth);
+    height: var(--colorPickerContainerHeight);
+    justify-content: center;
+    align-items: center;
+}
+
+#colorPickerCanvas {
+    width:100%;
+    height:100%;
+}
