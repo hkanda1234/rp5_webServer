@@ -1,5 +1,6 @@
 
 
+
 //shader source
 const vertexShaderSource = `
 attribute vec3 aPosition;
@@ -71,41 +72,233 @@ const colliderType = {
     BOX: 1 << 0,
 };
 
+
+let isDragging = false;
+let isPinching = false;
+
+let isTouchMoving = false;
+
+const dragThreshhold = 0.1;
+
+let firstMousePosition = null;
+let prevMousePosition = null;
+let currMousePosition = null;
+let mouseMoveDistance = 0;
+
+let firstTouchPosition = null;
+let prevTouchPosition = null;
+let currTouchPosition = null;
+let touchMoveDistance = 0;
+let touchMoveDirection = vec3.create();
+
+let currFingerDistance = null;
+let prevFingerDistance = null;
+
+let rotationVelocity = null;
+let translationVelocity = null;
+
+
+canvas.addEventListener('touchstart', whenTouchStart);
+document.addEventListener('touchmove', whenTouchMove);
+document.addEventListener('touchend', whenTouchEnd);
+canvas.addEventListener('click', deleteTouchedObject);
+
+//タッチ操作：
+//一本指でOrigin回転
+//二本指でカメラ操作：
+//xy方向　：左右に平行移動
+//ピンチ　：z方向に移動
+
+//マウス操作：
+//ドラックでOrigin回転
+//ホイールでz方向の移動
+//ホイールドラックで左右に平行移動
+
+
 const hierarchy = createHierarchy();
-const camera = createCamera();
+ const camera = createCamera();
 hierarchy.camera = camera;
+camera.transform.position = vec3.fromValues(0, 0, 22);
 const material = createMaterial(vertexShaderSource, fragmentShaderSource);
 const cubeArray = createCubeObjectArray(
-    vec3.fromValues(0, 0, 0),
-    6,
-    6,
-    6,
+    vec3.fromValues(0,0,0),
+    10,
     1,
-    1/12,
-    material 
+    1.5,
+    material
 );
 const origin = createObject();
-origin.transform.position = vec3.fromValues(0, 0, -2);
+origin.transform.position = vec3.fromValues(0, 0, 0);
 origin.children.push(...cubeArray);
-console.log(origin);
-
-console.log(cubeArray);
-//hierarchy.objects.push(...cubeArray);
 hierarchy.objects.push(origin);
 
-const stop = startRenderHierarchy(hierarchy);
-
-const loop = startLoop((delta, time) => {
-    hierarchy.objects[0].transform.rotation.euler[1] += delta;
-    hierarchy.objects[0].transform.rotation.euler[2] += delta;
-    hierarchy.objects[0].transform.update();
-    const hit = raycastHierarchy(vec3.fromValues(.2, 0.1, 0), vec3.fromValues(0, 0, -1), hierarchy);
+const renderStop = startRenderHierarchy(hierarchy);
+const root = hierarchy.objects[0];
     
-    if(hit){
-        console.log(hit.object.id, hit.object.transform.position);
+
+const appStop = startApp(hierarchy);
+
+function startApp(hierarchy){
+    const appLoop = startLoop((delta, time) => {
         
+        //model rotation control
+        if(isTouchMoving){
+            if(!prevTouchPosition){
+                prevTouchPosition = currTouchPosition;
+            }
+
+            const p =  NDCtoWorld(prevTouchPosition, camera);
+            const c =  NDCtoWorld(currTouchPosition, camera);
+            const vector = vec3.fromValues(c[0] - p[0], c[1] - p[1], c[2] - p[2]);
+            const w = vec3.distance(p, c);
+            const axis = 
+            vec3.normalize(vector, vector);
+            console.log(vector, w);
+        }
+    });
+    return appLoop;
+}
+
+function NDCtoWorld(ndc, camera){
+    const tmp = vec4.create();
+    const vp = camera.vp;
+    const vpi = mat4.create();
+    mat4.invert(vpi, vp);
+    
+    tmp[0] = ndc[0];
+    tmp[1] = ndc[1];
+    tmp[2] = -1;
+    tmp[3] = 1;
+    vec4.transformMat4(tmp, tmp, vpi);
+
+    tmp[0] /= tmp[3];
+    tmp[1] /= tmp[3];
+    tmp[2] /= tmp[3];
+
+    
+    return vec3.fromValues(...tmp)
+
+
+}
+
+function deleteTouchedObject(event){
+    const ndc = getNDC(event);
+    const od = getOriginAndDirection(ndc, camera);
+    const hit = raycastHierarchy(od.origin, od.direction, hierarchy);
+    if(hit){
+        hit.object.transform.scale = vec3.fromValues(0, 0, 0);
+        hit.object.transform.update();
+        hit.object.collider = null;
     }
-});
+}
+
+function whenTouchStart(event){
+    const ndc = getNDC(event)[0];
+    firstTouchPosition = ndc;
+    touchMoveDistance = 0;
+    prevTouchPosition = ndc;
+    
+
+}
+
+function whenTouchEnd(event){
+    const ndcs = getNDC(event);
+    const l = ndcs.length;
+    const avg = vec3.create();
+
+    isTouchMoving = true;
+
+    ndcs.forEach((ndc) =>{
+        avg[0] += ndc[0];
+        avg[1] += ndc[1];
+    });
+    avg[0] /= l;
+    avg[1] /= l;
+
+    currTouchPosition = avg;
+
+    isTouchMoving = false;
+}
+
+function whenTouchMove(event){
+    const ndcs = getNDC(event);
+    const l = ndcs.length;
+    const avg = vec3.create();
+
+    isTouchMoving = true;
+
+    ndcs.forEach((ndc) =>{
+        avg[0] += ndc[0];
+        avg[1] += ndc[1];
+    });
+    avg[0] /= l;
+    avg[1] /= l;
+
+    currTouchPosition = avg;
+    
+}
+
+function getTouchCount(event){
+    return event.length;
+}
+
+function getNDC(event){
+    if(event.touches){
+        const ndcs = [];
+        const rect = canvas.getBoundingClientRect();
+        const touches = event.touches;
+        const l = touches.length;
+        
+        for(let i = 0; i < l; i++){
+            const x = touches[i].clientX - rect.left;
+            const y = touches[i].clientY - rect.top;
+            const ndc = vec3.fromValues(x / rect.width * 2 - 1, y / -rect.height * 2 + 1, -1);
+
+            ndcs.push(ndc);
+        }
+        return ndcs;
+
+    }else{
+        const rect = canvas.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        const ndc = vec3.fromValues(x / rect.width * 2 - 1, y / -rect.height * 2 + 1, -1);
+        
+        return ndc;
+    }
+    
+}
+
+
+
+function getOriginAndDirection(ndc, camera){
+
+    const near = vec4.fromValues(ndc[0], ndc[1], ndc[2], 1);
+    const far = vec4.fromValues(ndc[0], ndc[1], -ndc[2], 1);
+
+    const invVP = mat4.create();
+    mat4.invert(invVP, camera.vp);
+
+    vec4.transformMat4(near, near, invVP);
+    near[0] /= near[3];
+    near[1] /= near[3];
+    near[2] /= near[3];
+    vec4.transformMat4(far, far, invVP);
+    far[0] /= far[3];
+    far[1] /= far[3];
+    far[2] /= far[3];
+
+    const dir = vec3.fromValues(far[0] - near[0], far[1] - near[1], far[2] - near[2]);
+    vec3.normalize(dir, dir);
+
+    return{
+        origin: vec3.fromValues(near[0], near[1], near[2]),
+        direction: dir
+    }
+    
+
+}
+
 
 function raycastHierarchy(origin, direction, hierarchy){
     const objects = hierarchy.objects;
@@ -208,17 +401,6 @@ function raycastAABB(origin, direction, a, b){
     return tenter <= texit && texit >= 0 ? hit : null;
 }
 
-function createScreenBaseQuaterninon(delta){
-    const x = delta.x;
-    const y = delta.y;
-
-    const q = quat.create();
-    const axis = vec3.fromValues(x, y, 0);
-    const angle = Math.sqrt(x * x + y * y);
-    quat.setAxisAngle(q, axis, angle);
-    return q;
-}
-
 function startLoop(onFrame) {
     let previousTime = null;
     let animationId = null;
@@ -271,23 +453,25 @@ function startRenderHierarchy(hierarchy){
     return renderLoop;
 }
 
-function createCubeObjectArray(origin = vec3.fromValues(0, 0, 0), xNum, yNum, zNum, size = 1, scale = 0.1, material){
+function createCubeObjectArray(origin = vec3.fromValues(0, 0, 0), num, size = 1, interval = 2, material){
     const cubeArray = [];
     const position = vec3.create();
+    const bound = interval * num;
+
     let id = 0;
-    for(let x = 0; x < xNum; x++){
-        for(let y = 0; y < yNum; y++){
-            for(let z = 0; z < zNum; z++){
-                const cube = createCubeObject(size, scale, material);
-                const positionX = origin[0] + x / xNum * size - size / 2;
-                const positionY = origin[1] + y / yNum * size - size / 2;
-                const positionZ = origin[2] + z / zNum * size - size / 2;
+    for(let x = 0; x < num; x++){
+        for(let y = 0; y < num; y++){
+            for(let z = 0; z < num; z++){
+                const cube = createCubeObject(size, 1, material);
+                const positionX = origin[0] + x / (num - 1) * bound - bound / 2;
+                const positionY = origin[1] + y / (num - 1) * bound - bound / 2;
+                const positionZ = origin[2] + z / (num - 1) * bound - bound / 2;
                 
                 cube.transform.position = vec3.fromValues(positionX, positionY, positionZ);
-                cube.transform.scale = vec3.fromValues(scale, scale, scale);
+                cube.transform.scale = vec3.fromValues(1, 1, 1);
                 cube.transform.update();
                 cube.id = id;
-                cube.collider = createBoxCollider(scale);
+                cube.collider = createBoxCollider(1);
                 id++;
                 cubeArray.push(cube);
             }
@@ -378,8 +562,8 @@ function createCubeArray(size = 1) {
 //vertex data is defined as [pos, uv, normal]
 function resizeCanvasToDisplaySize(canvas, resolution = 1.0){
     const dpr = window.devicePixelRatio || 1;
-    const displayWidth = Math.floor(canvas.clientWidth * dpr / 2);
-    const displayHeight = Math.floor(canvas.clientHeight * dpr / 2);
+    const displayWidth = Math.floor(canvas.clientWidth * dpr);
+    const displayHeight = Math.floor(canvas.clientHeight * dpr);
     if(displayWidth != canvas.width || displayHeight != canvas.height){
         canvas.width = displayWidth * resolution;
         canvas.height = displayHeight * resolution;
@@ -392,10 +576,27 @@ function clearRender(canvas){
     resizeCanvasToDisplaySize(canvas);
     camera.update();
     gl.viewport(0, 0, canvas.width, canvas.height);
-    gl.clearColor(0.0, 0.0, 1.0, 1.0);
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 }
 
+function updateHierarchyTransform(hierarchy){
+    const objects = hierarchy.objects;
+    const camera = hierarchy.camera;
+    
+    camera.update();
+
+    objects.forEach((o) => {
+        updateObjectTransform(o);
+    });
+}
+
+function updateObjectTransform(object){
+    object.transform.update();
+    if(object.children.length > 0){
+        object.children.forEach((c) => updateObjectTransform(c));
+    }
+}
 function createHierarchy(){
     const hierarcy = {
         camera : null,
@@ -688,8 +889,29 @@ function createTransform(
         position:  vec3.fromValues(...translate),
 
         rotation:  {
-            euler: vec3.fromValues(...rotation),
             matrix: mat4.create(),
+            quat: {
+                angle : quat.create(),
+                set : function(q){
+                    this.angle = q;
+                    mat4.identity(trs.rotation.matrix);
+                    mat4.fromQuat(trs.rotation.matrix, q);
+                },
+            },
+            euler: {
+                angle : vec3.create(),
+                set : function(e){
+                    this.angle = e;
+                    quat.fromEuler(trs.rotation.quat.angle, e[0], e[1], e[2]);
+                    
+                    mat4.identity(trs.rotation.matrix);
+            
+                    mat4.rotateX(trs.rotation.matrix, trs.rotation.matrix, e[0]);
+                    mat4.rotateY(trs.rotation.matrix, trs.rotation.matrix, e[1]);
+                    mat4.rotateZ(trs.rotation.matrix, trs.rotation.matrix, e[2]);
+                },
+            },
+            
         },
         
         scale:     vec3.fromValues(...scale),
@@ -700,12 +922,6 @@ function createTransform(
 
         update(){
             mat4.identity(this.matrix);
-            mat4.identity(this.rotation.matrix);
-            
-            mat4.rotateX(this.rotation.matrix, this.rotation.matrix, this.rotation.euler[0]);
-            mat4.rotateY(this.rotation.matrix, this.rotation.matrix, this.rotation.euler[1]);
-            mat4.rotateZ(this.rotation.matrix, this.rotation.matrix, this.rotation.euler[2]);
-
             mat4.translate(this.matrix, this.matrix, this.position);
             mat4.multiply(this.matrix, this.matrix, this.rotation.matrix);
             mat4.scale(this.matrix, this.matrix, this.scale);
