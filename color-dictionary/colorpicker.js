@@ -97,9 +97,13 @@ let prevFingerDistance = null;
 let rotationVelocity = null;
 let translationVelocity = null;
 
+let originQuat = quat.create();
+let originQuatDelta = quat.create();
+
 
 canvas.addEventListener('touchstart', whenTouchStart);
-document.addEventListener('touchmove', whenTouchMove);
+canvas.addEventListener('touchmove', whenTouchMove);
+document.addEventListener('mousemove', whenTouchMove);
 document.addEventListener('touchend', whenTouchEnd);
 canvas.addEventListener('click', deleteTouchedObject);
 
@@ -119,6 +123,7 @@ const hierarchy = createHierarchy();
  const camera = createCamera();
 hierarchy.camera = camera;
 camera.transform.position = vec3.fromValues(0, 0, 22);
+camera.transform.rotation.euler.set(vec3.fromValues(0, 0, 0));
 const material = createMaterial(vertexShaderSource, fragmentShaderSource);
 const cubeArray = createCubeObjectArray(
     vec3.fromValues(0,0,0),
@@ -139,22 +144,63 @@ const root = hierarchy.objects[0];
 const appStop = startApp(hierarchy);
 
 function startApp(hierarchy){
-    const appLoop = startLoop((delta, time) => {
+    const appLoop = startLoop((deltaTime, time) => {
         
         //model rotation control
         if(isTouchMoving){
             if(!prevTouchPosition){
                 prevTouchPosition = currTouchPosition;
+                
             }
 
-            const p =  NDCtoWorld(prevTouchPosition, camera);
-            const c =  NDCtoWorld(currTouchPosition, camera);
-            const vector = vec3.fromValues(c[0] - p[0], c[1] - p[1], c[2] - p[2]);
-            const w = vec3.distance(p, c);
-            const axis = 
-            vec3.normalize(vector, vector);
-            console.log(vector, w);
+            //create screen space vector
+            const p =  prevTouchPosition;
+            const c =  currTouchPosition;
+            const a = camera.aspect;
+            const delta = vec4.fromValues(c[0] - p[0], c[1] - p[1], 0, 0);
+            const delta2d = vec2.fromValues(delta[0] * a, delta[1]);
+            const deltaDistance = vec2.dist(vec2.fromValues(0, 0), delta2d);
+            const z90 = mat4.create();
+            mat4.identity(z90);
+            mat4.rotateZ(z90, z90, DegToRad(90));
+
+            const NDCaxis = vec4.create();
+            vec4.transformMat4(NDCaxis, delta, z90);
+
+
+            //convert to world space
+
+            const vp = camera.vp;
+            const ivp = mat4.create();
+            mat4.invert(ivp, vp);
+            const wAxis4 = vec4.create();
+            
+            vec4.transformMat4(wAxis4, NDCaxis, ivp);
+                
+            const wAxis = vec3.fromValues(wAxis4[0], wAxis4[1], wAxis4[2]);
+            vec3.normalize(wAxis, wAxis);
+            
+        
+            
+
+            //create Quaternion
+
+            quat.setAxisAngle(originQuatDelta, wAxis, deltaDistance);
+
+            //apply quaternion
+            if(deltaDistance > 0){
+                
+                quat.multiply(originQuat, originQuatDelta, originQuat);
+                quat.normalize(originQuat, originQuat);
+                root.transform.rotation.quat.set(originQuat);
+                root.transform.update();
+            }
+            
+            
+            //console.log(delta, NDCaxis, wAxis, originQuatDelta, originQuat);
         }
+
+        prevTouchPosition = currTouchPosition;
     });
     return appLoop;
 }
@@ -221,6 +267,7 @@ function whenTouchEnd(event){
 }
 
 function whenTouchMove(event){
+    event.preventDefault();
     const ndcs = getNDC(event);
     const l = ndcs.length;
     const avg = vec3.create();
