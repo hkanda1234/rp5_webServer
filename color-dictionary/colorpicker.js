@@ -1,6 +1,4 @@
 
-
-
 //shader source
 const vertexShaderSource = `
 attribute vec3 aPosition;
@@ -94,7 +92,12 @@ let touchMoveDirection = vec3.create();
 let currFingerDistance = null;
 let prevFingerDistance = null;
 
-let rotationVelocity = null;
+let angularVelocityAxis = vec3.create();
+let angularVelocity = 0;
+let angularVelocityDeclineSpeed = 10;
+
+let initialAngularVelocity = 0;
+
 let translationVelocity = null;
 
 let originQuat = quat.create();
@@ -153,56 +156,69 @@ function startApp(hierarchy){
                 
             }
 
-            //create screen space vector
-            const p =  prevTouchPosition;
-            const c =  currTouchPosition;
-            const a = camera.aspect;
-            const delta = vec4.fromValues(c[0] - p[0], c[1] - p[1], 0, 0);
-            const delta2d = vec2.fromValues(delta[0] * a, delta[1]);
-            const deltaDistance = vec2.dist(vec2.fromValues(0, 0), delta2d);
-            const z90 = mat4.create();
-            mat4.identity(z90);
-            mat4.rotateZ(z90, z90, DegToRad(90));
-
-            const NDCaxis = vec4.create();
-            vec4.transformMat4(NDCaxis, delta, z90);
-
-
-            //convert to world space
-
-            const vp = camera.vp;
-            const ivp = mat4.create();
-            mat4.invert(ivp, vp);
-            const wAxis4 = vec4.create();
-            
-            vec4.transformMat4(wAxis4, NDCaxis, ivp);
-                
-            const wAxis = vec3.fromValues(wAxis4[0], wAxis4[1], wAxis4[2]);
-            vec3.normalize(wAxis, wAxis);
-            
-        
-            
-
-            //create Quaternion
-
-            quat.setAxisAngle(originQuatDelta, wAxis, deltaDistance);
-
-            //apply quaternion
-            if(deltaDistance > 0){
-                
-                quat.multiply(originQuat, originQuatDelta, originQuat);
-                quat.normalize(originQuat, originQuat);
-                root.transform.rotation.quat.set(originQuat);
-                root.transform.update();
-            }
+            rotateRoot(deltaTime);
             
             
             //console.log(delta, NDCaxis, wAxis, originQuatDelta, originQuat);
+        }else if(angularVelocity >= 0){
+            inertiaRotateRoot(deltaTime);
         }
 
         prevTouchPosition = currTouchPosition;
     });
     return appLoop;
+}
+
+function inertiaRotateRoot(deltaTime){
+    
+    quat.setAxisAngle(originQuatDelta, angularVelocityAxis, angularVelocity * deltaTime);
+    quat.multiply(originQuat, originQuatDelta, originQuat);
+    
+    root.transform.rotation.quat.set(originQuat);
+    angularVelocity -= angularVelocityDeclineSpeed * deltaTime;
+}
+
+function rotateRoot(deltaTime){
+//create screen space vector
+    const p =  prevTouchPosition;
+    const c =  currTouchPosition;
+    const a = camera.aspect;
+    const delta = vec4.fromValues(c[0] - p[0], c[1] - p[1], 0, 0);
+    const delta2d = vec2.fromValues(delta[0] * a, delta[1]);
+    
+    const z90 = mat4.create();
+    mat4.identity(z90);
+    mat4.rotateZ(z90, z90, DegToRad(90));
+
+    const NDCaxis = vec4.create();
+    vec4.transformMat4(NDCaxis, delta, z90);
+
+
+    //convert to world space
+
+    const vp = camera.vp;
+    const ivp = mat4.create();
+    mat4.invert(ivp, vp);
+    const wAxis4 = vec4.create();
+    
+    vec4.transformMat4(wAxis4, NDCaxis, ivp);
+        
+    angularVelocityAxis = vec3.fromValues(wAxis4[0], wAxis4[1], wAxis4[2]);
+    vec3.normalize(angularVelocityAxis, angularVelocityAxis);
+    //create Quaternion
+    const angle = vec2.dist(vec2.fromValues(0, 0), delta2d);
+    quat.setAxisAngle(originQuatDelta, angularVelocityAxis, angle);
+    angularVelocity = angle / deltaTime;
+
+    //apply quaternion
+    if(angle > 0){
+        
+        quat.multiply(originQuat, originQuatDelta, originQuat);
+        quat.normalize(originQuat, originQuat);
+        root.transform.rotation.quat.set(originQuat);
+        root.transform.update();
+    }
+    
 }
 
 function NDCtoWorld(ndc, camera){
