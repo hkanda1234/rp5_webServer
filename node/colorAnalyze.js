@@ -56,5 +56,5 @@ app.get('/colorAnalyze', async(req, res) => {
 });
 
 app.listen(port, () => {
-    console.log("localhost running on port 3000");
+    console.log("ColorAnalyze.js working on port 3000");
 });

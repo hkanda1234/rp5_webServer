@@ -1,4 +1,5 @@
 
+
 //shader source
 const vertexShaderSource = `
 attribute vec3 aPosition;
@@ -13,11 +14,22 @@ varying vec3 vNormal;
 varying vec2 vUV;
 varying float vIndex;
 varying vec4 vMainColor;
+varying float lightness;
+varying float vDepth;
+
 void main(){
+
+    vec3 light;
+    light[0] = 1.0;
+    light[1] = 1.0;
+    light[2] = 1.0;
+
     gl_Position = uMVPMatrix * vec4(aPosition, 1.0);
     
+    vDepth = gl_Position.z / gl_Position.w;
+
     vNormal = normalize(uMVPMatrix * vec4(aNormal, 1.0)).xyz;
-    
+    lightness = dot(vNormal, light);
     vUV = aUV;
     vIndex = aIndex;
     vMainColor = uMainColor;
@@ -32,26 +44,39 @@ varying vec2 vUV;
 varying float vIndex;
 
 varying vec4 vMainColor;
+varying float lightness;
 
 void main(){
     float u = vUV[0];
     float v = vUV[1];
-    float r, g, b;
-    vec3 col;
-    r = 1.0;
-    g = 1.0;
-    b = 1.0;
-
-    vec3 n = normalize(vNormal.xyz);
-    vec3 l = normalize(vec3(1.0, 1.0, 1.0));
-    vec3 view = normalize(vec3(0.0, 0.0, -1.0));
-
-    float lightness = n.x * l.x + n.y * l.y + n.z * l.z;
-    if(lightness < 0.0)lightness = 0.0;
-    float viewDot = n.x * view.x + n.y * view.y + n.z * view.z;
-    float back = (1.0 - abs(viewDot)) * 2.0;
+    float r, g, b, a;
     
-    gl_FragColor = vec4(r * lightness, g * lightness, b * lightness, 1.0);
+    vec4 col = vMainColor;
+    vec4 inv = vMainColor;
+    vec3 nor = vNormal;
+
+
+    inv[0] = 1.0 - inv[0];
+    inv[1] = 1.0 - inv[1];
+    inv[2] = 1.0 - inv[2];
+
+    float edge = 0.01;
+
+    if(u > 1.0 - edge || v > 1.0 - edge || u < edge || v < edge) {
+        col[0] = inv[0];
+        col[1] = inv[1];
+        col[2] = inv[2];
+    };
+
+    
+    r = col[0];
+    g = col[1];
+    b = col[2];
+    a = 1.0;
+
+    
+    
+    gl_FragColor = vec4(r, g, b, a);
 }
 `;
 
@@ -66,10 +91,13 @@ if(!gl){
 const { mat4, vec2, vec3, vec4, quat } = glMatrix;
 const PI = Math.PI;
 const f32Size = Float32Array.BYTES_PER_ELEMENT;
+const matAdditionalType = {
+    vec4: 0
+}
 const colliderType = {
     BOX: 1 << 0,
 };
-
+const backgroundColor = [1, 1, 1, 1];
 
 let isDragging = false;
 let isPinching = false;
@@ -89,8 +117,10 @@ let currTouchPosition = null;
 let touchMoveDistance = 0;
 let touchMoveDirection = vec3.create();
 
-let currFingerDistance = null;
-let prevFingerDistance = null;
+let currTouchCount = 0;
+let prevTouchCount = 0;
+let currTouchDistance = null;
+let prevTouchDistance = null;
 
 let angularVelocityAxis = vec3.create();
 let angularVelocity = 0;
@@ -103,13 +133,50 @@ let translationVelocity = null;
 let originQuat = quat.create();
 let originQuatDelta = quat.create();
 
+const wheelMoveMultipier = 0.1;
+
+const colorpickerQuantLevel = 4;
+
+const colorPickerModels = {
+    objects : [],
+    colorBind : {
+        id : [],
+        min : [],
+        max : [],
+    }
+};
+
+
+const cubeSize = 1;
+const cubeArraySize = Math.pow(256, 1 / colorpickerQuantLevel);
+const cubeArrayBound = 5;
+
+const cubeArrayIdentity = quat.create();
+quat.identity(cubeArrayIdentity);
+
+const expandCubeSize = cubeArrayBound + cubeSize * 2;
+const expandAnimationDuration = 1;
+
+const nearCubeThreshold = 5;
+const nearCubeScaleDuration = 0.15;
+const nearCubeScale = vec3.fromValues(0, 0, 0);
+let prevNearCubes = [];
+let currNearCubes = [];
+
+let isAnimating = false;
+
+const initialCameraPosition = vec3.fromValues(0, 0, 30);
+
+
 
 canvas.addEventListener('touchstart', whenTouchStart);
 canvas.addEventListener('touchmove', whenTouchMove);
+
+
+canvas.addEventListener('wheel', whenWheelMove);
 document.addEventListener('mousemove', whenTouchMove);
 document.addEventListener('touchend', whenTouchEnd);
-canvas.addEventListener('click', deleteTouchedObject);
-
+canvas.addEventListener('click', whenClicked)
 //タッチ操作：
 //一本指でOrigin回転
 //二本指でカメラ操作：
@@ -122,30 +189,6 @@ canvas.addEventListener('click', deleteTouchedObject);
 //ホイールドラックで左右に平行移動
 
 
-const hierarchy = createHierarchy();
- const camera = createCamera();
-hierarchy.camera = camera;
-camera.transform.position = vec3.fromValues(0, 0, 22);
-camera.transform.rotation.euler.set(vec3.fromValues(0, 0, 0));
-const material = createMaterial(vertexShaderSource, fragmentShaderSource);
-const cubeArray = createCubeObjectArray(
-    vec3.fromValues(0,0,0),
-    10,
-    1,
-    1.5,
-    material
-);
-const origin = createObject();
-origin.transform.position = vec3.fromValues(0, 0, 0);
-origin.children.push(...cubeArray);
-hierarchy.objects.push(origin);
-
-const renderStop = startRenderHierarchy(hierarchy);
-const root = hierarchy.objects[0];
-    
-
-const appStop = startApp(hierarchy);
-
 function startApp(hierarchy){
     const appLoop = startLoop((deltaTime, time) => {
         
@@ -153,32 +196,163 @@ function startApp(hierarchy){
         if(isTouchMoving){
             if(!prevTouchPosition){
                 prevTouchPosition = currTouchPosition;
-                
             }
 
-            rotateRoot(deltaTime);
+            rotateorigin(deltaTime);
             
-            
-            //console.log(delta, NDCaxis, wAxis, originQuatDelta, originQuat);
         }else if(angularVelocity >= 0){
-            inertiaRotateRoot(deltaTime);
+            inertiaRotateorigin(deltaTime);
         }
+
+        scaleNearObject(origin);
 
         prevTouchPosition = currTouchPosition;
     });
     return appLoop;
 }
 
-function inertiaRotateRoot(deltaTime){
+function createColorIdBind(origin, min, max){
+    const cubes = origin.children;
+    const bind = {
+        id : [],
+        color : []
+    }
+    
+    for(let i = 0; i < Math.pow(cubeArraySize, 3); i++){}
+}
+
+function createColorpickerArray(size, bound, min, max) {
+    const origin = createObject();
+    const l = currCubeContainColorPerAxis
+    for(let x = 0; x < l; x++){
+        for(let y = 0; y < l; y++){
+            for(let z = 0; z < l; z++){
+                const x = bound * x / (l - 1) - bound / 2;
+                const y = bound * y / (l - 1) - bound / 2;
+                const z = bound * z / (l - 1) - bound / 2;
+                const pos = vec3.fromValues(x, y, z);
+                const mesh = createMesh(createCubeArray(size))
+                const cube = createObject();
+            }
+        }
+    }
+}
+
+function whenClicked(event){
+    const ndc = getNDC(event);
+    const od = getOriginAndDirection(ndc, hierarchy.camera);
+    
+    raycastHierarchy()
+}
+
+function createColorToCubeArray(color, level){
+
+    const size = cubeArraySize;
+
+    for(let x = 0; x < size; x++){
+        for(let y = 0; y < size; y++){
+            for(let z = 0; z < size; z++){
+                array[x * size * size + y * size + z].mainColor = vec4.fromValues(x / size, y / size, z / size, 1);
+            }
+        }
+    }
+
+
+
+}
+
+
+function scaleNearObject(origin){
+    const nearObjectId = findNearObjects(origin);
+
+    currNearCubes = [];
+    for(let i = 0; i < nearObjectId.length; i++){
+        currNearCubes.push(nearObjectId[i]);
+    }
+
+    // scale cubes does not included in prev
+   for(let i = 0; i < currNearCubes.length; i++){   
+        const included = prevNearCubes.includes(currNearCubes[i]);
+        if(!included){
+            prevNearCubes.push(currNearCubes[i]);
+            const cube = origin.children.find(o => o.id === currNearCubes[i]);
+            startObjectScaleAnim(cube, nearCubeScale, nearCubeScaleDuration);
+        }
+   }
+
+   if(prevNearCubes.length > 0){
+        for(let i = 0; i < prevNearCubes.length; i++){
+            const included = currNearCubes.includes(prevNearCubes[i]);
+            if(!included){
+                const cube = origin.children.find(o => o.id === prevNearCubes[i]);
+                startObjectScaleAnim(cube, vec3.fromValues(1, 1, 1), nearCubeScaleDuration);
+                prevNearCubes.splice(i, 1);
+            }
+        }
+   }
+
+}
+
+function startObjectScaleAnim(object, scale, duration){
+    const start = vec3.clone(object.transform.scale);
+    const end = vec3.clone(scale);
+    let s = vec3.clone(start);
+    let _time = 0;
+    let t = 0, ease = 0;
+    const scaleStop = startLoop((deltaTime, time) => {
+        _time += deltaTime;
+        t = _time / duration;
+        ease = t * (2 - t);
+
+        vec3.lerp(s, start, end, ease);
+        object.transform.scale = vec3.clone(s);
+        object.transform.update();
+
+        if(t >= 1){
+            scale = vec3.clone(end);
+            object.transform.scale = vec3.clone(s);
+            object.transform.update();
+            scaleStop();
+        }
+    });
+}
+
+function findNearObjects(origin){
+    const cam = hierarchy.camera.transform.position;
+    const rMat = origin.transform.matrix;
+    const objects = origin.children;
+
+    let nearObjects = [];
+
+    const l = objects.length;
+
+    for(let i = 0; i < l; i++){
+        const object = objects[i];
+        const pos = object.transform.position;
+        const wpos = vec3.create()
+        vec3.transformMat4(wpos, pos, rMat);
+
+        const dist = vec3.dist(wpos, cam);
+        if(dist < nearCubeThreshold){
+            nearObjects.push(object.id);
+            
+        }
+    }
+
+    return nearObjects;
+    
+}
+
+function inertiaRotateorigin(deltaTime){
     
     quat.setAxisAngle(originQuatDelta, angularVelocityAxis, angularVelocity * deltaTime);
     quat.multiply(originQuat, originQuatDelta, originQuat);
     
-    root.transform.rotation.quat.set(originQuat);
+    origin.transform.rotation.quat.set(originQuat);
     angularVelocity -= angularVelocityDeclineSpeed * deltaTime;
 }
 
-function rotateRoot(deltaTime){
+function rotateorigin(deltaTime){
 //create screen space vector
     const p =  prevTouchPosition;
     const c =  currTouchPosition;
@@ -215,8 +389,8 @@ function rotateRoot(deltaTime){
         
         quat.multiply(originQuat, originQuatDelta, originQuat);
         quat.normalize(originQuat, originQuat);
-        root.transform.rotation.quat.set(originQuat);
-        root.transform.update();
+        origin.transform.rotation.quat.set(originQuat);
+        origin.transform.update();
     }
     
 }
@@ -248,10 +422,14 @@ function deleteTouchedObject(event){
     const od = getOriginAndDirection(ndc, camera);
     const hit = raycastHierarchy(od.origin, od.direction, hierarchy);
     if(hit){
-        hit.object.transform.scale = vec3.fromValues(0, 0, 0);
-        hit.object.transform.update();
-        hit.object.collider = null;
+        hit.object.isActive = false;
     }
+}
+
+function whenWheelMove(event){
+    event.preventDefault();
+    camera.transform.position[2] += event.deltaY * wheelMoveMultipier;
+    camera.update();
 }
 
 function whenTouchStart(event){
@@ -259,6 +437,7 @@ function whenTouchStart(event){
     firstTouchPosition = ndc;
     touchMoveDistance = 0;
     prevTouchPosition = ndc;
+    currTouchPosition = ndc;
     
 
 }
@@ -270,34 +449,22 @@ function whenTouchEnd(event){
 
     isTouchMoving = true;
 
-    ndcs.forEach((ndc) =>{
-        avg[0] += ndc[0];
-        avg[1] += ndc[1];
-    });
-    avg[0] /= l;
-    avg[1] /= l;
-
-    currTouchPosition = avg;
+    currTouchPosition = ndcs[0];
 
     isTouchMoving = false;
 }
+
 
 function whenTouchMove(event){
     event.preventDefault();
     const ndcs = getNDC(event);
     const l = ndcs.length;
-    const avg = vec3.create();
 
     isTouchMoving = true;
+    
 
-    ndcs.forEach((ndc) =>{
-        avg[0] += ndc[0];
-        avg[1] += ndc[1];
-    });
-    avg[0] /= l;
-    avg[1] /= l;
 
-    currTouchPosition = avg;
+    currTouchPosition = ndcs[0];
     
 }
 
@@ -381,6 +548,8 @@ function raycastHierarchy(origin, direction, hierarchy){
 }
 
 function raycastObject(origin, direction, object){
+    if(!object.isActive) return null;
+
     const collider = object.collider;
 
     const id = object.id;
@@ -413,10 +582,13 @@ function raycastObject(origin, direction, object){
         vec4.transformMat4(_direction, vec4.fromValues(...direction, 0), local);
 
         
-
+        
         if(cType === colliderType.BOX){
-            const a = collider.collider.corners.a;
-            const b = collider.collider.corners.b;
+            const a = collider.corners.a;
+            const b = collider.corners.b;
+            const s = collider.scale;
+            vec3.scale(a, a, s);
+            vec3.scale(b, b, s);
             const selfHit = raycastAABB(_origin, _direction, a, b);
             if (selfHit) {
                 selfHit.object = object;
@@ -516,10 +688,10 @@ function startRenderHierarchy(hierarchy){
     return renderLoop;
 }
 
-function createCubeObjectArray(origin = vec3.fromValues(0, 0, 0), num, size = 1, interval = 2, material){
+function createCubeObjectArray(origin = vec3.fromValues(0, 0, 0), num, size = 1, bound = 10, material){
     const cubeArray = [];
     const position = vec3.create();
-    const bound = interval * num;
+    
 
     let id = 0;
     for(let x = 0; x < num; x++){
@@ -530,12 +702,13 @@ function createCubeObjectArray(origin = vec3.fromValues(0, 0, 0), num, size = 1,
                 const positionY = origin[1] + y / (num - 1) * bound - bound / 2;
                 const positionZ = origin[2] + z / (num - 1) * bound - bound / 2;
                 
+                
                 cube.transform.position = vec3.fromValues(positionX, positionY, positionZ);
                 cube.transform.scale = vec3.fromValues(1, 1, 1);
                 cube.transform.update();
-                cube.id = id;
+                
                 cube.collider = createBoxCollider(1);
-                id++;
+                
                 cubeArray.push(cube);
             }
         }
@@ -545,7 +718,7 @@ function createCubeObjectArray(origin = vec3.fromValues(0, 0, 0), num, size = 1,
 }
 
 function createCubeObject(size = 1, scale = 1, material = null){
-    const cube = createObject();
+    const cube = createObject(hierarchy);
     cube.material = material;
     cube.mesh = createMesh(createCubeArray(size));
     cube.transform.scale = vec3.fromValues(scale, scale, scale);
@@ -558,12 +731,13 @@ function createBoxCollider(size = 1){
 
     return {
         type: colliderType.BOX,
-        collider: {
-            corners: {
-                a: [-s, s, s],
-                b: [ s, -s, -s]
-            },
-        }
+        
+        corners: {
+            a: [-s, s, s],
+            b: [ s, -s, -s]
+        },
+        
+        scale: 1
     }
 }
 
@@ -639,7 +813,7 @@ function clearRender(canvas){
     resizeCanvasToDisplaySize(canvas);
     camera.update();
     gl.viewport(0, 0, canvas.width, canvas.height);
-    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    gl.clearColor(...backgroundColor);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 }
 
@@ -665,6 +839,7 @@ function createHierarchy(){
         camera : null,
         resolution : 1.0,
         objects: [],
+        objectsIdCache: [],
         light: null,
         render: function() {
 
@@ -686,6 +861,10 @@ function renderObject(object, camera, parentMatrix = null){
     };
 
     if(!object.transform){
+        return;
+    }
+
+    if(!object.isActive){
         return;
     }
 
@@ -791,6 +970,7 @@ function renderObject(object, camera, parentMatrix = null){
 
     gl.uniformMatrix4fv(mvpLocation, false, mvpMatrix);
 
+    gl.uniform4fv(material.uniforms.mainColorLoc, object.mainColor);
 
 
     gl.enable(gl.DEPTH_TEST);
@@ -846,8 +1026,9 @@ function DegToRad(deg){
     return deg / 180 * PI;
 }
 
-function createObject(){
+function createObject(hierarchy){
     const object = {
+        isActive : true,
         transform : createTransform(),
         mesh : null,
         material : null,
@@ -855,8 +1036,16 @@ function createObject(){
         children: [],
         id: null,
         collider: null,
+        mainColor: vec4.fromValues(1, 1, 1, 1),
 
     }
+
+    const cache = hierarchy.objectsIdCache;
+
+    cache.push(cache.length - 1);
+    object.id = cache[cache.length - 1];
+
+
     return object;
 }
 
@@ -893,18 +1082,11 @@ function createMaterial(vert, frag){
         },
         uniforms: {
             mvp : null,
+            mainColorLoc : null,
             additional : []
         },
-        setAdditional : function(name, type, value){
-            const additional = {
-                name : name,
-                type : type,
-                value: value,
-                location: null,
-            }
-            additional.location = gl.getUniformLocation(material.program, name);
-            this.uniforms.additional.push(additional);
-        },
+
+        
     }
     let success;
 
@@ -939,6 +1121,7 @@ function createMaterial(vert, frag){
     material.attributes.uv = gl.getAttribLocation(program, "aUV");
     material.attributes.index = gl.getAttribLocation(program, "aIndex");
     material.uniforms.mvp = gl.getUniformLocation(program, "uMVPMatrix");
+    material.uniforms.mainColorLoc = gl.getUniformLocation(program, 'uMainColor');
 
     return material;
 }
