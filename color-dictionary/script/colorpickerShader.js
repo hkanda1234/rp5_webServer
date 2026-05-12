@@ -9,6 +9,8 @@ attribute float aIndex;
 
 uniform mat4 uMVPMatrix;
 uniform vec4 uMainColor;
+uniform vec3 uMinColor;
+uniform vec3 uMaxColor;
 
 varying vec3 vNormal;
 varying vec2 vUV;
@@ -76,7 +78,7 @@ void main(){
 
     
     
-    gl_FragColor = vec4(r, g, b, a);
+    gl_FragColor = vec4(u, v, b, a);
 }
 `
 }

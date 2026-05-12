@@ -15,48 +15,8 @@ export class GLCanvas {
         this.height = Math.floor(this.canvas.clientHeight * this.dpr);
         
         this.aspect = this.width / this.height;
-    }
+        this.background = vec4.fromValues(1, 1, 1, 1);
 
-    resizeToDisplaySize(){
-        this.width = Math.floor(this.canvas.clientWidth * this.dpr);
-        this.height = Math.floor(this.canvas.clientHeight * this.dpr);
-        
-        if(this.width != this.canvas.width || this.height != this.canvas.height){
-            this.canvas.width = this.width;
-            this.canvas.height = this.height;
-            this.aspect = this.width / this.height;
-            return true;
-        }
-        
-        return false;
-    }
-
-    clear(color){
-        this.resizeToDisplaySize();
-
-        this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
-        this.gl.clearColor(...color);
-        this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-    }
-
-    renderScene(){
-
-        if(!this.scene){
-            console.error("no scene in canvas!");
-            return;
-        }
-
-        this.scene.render(this.gl);
-
-    }
-}
-//scene
-export class Scene {
-    constructor(gl) {
-        this.gl = gl;
-        this.camera = null;
-        this.objects = [];
-        this.objectIdCache = [];
         this.renderLoop = {
             id : null,
             isRunning : false,
@@ -64,8 +24,10 @@ export class Scene {
             currTime : null,
             deldaTime : null,
         }
+
     }
 
+    
     startRender(){
         const self = this;
         this.renderLoop.isRunning = true;
@@ -75,7 +37,6 @@ export class Scene {
             if(!self.renderLoop.isRunning) return;
 
             self.renderLoop.id = requestAnimationFrame(frame);
-            console.log("render");
 
             self.renderLoop.currTime = timeStamp;
             self.renderLoop.deldaTime = 
@@ -83,7 +44,8 @@ export class Scene {
             self.renderLoop.currTime - self.renderLoop.prevTime;
 
             try{
-                render();
+                self.clear();
+                self.render();
             } catch(error) {
                 throw new Error("in Render Loop, ", error);
                 self.stopRender();
@@ -101,9 +63,52 @@ export class Scene {
         this.renderLoop.isRunning = false;
     }
 
-    render(gl){
-        for(const o in this.objects){
-            o.render(gl);
+    render(){
+        this.scene.render();
+    }
+
+    
+    clear(){
+        this.resizeToDisplaySize();
+        
+        this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+        this.gl.clearColor(...this.background);
+        this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+    }
+
+    resizeToDisplaySize(){
+        this.dpr = window.devicePixelRatio || 1;
+        this.displayWidth = Math.floor(this.canvas.clientWidth * this.dpr);
+        this.displayHeight = Math.floor(this.canvas.clientHeight * this.dpr);
+        if(this.displayWidth != this.canvas.width || this.displayHeight != this.canvas.height){
+            this.canvas.width = this.displayWidth * this.resolution;
+            this.canvas.height = this.displayHeight * this.resolution;
+            return true;
+        }
+        return false;
+    }
+
+
+    
+
+    
+}
+//scene
+export class Scene {
+    constructor(gl) {
+        this.gl = gl;
+        this.camera = null;
+        this.objects = [];
+        this.objectIdCache = [];
+        
+        this.background = vec4.fromValues(1, 1, 1, 1);
+    }
+
+    render(){
+        this.camera.update();
+        this.updateObjectsTransform();
+        for(const o of this.objects){
+            o.render(this.gl, this.camera);
         }
     }
 
@@ -145,16 +150,16 @@ export class Scene {
 }
 
 
-
-
 export class Camera {
     constructor(
-        fovY = Math.PI / 4,
+        canvas,
+        fovY = Math.PI / 2,
         near = 0.01,
         far = 1000,
-        aspect = 9 / 16
+        aspect = null,
     )
     {
+        this.canvas = canvas;
         this.transform = new Transform();
         this.fovY = fovY;
         this.near = near;
@@ -164,6 +169,22 @@ export class Camera {
         this.projectionMatrix = mat4.create();
         this.viewMatrix = mat4.create();
         this.persMatrix = mat4.create();
+    }
+
+    update(){
+        this.aspect = this.canvas.width / this.canvas.height;
+        
+        mat4.perspective(
+            this.persMatrix,
+            this.fovY,
+            this.aspect,
+            this.near,
+            this.far,
+        );
+        this.transform.updateMatrix();
+        mat4.invert(this.viewMatrix, this.transform.worldMatrix);
+        mat4.multiply(this.projectionMatrix, this.persMatrix, this.viewMatrix);
+        
     }
 }
 
@@ -195,7 +216,7 @@ export class CObject {
 
         //render self
         if(this.mesh && this.material){
-
+            
             gl.useProgram(this.material.program);
             const mesh = this.mesh;
             const buffer = mesh.buffer;
@@ -211,7 +232,7 @@ export class CObject {
 
             const projectionMat = camera.projectionMatrix;
             const mpMat = mat4.create();
-            mat4.multiply(mpMat, world, projectionMat);
+            mat4.multiply(mpMat, projectionMat, world);
 
             const attribLoc = this.material.attribLoc;
             const positionLoc = attribLoc.position;
@@ -267,7 +288,7 @@ export class CObject {
             );
 
             gl.uniformMatrix4fv(mvpLoc, false, mpMat);
-            gl.uniform4fv(colLoc, false, this.mainColor);
+            gl.uniform4fv(colLoc, this.mainColor);
             gl.enable(gl.DEPTH_TEST);
             gl.drawArrays(gl.TRIANGLES, 0, mesh.vertCount);
 
@@ -277,7 +298,7 @@ export class CObject {
 
         //render children
         if(this.children.length > 0){
-            for(const c in this.children){
+            for(const c of this.children){
                 c.render(gl, this.transform.worldMatrix);
             }
         }

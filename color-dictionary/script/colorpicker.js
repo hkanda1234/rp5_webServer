@@ -926,6 +926,7 @@ function createCamera(fovY = 90, near = 0.1, far = 100){
                 this.near,
                 this.far
             );
+            
             this.transform.update();
             //create view matrix
             mat4.invert(this.view, this.transform.matrix);
