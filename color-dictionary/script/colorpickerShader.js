@@ -9,8 +9,9 @@ attribute float aIndex;
 
 uniform mat4 uMVPMatrix;
 uniform vec4 uMainColor;
-uniform vec3 uMinColor;
-uniform vec3 uMaxColor;
+uniform vec4 uMinColor;
+uniform vec4 uMaxColor;
+uniform float uEdgeThreshold;
 
 varying vec3 vNormal;
 varying vec2 vUV;
@@ -18,6 +19,9 @@ varying float vIndex;
 varying vec4 vMainColor;
 varying float lightness;
 varying float vDepth;
+
+varying vec4 vMinColor;
+varying vec4 vMaxColor;
 
 void main(){
 
@@ -35,6 +39,8 @@ void main(){
     vUV = aUV;
     vIndex = aIndex;
     vMainColor = uMainColor;
+    vMinColor = uMinColor;
+    vMaxColor = uMaxColor;
 }
 `,
 
@@ -48,21 +54,51 @@ varying float vIndex;
 varying vec4 vMainColor;
 varying float lightness;
 
+varying vec4 vMinColor;
+varying vec4 vMaxColor;
+
 void main(){
     float u = vUV[0];
     float v = vUV[1];
     float r, g, b, a;
     
-    vec4 col = vMainColor;
     vec4 inv = vMainColor;
     vec3 nor = vNormal;
 
+    vec4 col;
+    float i = vIndex;
+
+    if(i == 0.0){
+        col[0] = u;
+        col[1] = v;
+        col[2] = 0.0;
+    }
+
+    if(i == 2.0){
+        col[0] = u;
+        col[1] = 1.0;
+        col[2] = v;
+    }
+
+    if(i == 3.0){
+        col[0] = u;
+        col[1] = 0.0;
+        col[2] = v;
+    }
+
+    if(i == 4.0){
+        col[0] = 0.0;
+        col[1] = v;
+        col[2] = 1.0 - u;
+    }  
+
+    
 
     inv[0] = 1.0 - inv[0];
     inv[1] = 1.0 - inv[1];
     inv[2] = 1.0 - inv[2];
 
-    float edge = 0.01;
+    float edge = 0.015;
 
     if(u > 1.0 - edge || v > 1.0 - edge || u < edge || v < edge) {
         col[0] = inv[0];
@@ -78,7 +114,7 @@ void main(){
 
     
     
-    gl_FragColor = vec4(u, v, b, a);
+    gl_FragColor = vec4(r, g, b, a);
 }
 `
 }

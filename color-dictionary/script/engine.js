@@ -25,6 +25,8 @@ export class GLCanvas {
             deldaTime : null,
         }
 
+        
+
     }
 
     
@@ -33,7 +35,6 @@ export class GLCanvas {
         this.renderLoop.isRunning = true;
 
         function frame(timeStamp){
-            
             if(!self.renderLoop.isRunning) return;
 
             self.renderLoop.id = requestAnimationFrame(frame);
@@ -47,8 +48,8 @@ export class GLCanvas {
                 self.clear();
                 self.render();
             } catch(error) {
-                throw new Error("in Render Loop, ", error);
                 self.stopRender();
+                throw new Error("in Render Loop, ", error);
             }
 
         }
@@ -59,11 +60,18 @@ export class GLCanvas {
     }
 
     stopRender(){
-        canselAnimationFrame(this.renderLoop.id);
+        cancelAnimationFrame(this.renderLoop.id);
         this.renderLoop.isRunning = false;
     }
 
     render(){
+        if(!this.scene){
+            console.error("no scene in canvas");
+            if(this.renderLoop.isRunning){
+                this.stopRender();
+            }
+            return;
+        }
         this.scene.render();
     }
 
@@ -93,6 +101,26 @@ export class GLCanvas {
 
     
 }
+
+
+
+export class Raycast{
+    constructor(scene){
+        this.scene = scene,
+        this.objects = scene.objects,
+        this.camera = scene.camera,
+        this.ray = {
+            origin : null,
+            direction : null,
+        };
+    }
+
+    updateRay(ndc, camera){
+        
+    }
+
+
+}
 //scene
 export class Scene {
     constructor(gl) {
@@ -105,6 +133,7 @@ export class Scene {
     }
 
     render(){
+        if(!this.camera)return;
         this.camera.update();
         this.updateObjectsTransform();
         for(const o of this.objects){
@@ -112,7 +141,7 @@ export class Scene {
         }
     }
 
-    addObject(object){
+    add(object){
         if(object){
             object.id = this.objectIdCache.length;
             this.objects.push(object);
@@ -124,20 +153,6 @@ export class Scene {
             
             this.objectIdCache.push(this.objectIdCache.length);
         }   
-    }
-
-    findObjectById(id){
-        this.objects.forEach(o => {
-            if(o.id === id){
-                return o;
-            }
-            o.children.forEach(c => {
-                if(c.id === id){
-                    return c;
-                }
-            });
-        });
-        return null;
     }
 
     updateObjectsTransform(){
@@ -194,30 +209,22 @@ export class CObject {
         this.isActive = true;
         this.transform = new Transform();
         this.mesh = null;
-        this.material = null;
+        this.shader = null;
         this.children = [];
         this.id = null;
         this.collider = null;
-        this.mainColor = null;
+        this.mainColor = vec4.fromValues(1, 1, 1, 1);
     }
 
     render(gl, camera, parent = null){
         if(!this.isActive)return;
-        
 
-        let local = mat4.create();
-        let world = mat4.create();
-        mat4.copy(local, this.transform.localMatrix);
-        if(parent){
-            mat4.multiply(world, parent, local);
-        } else {
-            mat4.copy(world, this.transform.worldMatrix);
-        }
+        const world = this.transform.worldMatrix;
 
         //render self
         if(this.mesh && this.material){
             
-            gl.useProgram(this.material.program);
+            gl.useProgram(this.material.shader.program);
             const mesh = this.mesh;
             const buffer = mesh.buffer;
             const stride = mesh.stride;
@@ -234,13 +241,13 @@ export class CObject {
             const mpMat = mat4.create();
             mat4.multiply(mpMat, projectionMat, world);
 
-            const attribLoc = this.material.attribLoc;
+            const attribLoc = this.material.shader.attribLoc;
             const positionLoc = attribLoc.position;
             const normalLoc = attribLoc.normal;
             const uvLoc = attribLoc.uv;
             const indexLoc = attribLoc.index;
 
-            const uniformsLoc = this.material.uniformsLoc;
+            const uniformsLoc = this.material.shader.uniformsLoc;
             const mvpLoc = uniformsLoc.mvp;
             const colLoc = uniformsLoc.mainColor;
             
@@ -289,6 +296,11 @@ export class CObject {
 
             gl.uniformMatrix4fv(mvpLoc, false, mpMat);
             gl.uniform4fv(colLoc, this.mainColor);
+
+            for(const u of this.material.uniform4fv){
+                gl.uniform4fv(u.location, u.value);
+            }
+
             gl.enable(gl.DEPTH_TEST);
             gl.drawArrays(gl.TRIANGLES, 0, mesh.vertCount);
 
@@ -299,7 +311,7 @@ export class CObject {
         //render children
         if(this.children.length > 0){
             for(const c of this.children){
-                c.render(gl, this.transform.worldMatrix);
+                c.render(gl, camera, world);
             }
         }
 
@@ -309,29 +321,48 @@ export class CObject {
     }
     
     updateTransform(pMat = null){
-        this.transform.updateMatrix();
+        this.transform.updateMatrix(pMat);
         if(this.children.length > 0){
-            this.children.forEach(c => {
-                c.transform.updateMatrix(this.transform.worldMatrix);
-            });
+            for(const c of this.children){
+                c.updateTransform(this.transform.worldMatrix);
+            }
         }
-    }
-
-    setPosition(pos){
-        this.transform.setPosition(pos);
-    }
-
-    setRotation(rot){
-        this.transform.setRotation(rot);
-    }
-
-    setScale(scale){
-        this.transform.setScale(scale)
     }
 }
 
-//material
 export class Material {
+    constructor(gl, shader){
+        this.gl = gl,
+        this.shader = shader,
+        this.uniform4fv = [];
+    }
+
+    addVec4Uniform(name, value){
+        const location = this.gl.getUniformLocation(this.shader.program, name)
+        this.uniform4fv.push({
+            location : location,
+            value : value,
+        });
+    }
+
+    static createFromSource(gl, source){
+        const shader = Shader.create(gl, source);
+        return new Material(gl, shader);
+    }
+
+    copy(material){
+        const copy = {
+            gl : material.gl,
+            shader : material.shader,
+            uniform4fv : null,
+        }
+
+        copy.uniform4fv = material.uniform4fv;
+        return copy;
+    }
+}
+//shader
+export class Shader {
 
     constructor(gl, program, attribLoc, uniformLoc){
         
@@ -345,7 +376,6 @@ export class Material {
         const vert = gl.createShader(gl.VERTEX_SHADER);
         const frag = gl.createShader(gl.FRAGMENT_SHADER);
         const program = gl.createProgram();
-
         //compile vert shader
         gl.shaderSource(vert, source.vert);
         gl.compileShader(vert);
@@ -358,7 +388,7 @@ export class Material {
         //compile frag shader
         gl.shaderSource(frag, source.frag);
         gl.compileShader(frag);
-        success = gl.getShaderParameter(vert, gl.COMPILE_STATUS);
+        success = gl.getShaderParameter(frag, gl.COMPILE_STATUS);
         if(!success){
             console.error(gl.getShaderInfoLog(frag));
             throw new Error("Failed to compile frag shader")
@@ -389,7 +419,7 @@ export class Material {
 
         
 
-        return new Material(gl, program, attribLoc, uniformLoc);
+        return new Shader(gl, program, attribLoc, uniformLoc);
 
     }
 }
@@ -398,6 +428,7 @@ export class Mesh {
 
     constructor(gl, vertices){
         this.gl = gl;
+        
         this.vertices = new Float32Array(vertices);
         this.buffer = null;
         this.attribNumPerVertex = 9;
@@ -411,7 +442,7 @@ export class Mesh {
     }
 
     upload(gl, vertices){
-
+        
         this.buffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
         gl.bufferData(gl.ARRAY_BUFFER, this.vertices, gl.STATIC_DRAW);
@@ -515,7 +546,7 @@ export class Transform {
         quat.normalize(this.rotation, this.rotation);
     }
 
-    setScale(scale){
-        vec3.copy(this.scale, scale);
+    setScale(x, y, z){
+        vec3.set(this.scale, x, y, z);
     }
 }
