@@ -13,6 +13,7 @@ const gl = glCanvas.gl;
 const scene = new e.Scene(gl);
 const camera = new e.Camera(canvasElement);
 
+
 glCanvas.scene = scene;
 scene.camera = camera;
 
@@ -23,6 +24,8 @@ camera.transform.setPosition(...initialCameraPosition);
 glCanvas.startRender();
 //colorpicker setup
 
+
+
 const cubeMesh = e.Mesh.createCube(gl, 1);
 const cubeMainMaterial = e.Material.createFromSource(gl, cpShader.source);
 cubeMainMaterial.addVec4Uniform("uMinColor", vec4.create());
@@ -31,15 +34,15 @@ cubeMainMaterial.addVec4Uniform("uMaxColor", vec4.create());
 const colorPickerDivision = 4;
 const colorPickerArrayNum = Math.pow(256, 1 / colorPickerDivision);
 const colorPickerCubeInterval = 1;
+const colorPickerExpandAnimDuration = 1;
 
 let currColorPickerIndex = 0;
 
-console.log(colorPickerArrayNum);
 
 const colorPicker = createColorPicker(scene);
 setColorToColorPicker(colorPicker[0], [0, 0, 0], [255, 255, 255]);
 scene.add(colorPicker[0].origin);
-startDivideCubeAnimation(colorPicker[0], colorPickerCubeInterval, 1);
+startDivideCubeAnimation(colorPicker[0], colorPickerCubeInterval, colorPickerExpandAnimDuration);
 
 let angularVelocity = 0;
 let angularVelocityAxis = quat.create();
@@ -50,9 +53,12 @@ const angularVelocityDeclineSpeed = 10;
 const wheelMoveMultipier = 0.01;
 //app start
 
+console.log(scene);
+
 canvasElement.addEventListener('touchmove', whenTouchMove);
 canvasElement.addEventListener('touchend', whenTouchEnd);
 canvasElement.addEventListener('wheel', whenWheelMove);
+canvasElement.addEventListener('click', whenClicked);
 
 const app = startLoop((time, deltaTime, stop) =>{
     if(glCanvas.isTouchMoving){
@@ -114,6 +120,38 @@ function rotateOrigin(dt){
         colorPicker[0].origin.transform.setRotation(...originQuat);
         
     }
+}
+
+function whenClicked(event){
+    const Physic = new e.Physic(scene);
+    const ndc = getNDC(event);
+    Physic.setRayfromNDC(ndc);
+    const hit = Physic.raycastScene();
+
+    console.log(hit);
+    if(hit){
+        const object = hit.object;
+        
+        const current = colorPicker[currColorPickerIndex];
+        let cube;
+
+        for(const c of current.array){
+            if(c.object.id == object.id){
+                cube = c;
+                break;
+            }
+        }
+
+        if(cube){
+            
+            currColorPickerIndex++;
+            colorPicker[currColorPickerIndex].origin.transform.setScale(1 / 4, 1 / 4, 1 / 4);
+            colorPicker[currColorPickerIndex].origin.transform.setPosition(...cube.object.transform.position)
+            setColorToColorPicker(colorPicker[currColorPickerIndex], cube.min, cube.max);
+            startDivideCubeAnimation(colorPicker[currColorPickerIndex], colorPickerCubeInterval, colorPickerExpandAnimDuration);
+        }
+    }
+    
 }
 
 function whenWheelMove(event){
@@ -260,7 +298,7 @@ function createColorPicker(scene){
 
     const colorPicker = [];
     const n = colorPickerArrayNum;
-
+    const Physic = new e.Physic(scene);
     //create color picker divisions
     for(let d = 0; d < colorPickerDivision; d++){
         const origin = new e.CObject();
@@ -278,9 +316,9 @@ function createColorPicker(scene){
                         object : object
                     }
 
-                    
-                    object.mesh = cubeMesh;
-                    object.material = cubeMainMaterial.copy();
+                    cube.object.collider = Physic.createBoxCollider(1);
+                    cube.object.mesh = cubeMesh;
+                    cube.object.material = cubeMainMaterial.copy();
 
                     array.push(cube);
                     origin.children.push(object);

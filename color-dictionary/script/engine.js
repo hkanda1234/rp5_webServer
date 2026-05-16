@@ -120,30 +120,148 @@ export class Physic{
         }
     }
 
-    createBoxCollider(){
+    createBoxCollider(size){
+        const s = size / 2;
         const collider = {
             type : this.colliderType.BOX,
-            value : null
+            scale : 1,
+            corners : {
+                a : vec3.fromValues(-s, -s, -s),
+                b : vec3.fromValues(s, s, s)
+            }
         }
 
-
+        return collider;
     }
 
     setRayfromNDC(ndc){
-        this.ray.origin = vec3.clone(ndc);
-        this.ray.direction = vec3.fromValues(this.ray.origin[0], this.ray.origin[1], this.ray.origin[2] + 1);
-        this.camera.update();
-        mat4.invert(this.invertMat, this.camera.projectionMatrix);
+        const near = vec4.fromValues(ndc[0], ndc[1], ndc[2], 1);
+        const far = vec4.fromValues(ndc[0], ndc[1], -ndc[2], 1);
 
-        vec3.transformMat4(this.ray.direction, this.ray.direction, this.invertMat);
-        
-        vec3.transformMat4(this.ray.origin, this.ray.origin, this.invertMat);
+        const invVP = mat4.create();
+        mat4.invert(invVP, this.camera.projectionMatrix);
 
-        vec3.subtract(this.ray.direction, this.ray.direction, this.ray.origin);
-        vec3.normalize(this.ray.direction, this.ray.direction);
+        vec4.transformMat4(near, near, invVP);
+        near[0] /= near[3];
+        near[1] /= near[3];
+        near[2] /= near[3];
+        vec4.transformMat4(far, far, invVP);
+        far[0] /= far[3];
+        far[1] /= far[3];
+        far[2] /= far[3];
+
+        const dir = vec3.fromValues(far[0] - near[0], far[1] - near[1], far[2] - near[2]);
+        vec3.normalize(dir, dir);
+
+        this.ray.origin = vec3.fromValues(near[0], near[1], near[2]);
+        this.ray.direction = dir;
     }
 
-    
+    raycastScene(){
+        const objects = this.scene.objects;
+        let nearest = {
+            length : Infinity,
+            object : null,
+        }
+
+        for(let i = 0; i < objects.length; i++){
+            const hit = this.raycastObject(this.ray.origin, this.ray.direction, objects[i])
+            if(hit){
+                nearest = nearest.length > hit.length ? hit : nearest;
+            }
+        }
+
+        return nearest.length === Infinity ? null : nearest;
+    }
+
+    raycastObject(origin, direction, object){
+        if(!object.isActive) return null;
+        const collider = object.collider;
+
+        const id = object.id;
+        const children = object.children;
+        let nearest = {
+            length: Infinity,
+            object: null,
+        };
+
+        if(children){
+            
+            for(let i = 0; i < children.length; i++){
+                const _hit = this.raycastObject(origin, direction, children[i]);
+                if(_hit){
+                    
+                    nearest = nearest.length < _hit.length ? nearest : _hit;
+                }
+            }
+        }
+
+        if(collider){
+            const cType = collider.type;
+            const world = object.transform.worldMatrix;
+            const local = mat4.create();
+            mat4.invert(local, world);
+            const _origin = vec4.create();
+            vec4.transformMat4(_origin, vec4.fromValues(...origin, 1), local);
+            const _direction = vec4.create();
+            vec4.transformMat4(_direction, vec4.fromValues(...direction, 0), local);
+
+            
+            
+            if(cType === this.colliderType.BOX){
+                
+                const a = vec3.clone(collider.corners.a);
+                const b = vec3.clone(collider.corners.b);
+                const s = collider.scale;
+                
+                vec3.scale(a, a, s);
+                vec3.scale(b, b, s);
+
+                
+                const selfHit = this.raycastAABB(_origin, _direction, a, b);
+                if (selfHit) {
+                    selfHit.object = object;
+                    nearest = nearest.length < selfHit.length ? nearest : selfHit;
+                }
+                
+            }
+        }
+            
+        return nearest.length === Infinity ? null : nearest;
+    }
+    raycastAABB(origin, direction, a, b){
+        let t1, t2;
+        let enter = [], exit = [];
+
+        for(let i = 0; i < 3; i++){
+            const o = origin[i];
+            const d = direction[i];
+            const min = Math.min(a[i], b[i]);
+            const max = Math.max(a[i], b[i]);
+
+            if(Math.abs(d) < 0.000001){
+                if(o < min || o > max) return null;
+                t1 = -Infinity;
+                t2 = Infinity;
+            } else {
+                t1 = (min - o) / d;
+                t2 = (max - o) / d;
+            }
+            
+            enter.push(Math.min(t1, t2));
+            exit.push(Math.max(t1, t2));
+        }
+
+        const tenter = Math.max(...enter);
+        const texit = Math.min(...exit);
+
+        const hit = {
+            length: Math.max(tenter, 0),
+            object: null
+        };
+        return tenter <= texit && texit >= 0 ? hit : null;
+    }
+
 
 }
 //scene
