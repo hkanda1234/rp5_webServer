@@ -1,8 +1,39 @@
+body{
+    background-color: black;
+    color: white;
+    font-family :'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+h1 {
+    overflow-y: hidden;
+}
 header {
-    background-color: #f8f9fa;
+    
     padding: 5px;
 }
+
+header h1{
+    font-size : 7em;
+    font-size-adjust: 0.8;
+}
+
 header.h1{
-    font-family: 'Courier New', Courier, monospace;
+    font-family: 'Futura', Courier, monospace;
     font-size: 3rem;
+}
+
+.statement{
+    text-align: start;
+    
+}
+.statement h1{
+    font-size: 10rem;
+    color: red;
+    line-height: 2rem;
+}
+
+@media(max-width: 1500px){
+    header h1{
+        font-size: 3rem;
+    }
 }
