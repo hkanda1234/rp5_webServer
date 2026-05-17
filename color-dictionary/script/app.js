@@ -17,7 +17,7 @@ const camera = new e.Camera(canvasElement);
 glCanvas.scene = scene;
 scene.camera = camera;
 
-const initialCameraPosition = [0, 0, 15];
+let initialCameraPosition = [0, 0, 15];
 
 camera.transform.setPosition(...initialCameraPosition);
 
@@ -50,7 +50,7 @@ let originQuatDelta = quat.create();
 let originQuat = quat.create();
 const angularVelocityDeclineSpeed = 10;
 //ui setup
-const wheelMoveMultipier = 0.01;
+let wheelMoveMultipier = 0.1;
 //app start
 
 console.log(scene);
@@ -69,6 +69,8 @@ const app = startLoop((time, deltaTime, stop) =>{
     } else if(angularVelocity >= 0){
         inertiaRotateorigin(deltaTime);
     }
+
+    
 
     glCanvas.prevTouchPos = glCanvas.currTouchPos;
 });
@@ -144,14 +146,72 @@ function whenClicked(event){
 
         if(cube){
             
-            currColorPickerIndex++;
-            colorPicker[currColorPickerIndex].origin.transform.setScale(1 / 4, 1 / 4, 1 / 4);
-            colorPicker[currColorPickerIndex].origin.transform.setPosition(...cube.object.transform.position)
-            setColorToColorPicker(colorPicker[currColorPickerIndex], cube.min, cube.max);
-            startDivideCubeAnimation(colorPicker[currColorPickerIndex], colorPickerCubeInterval, colorPickerExpandAnimDuration);
+            
+            currColorPickerIndex ++;
+            colorPickerExpand(cube);
+            colorPickerHome(cube)
+            
         }
     }
     
+}
+
+function colorPickerExpand(cube){
+    const cp = colorPicker[currColorPickerIndex];
+    const scale = 1 / colorPickerArrayNum;
+    cube.object.isActive = false;
+    cp.origin.isActive = true;
+    cp.origin.transform.setPosition(...cube.object.transform.position);
+    cp.origin.transform.setScale(scale, scale, scale);
+    setIntervalToColorPicker(cp, 0);
+    setColorToColorPicker(cp, cube.min, cube.max);
+
+    startDivideCubeAnimation(cp, colorPickerCubeInterval, colorPickerExpandAnimDuration);
+}
+
+function colorPickerHome(cube){
+    
+    const origin = colorPicker[0].origin;
+    const currentOriginPos = vec3.clone(origin.transform.position);
+    const currentOriginRot = quat.clone(origin.transform.rotation);
+
+    origin.transform.setPosition(0, 0, 0);
+    origin.transform.setEulerRotation(0, 0, 0);
+    scene.updateObjectsTransform();
+
+
+    const mat = cube.object.transform.worldMatrix;
+    const cubeWorldPosInHome = vec3.fromValues(mat[12], mat[13], mat[14]);
+    console.log(cubeWorldPosInHome);
+
+    origin.transform.setPosition(...currentOriginPos);
+    origin.transform.setRotation(...currentOriginRot);
+
+    const cwp = cubeWorldPosInHome;
+    for(const c of origin.children){
+        const cpos = vec3.clone(c.transform.position);
+        const npos = vec3.create()
+        vec3.sub(npos, cpos, cwp);
+        ObjectMoveAnim(c, npos, 1)
+    }
+    wheelMoveMultipier /= colorPickerArrayNum;
+}
+
+function ObjectMoveAnim(object, target, duration){
+    const sPos = vec3.clone(object.transform.position);
+    const loop = startLoop((time, deltatime, stop) => {
+        const t = time / duration;
+        const ease = t * (2 - t);
+
+        const cPos = vec3.create();
+        vec3.lerp(cPos, sPos, target, ease);
+        object.transform.setPosition(...cPos);
+
+        if(t >= 1){
+            object.transform.setPosition(...tartget);
+            stop()
+        }
+    });
 }
 
 function whenWheelMove(event){
@@ -329,6 +389,7 @@ function createColorPicker(scene){
         
         if(d != 0){
             colorPicker[d - 1].origin.children.push(origin);
+            origin.isActive = false;
         }
 
         colorPicker.push({origin : origin, array : array});
