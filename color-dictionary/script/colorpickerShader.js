@@ -65,6 +65,8 @@ void main(){
     vec4 inv = vMainColor;
     vec3 nor = vNormal;
 
+    
+
     vec4 col;
     float i = vIndex;
 
@@ -95,13 +97,13 @@ void main(){
     if(i == 2.0){
         col[0] = minR + u * rangeR;
         col[1] = maxG;
-        col[2] = minB + u * rangeB;
+        col[2] = maxB - v * rangeB;
     }
 
     if(i == 3.0){
         col[0] = minR + u * rangeR;
         col[1] = minG;
-        col[2] = minB + u * rangeB;
+        col[2] = minB + v * rangeB;
     }
 
     if(i == 4.0){
@@ -116,7 +118,7 @@ void main(){
         col[2] = maxB - u * rangeB;
     }
 
-    
+    inv = col;
 
     inv[0] = 1.0 - inv[0];
     inv[1] = 1.0 - inv[1];

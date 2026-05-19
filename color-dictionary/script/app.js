@@ -3,7 +3,7 @@ import { vec2, vec3, vec4, mat4, quat } from "https://cdn.jsdelivr.net/npm/gl-ma
 import * as e from './engine.js';
 import * as cpShader from './colorpickerShader.js';
 
-const backgroundColor = vec4.fromValues(1, 1, 1, 1);
+const backgroundColor = vec4.fromValues(1, 1, 1, 0);
 
 const canvasElement = document.querySelector("#colorPickerCanvas");
 
@@ -17,9 +17,9 @@ const camera = new e.Camera(canvasElement);
 glCanvas.scene = scene;
 scene.camera = camera;
 
-let initialCameraPosition = [0, 0, 15];
+let homeCameraPosition = [0, 0, 10];
 
-camera.transform.setPosition(...initialCameraPosition);
+camera.transform.setPosition(...homeCameraPosition);
 
 glCanvas.startRender();
 //colorpicker setup
@@ -49,16 +49,26 @@ let angularVelocityAxis = quat.create();
 let originQuatDelta = quat.create();
 let originQuat = quat.create();
 const angularVelocityDeclineSpeed = 10;
-//ui setup
-let wheelMoveMultipier = 0.1;
-//app start
+//ux setup
+let wheelMoveMultipier = 0.05;
+let pinchMoveMultiplier = 10;
 
-console.log(scene);
+let nearCubeThreshold = 5;
+const nearCubeScaleDuration = 0.15;
+const nearCubeScale = vec3.fromValues(0, 0, 0);
+let prevNearCubes = [];
+let currNearCubes = [];
 
+canvasElement.addEventListener('touchstart', whenTouchStart);
 canvasElement.addEventListener('touchmove', whenTouchMove);
 canvasElement.addEventListener('touchend', whenTouchEnd);
 canvasElement.addEventListener('wheel', whenWheelMove);
 canvasElement.addEventListener('click', whenClicked);
+//app start
+
+console.log(scene);
+
+
 
 const app = startLoop((time, deltaTime, stop) =>{
     if(glCanvas.isTouchMoving){
@@ -71,9 +81,167 @@ const app = startLoop((time, deltaTime, stop) =>{
     }
 
     
-
+    if(glCanvas.isMultiTouching){
+        if(!glCanvas.prevMultiTouchDist){
+            glCanvas.prevMultiTouchDist = glCanvas.currMultiTouchDist;
+        }
+        zoomToOrigin(deltaTime);
+    }
+    hideNearCubes();
+    glCanvas.prevMultiTouchDist = glCanvas.currMultiTouchDist;
     glCanvas.prevTouchPos = glCanvas.currTouchPos;
 });
+
+function finalResult(cube){
+
+    const color = cube.min;
+    const r = color[0];
+    const g = color[1];
+    const b = color[2];
+
+    const hex = rgbToHex(color);
+
+    let json = null;
+    const generation = fetch(`https://hkanda.xyz/colorAnalyze?hex=${hex}&rgb=${r},${g},${b}`)
+    .then(res => {
+        res.json()
+        .then(data =>{
+            json = data;
+        })
+        
+    });
+
+    const animation = startLoop((time, deltatime, stop) => {
+        cube.object.transform.setEulerRotation(time * 180, time * 180, 0);
+        if(json != null){
+            stop();
+            showResult(json);
+        }
+    });
+}
+
+function showResult(json){
+    const things = json.things;
+    const best = json.bestMatching;
+    console.log(things, best);
+}
+
+function to16(n){
+    const h = n.toString(16).toUpperCase();
+    return h.length < 2 ? `0${h}` : h;
+}
+
+function rgbToHex(rgb){
+    const r = to16(rgb[0]);
+    const g = to16(rgb[1]);
+    const b = to16(rgb[2]);
+    return `${r}${g}${b}`;
+}
+
+function hideNearCubes(){
+    const near = findNearObjects();
+
+    currNearCubes = [];
+    for(const n of near){
+        currNearCubes.push(n.id);
+    }
+
+    for(const c of currNearCubes){
+        const included = prevNearCubes.includes(c);
+        if(!included){
+            prevNearCubes.push(c);
+            const cube = near.find(o => o.id === c);
+            startObjectScaleAnim(cube, nearCubeScale, nearCubeScaleDuration);
+            cube.collider.scale = 0;
+        }
+    }
+
+    if(prevNearCubes.length > 0){
+        for(let i = 0; i < prevNearCubes.length; i++){
+            const included = currNearCubes.includes(prevNearCubes[i]);
+            if(!included){
+                for(const cp of colorPicker){
+                    const objects = cp.origin.children;
+                    const cube = objects.find(o => o.id == prevNearCubes[i]);
+                    if(cube){
+                        
+                        startObjectScaleAnim(cube, vec3.fromValues(1, 1, 1), nearCubeScaleDuration);
+                        cube.collider.scale = 1;
+                        prevNearCubes.splice(i, 1);
+                    }
+                    
+                }
+            }
+        }
+    }
+}
+
+function findNearObjects(){
+
+    const near = [];
+
+    for(const cp of colorPicker){
+        cp.origin.children.forEach( (c) => {
+            if(c.mesh && c.material){
+                const wmat = c.transform.worldMatrix;
+                const wpos = vec3.fromValues(wmat[12], wmat[13], wmat[14]);
+                const cpos = camera.transform.position;
+
+                const dist = vec3.dist(cpos, wpos);
+                if(dist < nearCubeThreshold){
+                    near.push(c);
+                }
+            }
+        });
+    }
+    
+    return near;
+}
+
+
+function startObjectRotationAnim(object, target, duration){
+    const s = quat.clone(object.transform.rotation);
+
+    const anim = startLoop((time, deltatime, stop) => {
+        const t = time / duration;
+        const ease = t * (2 - t);
+        const rot = quat.create();
+        quat.lerp(rot, s, target, ease);
+
+        object.transform.setRotation(rot);
+        if(t >= 1){
+            object.transform.setRotation(...target);
+            stop();
+        }
+        
+    });
+}
+
+function startObjectScaleAnim(object, target, duration){
+    const s = vec3.clone(object.transform.scale);
+    
+    const anim = startLoop((time, deltaTime, stop) => {
+        const t = time / duration;
+        const ease = t * (2 - t);
+        const scale = vec3.create();
+        vec3.lerp(scale, s, target, ease);
+        object.transform.setScale(...scale);
+
+        if(t >= 1){
+            object.transform.setScale(...target);
+            stop();
+        }
+    });
+
+    
+
+}
+
+function zoomToOrigin(deltaTime){
+    const dist = glCanvas.currMultiTouchDist - glCanvas.prevMultiTouchDist;
+    const p = camera.transform.position;
+    p[2] -= dist * pinchMoveMultiplier;
+}
 
 function inertiaRotateorigin(deltaTime){
     
@@ -86,7 +254,6 @@ function inertiaRotateorigin(deltaTime){
 
 //function definition
 function rotateOrigin(dt){
-    console.log(dt);
     const p = glCanvas.prevTouchPos;
     const c = glCanvas.currTouchPos;
     const a = glCanvas.scene.camera.aspect;
@@ -114,7 +281,6 @@ function rotateOrigin(dt){
     quat.setAxisAngle(originQuatDelta, angularVelocityAxis, angle);
     angularVelocity = angle / dt;
 
-    console.log(angle);
     if(angle > 0){  
         quat.multiply(originQuat, originQuatDelta, originQuat);
         quat.normalize(originQuat, originQuat);
@@ -130,7 +296,7 @@ function whenClicked(event){
     Physic.setRayfromNDC(ndc);
     const hit = Physic.raycastScene();
 
-    console.log(hit);
+    
     if(hit){
         const object = hit.object;
         
@@ -138,20 +304,28 @@ function whenClicked(event){
         let cube;
 
         for(const c of current.array){
-            if(c.object.id == object.id){
+            if(c.object === object){
                 cube = c;
                 break;
             }
         }
 
         if(cube){
-            
-            
-            currColorPickerIndex ++;
-            colorPickerExpand(cube);
-            colorPickerHome(cube)
-            
+            selectColorPickerCube(cube);
         }
+    }
+    
+}
+
+function selectColorPickerCube(cube){
+    
+    if(currColorPickerIndex < colorPickerDivision - 1){
+        currColorPickerIndex ++;
+        colorPickerExpand(cube);
+        colorPickerHome(cube)
+    } else {
+        colorPickerHome(cube);
+        finalResult(cube);
     }
     
 }
@@ -169,6 +343,7 @@ function colorPickerExpand(cube){
     startDivideCubeAnimation(cp, colorPickerCubeInterval, colorPickerExpandAnimDuration);
 }
 
+//align rotate origin
 function colorPickerHome(cube){
     
     const origin = colorPicker[0].origin;
@@ -178,7 +353,6 @@ function colorPickerHome(cube){
     origin.transform.setPosition(0, 0, 0);
     origin.transform.setEulerRotation(0, 0, 0);
     scene.updateObjectsTransform();
-
 
     const mat = cube.object.transform.worldMatrix;
     const cubeWorldPosInHome = vec3.fromValues(mat[12], mat[13], mat[14]);
@@ -195,6 +369,12 @@ function colorPickerHome(cube){
         ObjectMoveAnim(c, npos, 1)
     }
     wheelMoveMultipier /= colorPickerArrayNum;
+    pinchMoveMultiplier /= colorPickerArrayNum;
+    nearCubeThreshold /= colorPickerArrayNum;
+    const div = vec3.fromValues(colorPickerArrayNum, colorPickerArrayNum, colorPickerArrayNum)
+    vec3.div(homeCameraPosition, homeCameraPosition, div);
+    console.log(homeCameraPosition)
+    ObjectMoveAnim(camera, homeCameraPosition, 1);
 }
 
 function ObjectMoveAnim(object, target, duration){
@@ -208,10 +388,10 @@ function ObjectMoveAnim(object, target, duration){
         object.transform.setPosition(...cPos);
 
         if(t >= 1){
-            object.transform.setPosition(...tartget);
             stop()
         }
     });
+    object.transform.setPosition(...target);
 }
 
 function whenWheelMove(event){
@@ -221,18 +401,43 @@ function whenWheelMove(event){
 
 function whenTouchStart(e){
     const ndc = getNDC(e)[0];
+
+
+    
     glCanvas.prevTouchPos = ndc;
     glCanvas.currTouchPos = ndc;
-}
-function whenTouchMove(e){
     glCanvas.isTouchMoving = true;
-    glCanvas.currTouchPos = getNDC(e)[0];
+}
+
+function whenTouchMove(e){
+    const ndcs = getNDC(e)
+    e.preventDefault();
+    glCanvas.isTouchMoving = true;
+    glCanvas.currTouchPos = ndcs[0];
+
+    if(ndcs.length > 1){
+        console.log("mt");
+        glCanvas.isMultiTouching = true;
+        glCanvas.secondTouchPos = ndcs[1];
+        console.log(ndcs);
+        glCanvas.currMultiTouchDist = vec3.dist(ndcs[0], ndcs[1]);
+        console.log(glCanvas.currMultiTouchDist);
+    }else{
+        glCanvas.isMultiTouching = false;
+        
+    }
+
+
 }
 
 function whenTouchEnd(e){
     glCanvas.isTouchMoving = false;
-    glCanvas.prevTouchPos = null;
-    glCanvas.currTouchPos = null;
+    glCanvas.isMultiTouching = false;
+    glCanvas.currTouchPos = getNDC(e);
+    glCanvas.prevTouchPos = getNDC(e);
+    glCanvas.deltaMultiTouchDist = null;
+    glCanvas.prevMultiTouchDist = null;
+    glCanvas.currMultiTouchDist = null;
 }
 
 function NDCtoWorld(ndc, camera){

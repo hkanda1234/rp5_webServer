@@ -21,6 +21,8 @@
   "dependencies": {
     "@google/genai": "^1.50.1",
     "await": "^0.2.6",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "gl-matrix": "^3.4.4",
     "pm2": "^6.0.14",

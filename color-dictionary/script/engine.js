@@ -31,6 +31,12 @@ export class GLCanvas {
         this.deltaTouch = null;
         this.deltaVector = null;
 
+        this.isMultiTouching = false;
+        this.secondTouchPos = null;
+        this.currMultiTouchDist = null;
+        this.prevMultiTouchDist = null;
+        this.deltaMultiTouchDist = null;
+
     }
 
     
@@ -135,25 +141,26 @@ export class Physic{
     }
 
     setRayfromNDC(ndc){
-        const near = vec4.fromValues(ndc[0], ndc[1], ndc[2], 1);
+        const near = this.camera.transform.position;
         const far = vec4.fromValues(ndc[0], ndc[1], -ndc[2], 1);
 
         const invVP = mat4.create();
         mat4.invert(invVP, this.camera.projectionMatrix);
 
-        vec4.transformMat4(near, near, invVP);
-        near[0] /= near[3];
-        near[1] /= near[3];
-        near[2] /= near[3];
+        // vec4.transformMat4(near, near, invVP);
+        // near[0] /= near[3];
+        // near[1] /= near[3];
+        // near[2] /= near[3];
         vec4.transformMat4(far, far, invVP);
         far[0] /= far[3];
         far[1] /= far[3];
         far[2] /= far[3];
 
-        const dir = vec3.fromValues(far[0] - near[0], far[1] - near[1], far[2] - near[2]);
+        const dir = vec3.create();
+        vec3.sub(dir, far, near);
         vec3.normalize(dir, dir);
 
-        this.ray.origin = vec3.fromValues(near[0], near[1], near[2]);
+        this.ray.origin = vec3.clone(near);
         this.ray.direction = dir;
     }
 
@@ -205,7 +212,7 @@ export class Physic{
             vec4.transformMat4(_origin, vec4.fromValues(...origin, 1), local);
             const _direction = vec4.create();
             vec4.transformMat4(_direction, vec4.fromValues(...direction, 0), local);
-
+            
             
             
             if(cType === this.colliderType.BOX){
@@ -256,10 +263,10 @@ export class Physic{
         const texit = Math.min(...exit);
 
         const hit = {
-            length: Math.max(tenter, 0),
+            length: tenter,
             object: null
         };
-        return tenter <= texit && texit >= 0 ? hit : null;
+        return tenter <= texit && tenter >= 0 ? hit : null;
     }
 
 
