@@ -63,6 +63,99 @@ p {
     margin: 0;
 }
 
+.overlay {
+    
+    position: fixed;
+    z-index: 1000;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.overlay-hidden{
+    opacity: 0;
+    filter: blur(20);
+    pointer-events: none;
+    transition: opacity 0.5s ease, filter 0.5s ease;
+}
+
+.title{
+    margin-top: 10px;
+    margin-left: 10px;
+    width: 80%;
+    height: 25vh;
+    backdrop-filter: blur(30px);
+    display: flex;
+    flex-direction: column;
+    background-color: #33333333;
+    justify-content: center;
+    border-radius: 0px;
+    background: linear-gradient(to right,rgba(0, 0, 0, 0.446) , rgba(0, 0, 0, 0))
+}
+
+.title h1{
+    margin-left: 10px;
+    color: white;
+    font-family: 'Elms Sans';
+    font-size: clamp(12px, 7vh, 10vw);
+    line-height: clamp(12px, 7vh, 10vh);
+    
+    transition: transform 1s ease, opacity 0.5s, filter 0.5s;
+}
+
+#title-1{
+    transition-delay: 0ms;
+}
+
+#title-2{
+    transition-delay: 100ms;
+}
+
+#title-3{
+    transition-delay: 200ms;
+}
+
+.title p{
+    font-family: 'Elms Sans';
+    margin-left: 10px;
+    padding-bottom: 10px;
+    opacity: 0.5;
+}
+
+.navigation{
+    display: flex;
+
+    flex-direction: column;
+    justify-content: center;
+    margin-top: 10px;
+    margin-left: 10px;
+    width: 80%;
+    height: 10vh;
+    backdrop-filter: blur(30px);
+    background: linear-gradient(to right,rgba(0, 0, 0, 0.446), rgba(0, 0, 0, 0));
+    transition-delay: 300ms;
+}
+
+.navigation h2{
+    margin-left: 10px;
+    color: white;
+    font-family: 'Elms Sans';
+    font-weight: 900;
+    font-size: clamp(12px, 3vh, 3vw);
+    line-height: 0;
+    margin: none;
+    transition: transform 1s ease, opacity 0.5s, filter 0.5s;
+}
+
+.title-hidden {
+
+    transform: translateX(-100px);
+    opacity: 0;
+    filter: blur(10px);
+
+}
+
 .ColorPickerContainer {
     display: flex;
     flex-direction: column;
@@ -73,6 +166,7 @@ p {
 }
 
 #colorPickerCanvas {
+    position: fixed;
     width:100vw;
     height:100vh;
 }

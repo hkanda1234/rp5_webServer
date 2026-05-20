@@ -15,7 +15,7 @@ export class GLCanvas {
         this.height = Math.floor(this.canvas.clientHeight * this.dpr);
         
         this.aspect = this.width / this.height;
-        this.background = vec4.fromValues(1, 1, 1, 1);
+        this.background = vec4.fromValues(1, 1, 1, 0);
 
         this.renderLoop = {
             id : null,
@@ -36,6 +36,12 @@ export class GLCanvas {
         this.currMultiTouchDist = null;
         this.prevMultiTouchDist = null;
         this.deltaMultiTouchDist = null;
+        this.isMouseMoving = null;
+        this.MouseMove = {
+            x : null,
+            y : null
+        }
+        this.MouseMoveDist = 0;
 
     }
 

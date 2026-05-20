@@ -50,7 +50,10 @@ let originQuatDelta = quat.create();
 let originQuat = quat.create();
 const angularVelocityDeclineSpeed = 10;
 //ux setup
+let isColorPickerAnimating = true;
 let wheelMoveMultipier = 0.05;
+let mouseMoveMultipier = 0.005;
+let mouseMoveThreshold = 10;
 let pinchMoveMultiplier = 10;
 
 let nearCubeThreshold = 5;
@@ -64,10 +67,13 @@ canvasElement.addEventListener('touchmove', whenTouchMove);
 canvasElement.addEventListener('touchend', whenTouchEnd);
 canvasElement.addEventListener('wheel', whenWheelMove);
 canvasElement.addEventListener('click', whenClicked);
+canvasElement.addEventListener('mousedown', whenMouseDown);
+canvasElement.addEventListener('mousemove', whenMouseMove);
+document.addEventListener('mouseup', whenMouseUp);
+
 //app start
 
-console.log(scene);
-
+startInitialColorPickerAnimation();
 
 
 const app = startLoop((time, deltaTime, stop) =>{
@@ -75,8 +81,11 @@ const app = startLoop((time, deltaTime, stop) =>{
         if(!glCanvas.prevTouchPos){
             glCanvas.prevTouchPos = glCanvas.currTouchPos;
         }
-        rotateOrigin(deltaTime);
-    } else if(angularVelocity >= 0){
+        rotateOrigin_touch(deltaTime);
+    } else if(glCanvas.isMouseMoving){
+        rotateOrigin_mouse(deltaTime);
+    }
+    else if(angularVelocity >= 0){
         inertiaRotateorigin(deltaTime);
     }
 
@@ -91,6 +100,20 @@ const app = startLoop((time, deltaTime, stop) =>{
     glCanvas.prevMultiTouchDist = glCanvas.currMultiTouchDist;
     glCanvas.prevTouchPos = glCanvas.currTouchPos;
 });
+
+function startInitialColorPickerAnimation(){
+    const origin = colorPicker[0].origin;
+    const anim = startLoop((time, deltatime, stop) => {
+        
+        origin.transform.setEulerRotation(time * 20, time * 10, 0);
+        originQuat = quat.clone(origin.transform.rotation);
+        
+        if(!isColorPickerAnimating){
+            stop();
+        }
+    });
+    
+}
 
 function finalResult(cube){
 
@@ -253,7 +276,7 @@ function inertiaRotateorigin(deltaTime){
 }
 
 //function definition
-function rotateOrigin(dt){
+function rotateOrigin_touch(dt){
     const p = glCanvas.prevTouchPos;
     const c = glCanvas.currTouchPos;
     const a = glCanvas.scene.camera.aspect;
@@ -290,7 +313,67 @@ function rotateOrigin(dt){
     }
 }
 
+function rotateOrigin_mouse(dt){
+    
+    const mx = glCanvas.MouseMove.x * mouseMoveMultipier;
+    const my = -glCanvas.MouseMove.y * mouseMoveMultipier;
+    const delta = vec4.fromValues(mx, my, 0, 0);
+    
+    const delta2d = vec2.fromValues(mx, my);
+
+    const z90 = mat4.create();
+    mat4.rotateZ(z90, z90, Math.PI / 2);
+
+    const NDCaxis = vec4.create();
+    vec4.transformMat4(NDCaxis, delta, z90);
+    //convert to world space
+    console.log(NDCaxis);
+    const vp = camera.projectionMatrix;
+    const ivp = mat4.create();
+    mat4.invert(ivp, vp);
+    const wAxis4 = vec4.create();
+    
+    vec4.transformMat4(wAxis4, NDCaxis, ivp);
+        
+    angularVelocityAxis = vec3.fromValues(wAxis4[0], wAxis4[1], wAxis4[2]);
+    vec3.normalize(angularVelocityAxis, angularVelocityAxis);
+    //create Quaternion
+    const angle = vec2.dist(vec2.fromValues(0, 0), delta2d);
+    quat.setAxisAngle(originQuatDelta, angularVelocityAxis, angle);
+    angularVelocity = angle / dt;
+
+    if(angle > 0){  
+        quat.multiply(originQuat, originQuatDelta, originQuat);
+        quat.normalize(originQuat, originQuat);
+        
+        colorPicker[0].origin.transform.setRotation(...originQuat);
+        
+    }
+}
+
+function whenMouseDown(event){
+    glCanvas.MouseMoveDist = 0;
+    glCanvas.isMouseMoving = true;
+    console.log(glCanvas.MouseMoveDist);
+    if(isColorPickerAnimating){
+        isColorPickerAnimating = false;
+    }
+}
+
+function whenMouseMove(event){
+    glCanvas.MouseMove.x = event.movementX;
+    glCanvas.MouseMove.y = event.movementY;
+    glCanvas.MouseMoveDist += vec2.dist(vec2.create(), vec2.fromValues(glCanvas.MouseMove.x, glCanvas.MouseMove.y));
+    console.log(glCanvas.MouseMoveDist);
+}
+
+function whenMouseUp(event){
+    glCanvas.isMouseMoving = false;
+}
+
 function whenClicked(event){
+    console.log(glCanvas.MouseMoveDist, mouseMoveThreshold, glCanvas.MouseMoveDist > mouseMoveThreshold);
+    if(glCanvas.MouseMoveDist > mouseMoveThreshold)return;
     const Physic = new e.Physic(scene);
     const ndc = getNDC(event);
     Physic.setRayfromNDC(ndc);
@@ -407,6 +490,10 @@ function whenTouchStart(e){
     glCanvas.prevTouchPos = ndc;
     glCanvas.currTouchPos = ndc;
     glCanvas.isTouchMoving = true;
+
+    if(isColorPickerAnimating){
+        isColorPickerAnimating = false;
+    }
 }
 
 function whenTouchMove(e){

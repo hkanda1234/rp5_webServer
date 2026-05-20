@@ -7,18 +7,35 @@
         <title></title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Elms+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="style.css">
+        
     </head>
     <body>
         <main>
             <canvas id="colorPickerCanvas"></canvas>
 
-            <section class="modal-container">
-                
+            <section class="overlay">
+
+                <section class="title">
+                    <h1 id="title-1" class="title-hidden">THOUGHTS</h1>
+                    <h1 id="title-2" class="title-hidden">ON</h1>
+                    <h1 id="title-3" class="title-hidden">COLOUR</h1>
+                    <p>&copy 2024- HKanda All Rights Reserved.</p>
+                </section>
+
+                <!-- <section class="navigation">
+                    <h2 class="title-hidden">Mobile: swipe to rotate / pinch to zoom</h2>
+                    <h2 class="title-hidden">Desktop: click and drag to rotate / scroll wheel to zoom</h2>
+
+                </section> -->
+
             </section>
 
         </main>
-        
+        <script src="script/title.js" defer></script>
         <script src="script/app.js" type="module" defer></script>
     </body>
 </html>
