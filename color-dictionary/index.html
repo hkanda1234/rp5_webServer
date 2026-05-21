@@ -15,7 +15,10 @@
     </head>
     <body>
         <main>
-            <canvas id="colorPickerCanvas"></canvas>
+            <section class="app">
+                <canvas id="colorPickerCanvas"></canvas>
+            </section>
+            
 
             <section class="overlay">
 
@@ -26,16 +29,36 @@
                     <p>&copy 2024- HKanda All Rights Reserved.</p>
                 </section>
 
-                <!-- <section class="navigation">
-                    <h2 class="title-hidden">Mobile: swipe to rotate / pinch to zoom</h2>
-                    <h2 class="title-hidden">Desktop: click and drag to rotate / scroll wheel to zoom</h2>
+                <section class="navigation navigation-hidden" id="mobile-nav">
+                    <p>SWIPE TO ROTATE</p>
+                    <p>PINCH TO ZOOM IN / OUT</p>
+                </section>
 
-                </section> -->
+                <section class="navigation navigation-hidden" id="desktop-nav">
+                    <p>DRAG TO ROTATE</p>
+                    <p>WHEEL TO ZOOM IN / OUT</p>
+                </section>
+
+                <section class="indicator indicator-hidden" id="indicator">
+                    
+                    <div id="color-range"></div>
+                    
+                </section>
+
+                <section id="result">
+                    <div class="result-wrapper">
+                        <section id="color-discription">
+
+                        </section>
+
+                    </div>
+                </section>
 
             </section>
 
+
+
         </main>
-        <script src="script/title.js" defer></script>
         <script src="script/app.js" type="module" defer></script>
     </body>
 </html>

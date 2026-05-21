@@ -45,23 +45,7 @@ footer {
     justify-content: center;
 }
 
-h1 {
-    font-family:'Courier New', Courier, monospace;
-    font-size: 3rem;
-    font-weight: 900;
-    color: var(--textColor);
-    line-height: 3rem;
-    margin: 0;
-    text-shadow: inherit;
-}
 
-p {
-    font-family:'Courier New', Courier, monospace;
-    font-size: 1rem;
-    font-weight: 900;
-    color: var(--textColor);
-    margin: 0;
-}
 
 .overlay {
     
@@ -81,27 +65,36 @@ p {
 }
 
 .title{
-    margin-top: 10px;
-    margin-left: 10px;
-    width: 80%;
-    height: 25vh;
+    display: block;
+    margin: 10px;
+    padding: 10px;
+    width: auto;
+    max-width: 1000px;
+    height: auto;
+    border-radius: 10px;
     backdrop-filter: blur(30px);
-    display: flex;
-    flex-direction: column;
+    
     background-color: #33333333;
-    justify-content: center;
-    border-radius: 0px;
-    background: linear-gradient(to right,rgba(0, 0, 0, 0.446) , rgba(0, 0, 0, 0))
+    background: linear-gradient(to right,rgba(0, 0, 0, 0.597) , rgba(0, 0, 0, 0.189))
 }
 
+.title-hidden {
+
+    transform: translateX(-100px);
+    opacity: 0;
+    filter: blur(10px);
+
+}
 .title h1{
-    margin-left: 10px;
     color: white;
     font-family: 'Elms Sans';
-    font-size: clamp(12px, 7vh, 10vw);
-    line-height: clamp(12px, 7vh, 10vh);
-    
+    font-size: 3rem;
+    margin: 0;
     transition: transform 1s ease, opacity 0.5s, filter 0.5s;
+}
+.title p{
+    font-family: 'Elms Sans';
+    opacity: 0.5;
 }
 
 #title-1{
@@ -116,54 +109,73 @@ p {
     transition-delay: 200ms;
 }
 
-.title p{
-    font-family: 'Elms Sans';
-    margin-left: 10px;
-    padding-bottom: 10px;
-    opacity: 0.5;
+
+
+.indicator{
+    display: block;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: auto;
+    height: auto;
+    backdrop-filter: blur(30px);
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    transition: opacity 0.5s ease, transform 0.5s ease, filter 0.5s ease;
+
 }
 
 .navigation{
-    display: flex;
-
-    flex-direction: column;
-    justify-content: center;
-    margin-top: 10px;
-    margin-left: 10px;
-    width: 80%;
-    height: 10vh;
+    display: block;
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    width: auto;
+    height: auto;
     backdrop-filter: blur(30px);
-    background: linear-gradient(to right,rgba(0, 0, 0, 0.446), rgba(0, 0, 0, 0));
-    transition-delay: 300ms;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    transition: opacity 0.5s ease, transform 0.5s ease, filter 0.5s ease;
 }
 
-.navigation h2{
+.indicator p{
     margin-left: 10px;
+    margin-right: 10px;
     color: white;
     font-family: 'Elms Sans';
     font-weight: 900;
-    font-size: clamp(12px, 3vh, 3vw);
-    line-height: 0;
-    margin: none;
+    font-size: 12px;
     transition: transform 1s ease, opacity 0.5s, filter 0.5s;
 }
 
-.title-hidden {
+.color-indicator{
+    display: block;
+}
 
-    transform: translateX(-100px);
+.indicator-hidden{
     opacity: 0;
-    filter: blur(10px);
-
+    transform: translateY(-100px);
+    filter: blur(20px);
 }
 
-.ColorPickerContainer {
-    display: flex;
-    flex-direction: column;
-    width: var(--colorPickerContainerWidth);
-    height: var(--colorPickerContainerHeight);
-    justify-content: center;
-    align-items: center;
+.navigation-hidden{
+    opacity: 0;
+    transform: translateY(100px);
+    filter: blur(20px);
 }
+
+.navigation p{
+    margin-left: 10px;
+    margin-right: 10px;
+    color: white;
+    font-family: 'Elms Sans';
+    font-weight: 900;
+    font-size: 12px;
+    transition: transform 1s ease, opacity 0.5s, filter 0.5s;
+}
+
+
+
 
 #colorPickerCanvas {
     position: fixed;

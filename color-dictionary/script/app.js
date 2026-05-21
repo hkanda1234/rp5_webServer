@@ -50,6 +50,9 @@ let originQuatDelta = quat.create();
 let originQuat = quat.create();
 const angularVelocityDeclineSpeed = 10;
 //ux setup
+const isMobile = /iPhone|iPad|Android|Windows Phone/i.test(navigator.userAgent);
+console.log(isMobile);
+let isEnteredApp = false;
 let isColorPickerAnimating = true;
 let wheelMoveMultipier = 0.05;
 let mouseMoveMultipier = 0.005;
@@ -73,8 +76,9 @@ document.addEventListener('mouseup', whenMouseUp);
 
 //app start
 
+showTitle();
 startInitialColorPickerAnimation();
-
+updateIndicator();
 
 const app = startLoop((time, deltaTime, stop) =>{
     if(glCanvas.isTouchMoving){
@@ -100,6 +104,82 @@ const app = startLoop((time, deltaTime, stop) =>{
     glCanvas.prevMultiTouchDist = glCanvas.currMultiTouchDist;
     glCanvas.prevTouchPos = glCanvas.currTouchPos;
 });
+
+
+function showTitle(){
+
+    const overlay = document.querySelector(".overlay");
+    const title = document.querySelector(".title");
+    const titleElements = document.querySelectorAll(".title h1");
+    const navElements = document.querySelectorAll(".navigation");
+    const title_color = document.querySelector("#title-3");
+
+    overlay.addEventListener("click", () => {
+        title.classList.add('overlay-hidden');
+        overlay.style.pointerEvents = "none";
+        titleElements.forEach(e => {
+            e.classList.add('title-hidden');
+            isEnteredApp = true;
+        });
+        showNavigation();
+        showIndicator();
+    });
+
+    titleElements.forEach(e => {
+        e.classList.remove('title-hidden');
+    });
+
+    const colour_color = ["red", "green", "yellow", "blue", "purple", "white"];
+
+    setTimeout(() => {
+        for(let i = 0; i < 6; i++){
+            setTimeout(() => {
+                title_color.style.color = colour_color[i];
+            }, i * 200);
+        }
+    }, 1500);
+
+
+    
+}
+
+function showNavigation(){
+    if(isMobile){
+        const nav_mobile = document.querySelector("#mobile-nav");
+        nav_mobile.classList.remove("navigation-hidden");
+    } else {
+        const nav_desktop = document.querySelector("#desktop-nav");
+        nav_desktop.classList.remove("navigation-hidden");
+    }
+}
+
+function showIndicator(){
+    const indicator = document.querySelector('#indicator');
+    indicator.classList.remove('indicator-hidden');
+}
+
+function updateIndicator(){
+    const colorRange = document.querySelector('#color-range');
+    const cp = colorPicker[currColorPickerIndex];
+    const last = cp.array.length - 1;
+    const min = cp.array[0].min;
+    const max = cp.array[last].max;
+
+    colorRange.innerHTML = `
+    <p>CURRENT COLOR RANGE :</p>
+    <p>MIN : RGB ( ${min[0]}, ${min[1]}, ${min[2]} )</p>
+    <p>MAX : RGB ( ${max[0]}, ${max[1]}, ${max[2]} )</p>`;
+}
+
+function hideNavigation(){
+    if(isMobile){
+        const nav_mobile = document.querySelector("#mobile-nav");
+        nav_mobile.classList.add("navigation-hidden");
+    } else {
+        const nav_desktop = document.querySelector("#desktop-nav");
+        nav_desktop.classList.add("navigation-hidden");
+    }
+}
 
 function startInitialColorPickerAnimation(){
     const origin = colorPicker[0].origin;
@@ -403,10 +483,14 @@ function whenClicked(event){
 function selectColorPickerCube(cube){
     
     if(currColorPickerIndex < colorPickerDivision - 1){
+
         currColorPickerIndex ++;
+        
         colorPickerExpand(cube);
-        colorPickerHome(cube)
+        colorPickerHome(cube);
+        updateIndicator();
     } else {
+        updateIndicator();
         colorPickerHome(cube);
         finalResult(cube);
     }

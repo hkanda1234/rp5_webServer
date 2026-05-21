@@ -57,6 +57,7 @@ varying float lightness;
 varying vec4 vMinColor;
 varying vec4 vMaxColor;
 
+varying float vDepth;
 void main(){
     float u = vUV[0];
     float v = vUV[1];
