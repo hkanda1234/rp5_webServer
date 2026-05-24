@@ -8,37 +8,35 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Code:ital,wght,MONO@0,300..800,1;1,300..800,1&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-
-
+        <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Code:ital,wght,MONO@0,300..800,1;1,300..800,1&family=Jost:ital,wght@0,100..900;1,100..900&family=Noto+Serif+JP:wght@200..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="style.css">
     </head>
     <body>
-        <header class="header">
+        <header>
             <canvas id="logo-canvas"></canvas>
             <p>/</p>
-            <p>Top</p>
+            <a href="#top"><p id="nav-top">Top</p></a>
             <p>/</p>
-            <p>Works</p>
+            <a href="#works"><p id="nav-works">Works</p></a> 
             <p>/</p>
-            <p>Profile</p>
+            <p id="nav-profile">Profile</p>
             <p>/</p>
-            <p>Contact</p>
+            <p id="nav-contact">Contact</p>
             <p>/</p>
         </header>
         <main>
-            <section class="hero">
+            <section class="hero" id="top">
                 <section class="title">
                     <p class="tag">&lt;<span style="color: rgb(126, 159, 255)">section</span> <span style="color: rgb(184, 251, 255)">class</span>=<span style="color: rgb(240, 189, 152)">"title"</span>&gt;</p>
                     <h1 class="title-1-hidden" id="title-1">HIROMU KANDA</h1>
-                    <h1 class="title-2-hidden" id="title-2">PORTFOL<span style="color: rgb(45, 152, 223)">I</span>/<span style="color: red">O</span> '26</h1>
+                    <h1 class="title-2-hidden" id="title-2">PORTFOL<span id="title-I" style="color: rgb(45, 152, 223)"><span id="title-/">I</span></span>/<span id="title-O" style="color: red">O</span> '26</h1>
                     <p class="tag" style="text-align: end;">&lt;/<span style="color: rgb(126, 159, 255)">section</span>&gt;</p>
 
                 </section>
                 <section class="statement">
                     <p class="tag">&lt;<span style="color: rgb(126, 159, 255)">section</span> <span style="color: rgb(184, 251, 255)">class</span>=<span style="color: rgb(240, 189, 152)">"statement"</span>&gt;</p>
                     <h1 class="statement-hidden">NOTHING</h1>
-                    <h1 class="statement-hidden">VALUAVLE</h1>
+                    <h1 class="statement-hidden">VALUABLE</h1>
                     <h1 class="statement-hidden">WITHOUT</h1>
                     <h1 class="statement-hidden">THINKING</h1>
                     <h1 class="statement-hidden">AND</h1>
@@ -46,19 +44,56 @@
                     <p class="tag" style="text-align: end;">&lt;/<span style="color: rgb(126, 159, 255)">section</span>&gt;</p>
                 </section>
             </section>
-            <section class="works">
+            <section class="works" id="works">
                 <p class="tag" style="grid-area: tagstart;">&lt;<span style="color: rgb(126, 159, 255)">section</span> <span style="color: rgb(184, 251, 255)">class</span>=<span style="color: rgb(240, 189, 152)">"works"</span>&gt;</p>
+                <h1 style="grid-area: title">/ WORKS</h1>
+                <article class="work-error" style="grid-area: error">
+                    
+                    <h3>Graduation Work "Error"</h3>
+                    <div class="work-stack">
+                        <img src="https://assets.hkanda.xyz/Logos/quest3-stack.png" alt="">
+                    </div>
+                    <p>卒業制作。Gaussian Splattingで再構成したVR空間のなかで、日常に潜む静かな「エラー」を増幅する装置として製作した作品。</p>
+                    
+                </article>
+                <article class="work-fadd" style="grid-area: add">
+                    
+                    <h3>Think of Ads of the Future</h3>
+                    <p>（株）1→10短期インターンにて製作した作品。Apple Vision Proを通して「未来の広告を想像する」というコンセプトに基づき製作した。</p>
+                    <div class="work-stack">
+                        <img src="https://assets.hkanda.xyz/Logos/visionpro-stack.png" alt="">
+                        <img src="https://assets.hkanda.xyz/Logos/unity.png" alt="">
+                        <img src="https://assets.hkanda.xyz/Logos/Logo_C_sharp.png" alt="">
+                        <img src="https://assets.hkanda.xyz/Logos/blender.png" alt="">
+                    </div>
+                </article>
 
-                <article class="work-error">
-                    <h1 style="grid-area: title">WORKS /</h1>
+                <article class="work-glitter" style="grid-area: glitter">
+                    
+                    <h3>Litter to Glitter</h3>
+                    <p>グループワーク・フィールドワークを通しての制作。吉祥寺を「響」という言葉で再構成するという課題のもと、フィールドワークからVRインスタレーションの制作まで担当した。</p>
+                    
+                </article>
+
+                <article class="work-color" style="grid-area: color">
+                    <h3>Thoughts on Colour</h3>
+                    <p>ユーザが選択した色に関連する事柄をAIに出力させ、世界を知らない存在が考える「色」と「事」の関係を覗く体験をウェブアプリケーションに落とし込んだ作品。</p>
+
+                </article>
+
+                <article class="work-achive" style="grid-area: achive">
+                    <a href="https://www.notion.so/151d3f1059e08089a898e537b428886c?source=copy_link">
+                        <h3>Achives</h3>
+                    </a>
+
                 </article>
 
                 <p class="tag" style="text-align: end; grid-area: tagend;">&lt;/<span style="color: rgb(126, 159, 255)">section</span>&gt;</p>
             </section>
             <section class="profile">
-                <section>
-
-                </section>
+                <h1>/ PROFILE</h1>
+                <img src="">
+                <h2>Hiromu Kanda</h2>
             </section>
         </main>
         <footer>

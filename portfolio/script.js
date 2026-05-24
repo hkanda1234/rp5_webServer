@@ -1,10 +1,15 @@
 
 
+
 const title1 = document.querySelector('#title-1');
 const title2 = document.querySelector('#title-2');
 
-title1.classList.remove('title-1-hidden');
-title2.classList.remove('title-2-hidden');
+setTimeout(() => {
+    title1.classList.remove('title-1-hidden');
+    title2.classList.remove('title-2-hidden');
+}, 100);
+
+
 
 const statement = document.querySelector('.statement');
 const statementsfObserveOption = {

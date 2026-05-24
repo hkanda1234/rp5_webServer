@@ -6,6 +6,8 @@ body {
     --colorPickerContainerHeight: 100vh;
 
     margin: 0px;
+
+    font-family: 'Elms Sans';
 }
 
 header{
@@ -68,14 +70,14 @@ footer {
     display: block;
     margin: 10px;
     padding: 10px;
-    width: auto;
+    width: fit-content;
     max-width: 1000px;
     height: auto;
     border-radius: 10px;
-    backdrop-filter: blur(30px);
+    /* backdrop-filter: blur(30px); */
     
-    background-color: #33333333;
-    background: linear-gradient(to right,rgba(0, 0, 0, 0.597) , rgba(0, 0, 0, 0.189))
+    /* background-color: #33333333;
+    background: linear-gradient(to right,rgba(0, 0, 0, 0.252) , rgba(0, 0, 0, 0)) */
 }
 
 .title-hidden {
@@ -88,13 +90,11 @@ footer {
 .title h1{
     color: white;
     font-family: 'Elms Sans';
-    font-size: 3rem;
+    font-weight: 900;
+    font-size: clamp(20px, 10vw, 200px);
     margin: 0;
+    text-shadow: 0 0 19px#0000007e;
     transition: transform 1s ease, opacity 0.5s, filter 0.5s;
-}
-.title p{
-    font-family: 'Elms Sans';
-    opacity: 0.5;
 }
 
 #title-1{
@@ -109,6 +109,61 @@ footer {
     transition-delay: 200ms;
 }
 
+.credit{
+
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: fit-content;
+    height: auto;
+    margin: 10px;
+    padding: 10px;
+
+    /* border-radius: 10px;
+    backdrop-filter: blur(30px);
+    
+    background-color: #33333333;
+    background: linear-gradient(to right,rgba(255, 255, 255, 0.597) , rgba(0, 0, 0, 0.215)); */
+    transition: transform 1s ease, opacity 0.5s, filter 0.5s;
+
+}
+
+.credit.hidden{
+    opacity: 0;
+    transform: translateX(300px);
+    filter: blur(40px);
+}
+
+.powerdby{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.github{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.github a{
+    font-size: 12px;
+    font-weight: 700;
+    opacity: 0.5;
+    color: black;
+    text-decoration: underline black;
+}
+
+.credit img{
+    height: 24px;
+    width: auto;
+}
+
+.credit p{
+    font-size: 12px;
+    font-weight: 700;
+    opacity: 0.5;
+}
 
 
 .indicator{

@@ -50,7 +50,7 @@ let originQuatDelta = quat.create();
 let originQuat = quat.create();
 const angularVelocityDeclineSpeed = 10;
 //ux setup
-const isMobile = /iPhone|iPad|Android|Windows Phone/i.test(navigator.userAgent);
+const isMobile = /iPhone|iPad|Android/i.test(navigator.userAgent);
 console.log(isMobile);
 let isEnteredApp = false;
 let isColorPickerAnimating = true;
@@ -111,11 +111,13 @@ function showTitle(){
     const overlay = document.querySelector(".overlay");
     const title = document.querySelector(".title");
     const titleElements = document.querySelectorAll(".title h1");
+    const credit = document.querySelector(".credit");
     const navElements = document.querySelectorAll(".navigation");
     const title_color = document.querySelector("#title-3");
 
     overlay.addEventListener("click", () => {
         title.classList.add('overlay-hidden');
+        credit.classList.add('hidden');
         overlay.style.pointerEvents = "none";
         titleElements.forEach(e => {
             e.classList.add('title-hidden');
@@ -127,7 +129,9 @@ function showTitle(){
 
     titleElements.forEach(e => {
         e.classList.remove('title-hidden');
+        
     });
+    credit.classList.remove('hidden');
 
     const colour_color = ["red", "green", "yellow", "blue", "purple", "white"];
 
@@ -198,35 +202,36 @@ function startInitialColorPickerAnimation(){
 function finalResult(cube){
 
     const color = cube.min;
-    const r = color[0];
-    const g = color[1];
-    const b = color[2];
-
-    const hex = rgbToHex(color);
-
-    let json = null;
-    const generation = fetch(`https://hkanda.xyz/colorAnalyze?hex=${hex}&rgb=${r},${g},${b}`)
-    .then(res => {
-        res.json()
-        .then(data =>{
-            json = data;
-        })
-        
-    });
-
-    const animation = startLoop((time, deltatime, stop) => {
-        cube.object.transform.setEulerRotation(time * 180, time * 180, 0);
-        if(json != null){
-            stop();
-            showResult(json);
-        }
-    });
+    const content = generateContent(color);
+    
 }
 
-function showResult(json){
-    const things = json.things;
-    const best = json.bestMatching;
-    console.log(things, best);
+async function generateContent(color){
+
+    const textData = await generateText(color);
+    console.log(textData);
+    const { imagePrompt } = textData;
+    const imageURL = await generateImage(imagePrompt);
+}
+
+async function generateText(color){
+
+    const hex = rgbToHex(color);
+    const res = await fetch(`https://hkanda.xyz/colorAnalyze?hex=${hex}&rgb=${color}`);
+    const json = await res.json();
+    return json;
+
+}
+
+async function generateImage(prompt){
+    const res = await fetch(`https://hkanda.xyz/imageGenerate`, {
+        method : 'POST',
+        headers : {'Content-Type' : 'application/json'},
+        body : JSON.stringify({prompt})
+    });
+
+    const json = await res.json();
+
 }
 
 function to16(n){
