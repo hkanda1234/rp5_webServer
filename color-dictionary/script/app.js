@@ -10,6 +10,9 @@ const canvasElement = document.querySelector("#colorPickerCanvas");
 //scene setup
 const glCanvas = new e.GLCanvas(canvasElement);
 const gl = glCanvas.gl;
+
+if(!gl) alert('WebGL is not supported on this browser!\nPlease turn on gpu accelation on browser settings.');
+
 const scene = new e.Scene(gl);
 const camera = new e.Camera(canvasElement);
 
@@ -54,9 +57,9 @@ const isMobile = /iPhone|iPad|Android/i.test(navigator.userAgent);
 console.log(isMobile);
 let isEnteredApp = false;
 let isColorPickerAnimating = true;
-let wheelMoveMultipier = 0.05;
+let wheelMoveMultipier = 0.025;
 let mouseMoveMultipier = 0.005;
-let mouseMoveThreshold = 10;
+let mouseMoveThreshold = 30;
 let pinchMoveMultiplier = 10;
 
 let nearCubeThreshold = 5;
@@ -105,7 +108,24 @@ const app = startLoop((time, deltaTime, stop) =>{
     glCanvas.prevTouchPos = glCanvas.currTouchPos;
 });
 
-
+function enterApp(){
+    const overlay = document.querySelector(".overlay");
+    const title = document.querySelector(".title");
+    const titleElements = document.querySelectorAll(".title h1");
+    const credit = document.querySelector(".credit");
+    const navElements = document.querySelectorAll(".navigation");
+    const title_color = document.querySelector("#title-3");
+    overlay.classList.remove('blur');
+    title.classList.add('overlay-hidden');
+    credit.classList.add('hidden');
+    overlay.style.pointerEvents = "none";
+    titleElements.forEach(e => {
+        e.classList.add('title-hidden');
+        isEnteredApp = true;
+    });
+    showNavigation();
+    showIndicator();
+}
 function showTitle(){
 
     const overlay = document.querySelector(".overlay");
@@ -115,17 +135,7 @@ function showTitle(){
     const navElements = document.querySelectorAll(".navigation");
     const title_color = document.querySelector("#title-3");
 
-    overlay.addEventListener("click", () => {
-        title.classList.add('overlay-hidden');
-        credit.classList.add('hidden');
-        overlay.style.pointerEvents = "none";
-        titleElements.forEach(e => {
-            e.classList.add('title-hidden');
-            isEnteredApp = true;
-        });
-        showNavigation();
-        showIndicator();
-    });
+    overlay.addEventListener("click", enterApp);
 
     titleElements.forEach(e => {
         e.classList.remove('title-hidden');
@@ -199,19 +209,149 @@ function startInitialColorPickerAnimation(){
     
 }
 
-function finalResult(cube){
+async function finalResult(cube){
+
+    const origin = colorPicker[0].origin;
+    const originRot = quat.create();
+    const animation = startLoop((time, deltatime, stop) => {
+        quat.fromEuler(originRot, 30 * deltatime, 30 * deltatime, 0);
+        quat.multiply(originQuat, originQuat, originRot);
+        origin.transform.setRotation(...originQuat);
+    });
+
+    const overlay = document.querySelector('.overlay');
+    const resultElement = overlay.querySelector('.result');
+    const resultWrap = resultElement.querySelector('.result-wrap');
+    const resultContainers = resultWrap.querySelectorAll('.result-container');
+    const navElement = isMobile ? overlay.querySelector('#mobile-nav') : overlay.querySelector('#desktop-nav');
+    const indicatorElement = overlay.querySelector('#indicator');
+
+    navElement.classList.add('navigation-hidden');
+    indicatorElement.classList.add('indicator-hidden');
+
+    resultElement.classList.remove('hidden');
+    overlay.classList.add('blur');
+    overlay.style.pointerEvents = "all";
+    overlay.removeEventListener('click', enterApp);
 
     const color = cube.min;
-    const content = generateContent(color);
+
+    const content = await generateContent(color);
+    const text = content.textData;
+    const imageURL = content.imageURL;
+
+    const descriptionElement = resultWrap.querySelector("#color-description");
+    const hex = rgbToHex(color);
+    const description = text.description;
+
+    await showColorDescription(descriptionElement, hex, color, description);
+
+    const things = text.things;
+    const thingsContainers = resultWrap.querySelectorAll('#thing');
+
+    await showThings(thingsContainers, things);
     
+    const bestMatchingContainer = resultWrap.querySelector('#best-thing');
+    const bestMatching = text.bestMatching;
+
+    await showBestMatching(bestMatchingContainer, bestMatching);
+
+    const imageContainer = resultWrap.querySelector('#image');
+
+    const imagePrompt = text.imagePrompt;
+    
+
+    await showImage(imageContainer, imagePrompt, imageURL);
+
+    const returnToTitle = resultWrap.querySelector('.return-to-title');
+    await showReturnToTitle(returnToTitle, '← RETURN TO TITLE');
+
+    
+}
+
+async function showColorDescription(container, hex, rgb, colorDiscription){
+    
+    container.classList.remove('hidden');
+    await typeText(container, 'h2', "YOU SELECTED", 0.1);
+    await wait(0.5);
+    const colorElement = await typeText(container, 'h1', '#' + hex, 0.1);
+    colorElement.style =`color: rgb(${rgb[0]},${rgb[1]},${rgb[2]}); text-shadow: 0px 0px 20px white; transition: color 1s ease, text-shadow 1s ease;`;
+    await wait(0.5);
+    await typeText(container, 'h3', colorDiscription, 0.05);
+
+
+}
+
+async function showThings(containers, things){
+    const length = containers.length;
+    for(let i = 0; i < length; i++){
+        await wait(0.5);
+        await showThing(containers[i], things[i]);
+    }
+}
+
+async function showThing(container, thing){
+    container.classList.remove('hidden');
+    await typeText(container, 'h2', thing.thing, 0.1);
+    await wait(0.5);
+    await typeText(container, 'h3', thing.reason, 0.1);
+}
+
+async function showBestMatching(container, bestMatching){
+    container.classList.remove('hidden');
+    await typeText(container, 'h2', "BEST MATCHING", 0.1);
+    await wait(0.5);
+    await typeText(container, 'h2', bestMatching.thing, 0.1);
+    await wait(0.5);
+    await typeText(container, 'h3', bestMatching.reason, 0.1);
+}
+
+async function showImage(container, prompt, imageURL){
+    container.classList.remove('hidden');
+    const imageElement = container.querySelector('.generated-image');
+    imageElement.src = imageURL;
+
+    await wait(1);
+
+    imageElement.classList.remove('hidden');
+}
+
+async function showReturnToTitle(element, text){
+    element.classList.remove('hidden');
+    await typeText(element, 'h2', text, 0.1);
+}
+
+async function typeText(container, elementType, text, maxDelay){
+    let left, right;
+    const length = text.length;
+    const element = document.createElement(elementType);
+    container.appendChild(element);
+    
+    for(let i = 0; i <= length; i++){
+        left = text.slice(0, i);
+        right = text.slice(i);
+        await wait(Math.random() * maxDelay);
+        element.innerHTML = `${left}<span style="opacity: 0">${right}</span>`
+    }
+
+    element.innerHTML = text;
+
+    return element;
+
+}
+
+async function wait(s){
+    return new Promise(resolve => setTimeout(resolve, s * 1000));
 }
 
 async function generateContent(color){
 
     const textData = await generateText(color);
-    console.log(textData);
     const { imagePrompt } = textData;
-    const imageURL = await generateImage(imagePrompt);
+    const imageData = await generateImage(imagePrompt);
+    const { imageURL } = imageData;
+    const result = {textData : textData, imageURL : imageURL}
+    return result;
 }
 
 async function generateText(color){
@@ -229,8 +369,8 @@ async function generateImage(prompt){
         headers : {'Content-Type' : 'application/json'},
         body : JSON.stringify({prompt})
     });
-
     const json = await res.json();
+    return json;
 
 }
 
@@ -438,6 +578,7 @@ function rotateOrigin_mouse(dt){
 
 function whenMouseDown(event){
     glCanvas.MouseMoveDist = 0;
+
     glCanvas.isMouseMoving = true;
     console.log(glCanvas.MouseMoveDist);
     if(isColorPickerAnimating){
