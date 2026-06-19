@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>ERROR-GW</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Code:ital,wght,MONO@0,300..800,1;1,300..800,1&family=Jost:ital,wght@0,100..900;1,100..900&family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="../works-g-style.css">
+    </head>
+    <body>
+        <header>
+            <canvas id="logo-canvas"></canvas>
+            <img src="https://assets.hkanda.xyz/Logos/hkLOGO.png" alt="" class="logo-2d hidden">
+            <nav>
+                /
+                <a href="../top/">BACK TO TOP</a>
+                /
+                <a href="#title">TITLE</a>
+                /
+                <a href="#summary">SUMMARY</a>
+                /
+                <a href="#tech">TECH</a>
+                /
+                <a href="#the-error">THE "ERROR"</a>
+            </nav>
+        </header>
+        <main>
+            <div class="hero-wrap" id="title">
+                <img src="https://assets.hkanda.xyz/error-gw/Screenshot%202026-02-11%20at%203.11.48.png" alt="" class="hero-img hidden">
+                <div class="title-wrap">
+                    <div class="title hidden">ERROR:</div>
+                    <div class="title hidden">GRADUATION WORK</div>
+                </div>
+            </div>
+            
+            <div class="content-wrap">
+                <section class="content">
+
+                    
+                    <h1 class="summary-headline hidden" id="summary">/ SUMMARY</h1>
+                    <h2 class="summary-sub-headline hidden">現実をゆがめる</h2>
+                    <p class="summary hidden" style="transition-delay: 0ms">
+                        卒業制作として作成、展示を行ったVRコンテンツ。
+                    </p>
+                    <p class="summary hidden" style="transition-delay: 100ms">
+                        <br>3D空間を再構成するうえで比較的新しい技術である<span class="strong">Gaussian Splatting</span>を、
+                    </p>
+                    <p class="summary hidden" style="transition-delay: 200ms">
+                        <span class="strong">物理的なインタラクション</span>を発端とした体験に組み込むことを試みた。
+                    </p>
+                    <p class="summary hidden" style="transition-delay: 300ms">
+                        VRゴーグルを装着した鑑賞者は展示空間にある歩行者ボタンを押すことで、
+                    </p>
+                    <p class="summary hidden" style="transition-delay: 400ms">
+                        Gaussian Splattingによって再構成された横断歩道に囲まれる。
+                    </p>
+                    <p class="summary hidden" style="transition-delay: 500ms">
+                        <span class="strong white">その見慣れた日常が、小さな「エラー」によって歪んでゆく。</span>
+                    </p>
+                    <h2 class="hidden">デモ映像</h2>
+                    <p class="hidden">Quest3を装着し、作品を鑑賞している視点を録画した映像。</p>
+        
+                    <section class="demo hidden">
+                        <div class="carousel-button-overlay">
+                            <div class="carousel-button-left">
+                                <div class="carousel-button-left-arrow">
+                                    &lt;
+                                </div>
+                            </div>
+                            <div class="carousel-button-right">
+                                <div class="carousel-button-right-arrow">
+                                    &gt;
+                                </div>
+                            </div>
+                        </div>
+                        <div class="carousel-indicator-overlay">
+                            <div class="carousel-indicator-container">
+                                <div class="carousel-indicator"></div>
+                                <div class="carousel-indicator"></div>
+                                <div class="carousel-indicator"></div>
+                            </div>
+                        </div>
+                        <div class="carousel">
+                            <div class="carousel-spacer"></div>
+                            <div class="carousel-card">
+                                <video src="https://assets.hkanda.xyz/error-gw/crosswalk.mp4" controls></video>
+                                <p>"Crosswalk"体験映像。</p>
+                                <p>横断歩道の歩行者用ボタンを押すことで体験が始まる。</p>
+                            </div>
+                            <div class="carousel-card">
+                                <video src="https://assets.hkanda.xyz/error-gw/Platform-1.mov" controls></video>
+                                <p>"Platform"体験映像。（1 / 2）</p>
+                                <p>改札ICリーダーにスマートフォンをかざすことで体験が始まる。</p>
+                            </div>
+                            <div class="carousel-card">
+                                <video src="https://assets.hkanda.xyz/error-gw/Platform-2.mov" controls></video>
+                                <p>"Platform"体験映像。（2 / 2）</p>
+                                <p>駅ホームの「黄色い線」にだんだんと囲まれていく。</p>
+                            </div>
+                            <div class="carousel-spacer"></div>
+                        </div>
+
+
+                    </section>
+                    <section class="tech" id="tech">
+                        <h1 class="hidden">/ TECH</h1>
+                        <h2 class="hidden">Gaussian Splatting</h2>
+                        
+                        <div class="column-box hidden">
+                            <div class="block-box flex-1">
+                                <a href="https://antimatter15.com/splat/">
+                                    <img style="border-radius: 10px;" src="https://assets.hkanda.xyz/error-gw/gaussian-thumbnail.png" alt="">
+                                </a>
+                                <p>https://antimatter15.com/splat/</p>
+                            </div>
+                            <div class="block-box flex-2">
+                                <p>Gaussian Splatting（以下GS）は、中心から広がるもやのような粒を空間に撒く（スプラット）ことによって3D空間を表現する、新たなボリューメトリックレンダリングの手法。</p>
+                                <p>リアルタイムレンダリングに長けており、左の外部サイトではGSをブラウザ上で閲覧することができる。</p>
+                                <p>さまざまな角度から観察することで、このモデルが粒の集合体であることがわかるかと思う。</p>
+                            </div>
+                        </div>
+
+                        <h2 class="hidden">Quest3向けGSレンダラーの実装</h2>
+                        <p class="hidden">開発環境はUnity（C#）。展示での安定性を優先し、Quest3単体で動くアプリケーションの開発を目指した。</p>
+                        <p class="hidden">しかし既存実装はPCVR前提のものが多く、この制作に向いたものを見つけることはできなかった。</p>
+                        <p class="hidden">そのため、Questスタンドアロン向けに<span class="strong white">GSレンダラーを自前で制作することにした。</span></p>
+                        <p class="hidden"><br>.splatファイルバイナリのパース、展開からカスタムシェーダによる描画まで、パイプライン全体の設計・実装をゼロから行なった。</p>
+                        <p class="hidden">DrawIndirectによる一括描画、Compute ShaderによるZソート、ボクセル単位の距離LODを組み合わせることで、</p>
+                        <p class="hidden">QuestのGPU制約の中でリアルタイム描画を実現した。</p>
+                        <div class="column-box margin padding hidden">
+                            <div class="block-box flex-1">
+                                <p>Unity Editor上で自作GSが表示されている様子。</p>
+                                <p><br>厳しい制作スケジュールで体験を完成させるため、エディタ上での扱いやすさも重視した設計になっている。</p>
+                                
+                                <p></p>
+                            </div>
+                            <div class="block-box flex-2">
+                                <img src="https://assets.hkanda.xyz/error-gw/GS-editor-screenshot.png" alt="">
+                            </div>
+                        </div>
+
+                        <h2 class="hidden">ネットワークとインタラクション</h2>
+                        <p class="hidden">この作品には、VR体験の起点として物理的な入力が置いてある。</p>
+                        <p class="hidden">Crosswalkは展示されている歩行者ボタンを押すことで始まるが、この歩行者ボタンはESP-32を内蔵した無線デバイスになっており、</p>
+                        <p class="hidden">Raspberry Pi、Node.jsで構成したHTTPサーバーを介してQuestとの通信が成立している。</p>
+                        <p class="hidden">この<span class="strong yellow">「物理的な存在」</span>と <span class="strong blue">「バーチャルな体験」</span>のつながりは、この作品のアイデンティティのひとつだ。</p>
+                        <div class="column-box margin padding hidden">
+                            <div class="block-box flex-1">
+                                <p>構築したネットワークの概念図。<span class="dim">※簡略のためClosswalkに限って図示している</span></p>
+                                <p><br>すべてのデバイス（Quest・ 歩行者ボタン（ESP-32）・HTTPサーバー（Raspberry Pi））は同じLANに無線接続されている。</p>
+                                <p>ESP-32は押しボタンの状態を定期的にサーバーへ送信しており、サーバーはその状態を保持する。</p>
+                                <p>Questはサーバーをポーリングしており、ボタンの押下をトリガーとして体験を開始する。</p>
+                            </div>
+                            <div class="block-box flex-1">
+                                <img src="https://assets.hkanda.xyz/error-gw/Crosswalk_Connection_Flow.svg" alt="">
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="what-is-error" id="the-error">
+                        <h1 class="hidden">/ THE "ERROR"</h1>
+                        <h2 class="hidden">「エラー」とは何なのか</h2>
+                        <p class="hidden">「青信号」は英語で 'Green Light' と訳される。</p>
+                        <p class="hidden"><span class="green strong">緑色</span>を <span class="blue strong">「青」</span>と表現する日本語の習慣は、誰しも考えたことのある矛盾ではないだろうか。<br> "Crosswalk"ではこの言葉の遊びを、文字通り「遊んで」いる。</p>
+                        <p class="hidden"><br>あ</p>
+                        <p class="hidden"></p>
+
+                    </section>
+
+                    
+                </section>
+            </div>
+
+        </main>
+        <footer>
+            <div class="back-to-top-button-wrap">
+                
+                <div class="back-to-top-button hidden">
+                    <a href="../top/"></a>
+                    &lt;&lt;&lt; BACK TO TOP
+                </div>
+            </div>
+            <div class="footer-text-container">
+                <p>&copy;2026 Hkanda. All Rights Reserved.</p>
+            </div>
+            <div class="end-wrap hidden"><div class="end">ERROR</div></div>
+        </footer>
+    </body>
+    <script src="../works-g-script.js" async defer></script>
+    <script src="../asset/logo.js" type="module" defer></script>
+</html>

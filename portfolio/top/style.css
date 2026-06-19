@@ -2,13 +2,18 @@ html{
     scroll-behavior: smooth;
 }
 
+*{
+    margin: 0;
+    padding: 0;
+}
+
 a{
-    text-decoration: underline rgba(255, 255, 255, 0.337);
+    text-decoration: none;
 }
 
 body{
     margin: 0;
-    background-color: rgb(9, 31, 33);
+    background-color: rgb(0, 0, 0);
     font-family: 'Jost';
 }    
 
@@ -19,6 +24,7 @@ header{
     align-items: center;
     z-index: 1000;
     margin:0;
+    padding: 10px;
     width: 100%;
     height: auto;
     backdrop-filter: blur(4px);
@@ -26,9 +32,23 @@ header{
 }
 
 header p{
-    font-size: clamp(10px, 1vw, 2vw);
+    font-size: clamp(10px, 1vw, 20px);
     font-weight: 200;
-    color: rgba(255, 255, 255, 0.729);
+    color: white;
+}
+
+.logo-2d{
+    width: clamp(50px, 8vw, 60px);
+    height: clamp(50px, 8vw, 60px);
+    margin: 10px;
+}
+
+.logo-2d.hidden{
+    display: none;
+}
+
+.logo3d-hidden{
+    display: none;
 }
 
 #logo-canvas{
@@ -42,24 +62,24 @@ header p{
     width: 100%;
     height: auto;
     overflow: hidden;
-    background: linear-gradient(to bottom, black 90%, rgba(0, 0, 0, 0))
 }
 
 .tag{
     font-family: 'Google Sans Code';
+    width: 100%;
     color: white;
-    font-size: 20px;
+    font-size: 15px;
     opacity: 0.3;
 }
+
 
 .title{
     display: flex;
     flex-direction: column;
     justify-content: center;
     width: auto;
-    height: 70vh;
+    height: 100vh;
     margin: 20px;
-    margin-top: 150px;
 }
 
 .title-1-hidden{
@@ -112,8 +132,8 @@ header p{
 .statement h1{
     text-align: end;
     font-weight: 500;
-    font-size: clamp(10px, 10vw, 10rem);
-    line-height: clamp(10px, 3vw, 10rem);
+    font-size: clamp(10px, 10vw, 90px);
+    line-height: clamp(10px, 12vw, 100px);
     color: rgb(229, 0, 46);
     transition: transform 2s ease, opacity 1s ease, filter 1s ease;
 }
@@ -146,98 +166,198 @@ header p{
 
 }
 
+#works-tagstart{
+    grid-area: tagstart;
+}
+
+.works-wrap{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px;
+}
+
 .works{
     display: grid;
-    grid-template-columns: 1fr 1fr;
     gap: 10px;
-    grid-template-areas: "tagstart tagstart" "title title" "error add" "glitter color" ". achive" "tagend tagend";
-    width: auto;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas: "title title" "featured featured" "error add" "glitter color" ". achive";
+    width: 80vw;
     height: auto;
     margin: 20px;
 }
 
+
+
+.works a{
+    text-decoration: none;
+}
+
 .work-stack{
     display: flex;
-    width: auto;
+    width: 100%;
+    justify-content: end;
+    margin-top: 10px;
+    margin-bottom: 10px;
     height: clamp(10px, 2.5vw, 200px);
 }
 
 .work-stack img {
     width: auto;
     height: 100%;
-    margin: 10px;
+    margin-right: 15px;
 }
 
-.work-error{
-    padding: 10px;
-    background-color: rgba(0, 0, 0, 0);
+.work{
+    padding: 40px;
+    background-color: rgb(0, 0, 0);
+    border: solid 1px white;
+}
+
+.work.visible{
+    transition: 0.3s ease;
+}
+
+.work.hidden{
+    opacity: 0;
+    transform: translateX(-100px);
+    filter: blur(20px);
+}
+
+.work.is-revealing{
+    transition: 1s ease;
+    pointer-events: none;
+}
+
+.work:hover{
+    transform: scale(1.1) rotate(-2deg);
+    border-radius: 30px;
+    border: dashed 5px white;
+    z-index: 100;
+    transition: 0.2s cubic-bezier(0.2, 0, 0.3, 1);
 }
 
 
-.work-fadd{
-    padding: 10px;
-    background-color: rgba(0, 0, 0, 0);
+.work-thumbnail{
+    width: 100%;
+    border-radius: 10px;
+    transition: transform 0.1s ease;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
-.work-glitter{
-    padding: 10px;
-    background-color: rgba(0, 0, 0, 0);
-}
-
-.work-color{
-    padding: 10px;
-    background-color: rgba(0, 0, 0, 0);
-}
 
 .works p {
-    margin: 20px;
     font-family: 'Noto Sans JP', "Google Sans Code";
-    font-size: clamp(10px, 1vw, 1.8vw);
+    font-size: clamp(10px, 1vw, 20px);
     color: white;
     opacity: 0.7;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 .works h1 {
-    margin: 20px;
     font-size: clamp(12px, 10vw, 100px);
     font-weight: 500;
     color: white;
+    margin-top: 30px;
+    margin-bottom: 30px;
 }
 
 .works h2 {
-    margin: 20px;
-    font-size: clamp(12px, 5vw, 100px);
+    font-size: clamp(12px, 5vw, 70px);
     font-weight: 500;
     color: white;
+    margin-top: 30px;
+    margin-bottom: 30px;
 }
 
 .works h3 {
-    margin: 10px;
-    font-size: clamp(12px, 3vw, 100px);
+    font-size: clamp(12px, 3vw, 40px);
     font-weight: 500;
     color: white;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+#works-section{
+    grid-area: title;
+    transition: 1s ease;
+}
+
+#works-featured-section{
+    grid-area: featured;
+    transition: 1s ease;
+}
+
+.left-hidden{
+    transform: translateX(-100px);
+    opacity: 0;
+    filter: blur(20px);
+}
+
+
+
+@media (max-width: 700px){
+    .works{
+        display: flex;
+        flex-direction: column;
+    }
+    .works h1{
+        font-size: 4rem;
+    }
+    .works h2{
+        font-size: 3rem;
+    }
+    .works h3{
+        font-size: 2rem;
+    }
+    .works p{
+        font-size: 12px;
+    }
+    .work-stack{
+        height: 30px;
+    }
+}
+
+.profile-wrap{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
 }
 
 .profile{
     display: grid;
-    width: auto;
+    width: 80vw;
     height: auto;
     margin: 20px;
 
 }
 
-
-
-.profile h1{
-    margin: 20px;
+.profile-section{
+    color: white;
     font-size: clamp(12px, 10vw, 100px);
     font-weight: 500;
-    color: white;
+    transition: 1s ease;
 }
 
-.profile h2{
-    margin: 20px;
-    font-size: clamp(12px, 5vw, 100px);
-    font-weight: 500;
-    color: white;
+.profile-section.hidden{
+    transform: translateX(-100px);
+    opacity: 0;
+    filter: blur(20px);
 }
+
+.profile-name-en{
+    color: white;
+    font-size: clamp(12px, 8vw, 80px);
+    font-weight: 500;
+    transition: 1s ease;
+}
+
+.profile-name-en.hidden{
+    transform: translateX(-100px);
+    opacity: 0;
+    filter: blur(20px);
+}
+
