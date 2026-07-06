@@ -90,7 +90,7 @@ function updateCarousel(demoWrap, index){
 
 const footerEnd = document.querySelector('.end');
 let prevWindowWidth = window.innerWidth;
-justifyFooterEnd();
+window.addEventListener('load',justifyFooterEnd);
 window.addEventListener('resize', () => {
     if(prevWindowWidth === window.innerWidth)return;
     justifyFooterEnd();
@@ -129,7 +129,6 @@ function justifyFooterEnd(){
         size++;
         el.style = `font-size: ${size}px`;
         celw = el.clientWidth;
-        console.log(celw, vpw);
         if(celw >= vpw){
             el.style = `font-size: ${size - 1}px; line-height: ${size - 1}px`;
             break;

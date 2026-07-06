@@ -642,6 +642,10 @@ footer .end{
     translate: 0 50%;
 }
 
+footer .end:hover{
+    translate: none;
+}
+
 @media (max-width: 700px){
     .column-box{
         flex-direction: column;
