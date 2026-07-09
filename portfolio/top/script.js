@@ -83,11 +83,13 @@ for(const w of works){
     worksObserver.observe(w)
 }
 
-const profileSection = document.querySelector('.profile-section');
-const profileNameEn = document.querySelector('.profile-name-en');
+const hiddens = document.querySelectorAll('.hidden');
 
-HiddenObserver.observe(profileSection);
-HiddenObserver.observe(profileNameEn);
-
+hiddens.forEach((e) => {
+    console.log(e);
+    if(e.classList.contains('hidden')){
+        HiddenObserver.observe(e);
+    }
+})
 
 }
