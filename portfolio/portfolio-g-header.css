@@ -1,0 +1,82 @@
+header{
+    
+
+    --icon-height: clamp(50px, 8vw, 80px);
+
+    position: fixed;
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+    height: auto;
+
+    padding: 10px;
+    gap: 20px;
+
+    z-index: 1000;
+
+    --input-color: rgb(45, 152, 223);
+    --output-color: red;
+    backdrop-filter: blur(20px);
+    text-shadow: 0 0 5px black;
+
+    font-family: 'Jost';
+
+}
+
+header img{
+    width: auto;
+    height: var(--icon-height);
+}
+
+header canvas{
+    width: auto;
+    height: var(--icon-height);
+    aspect-ratio: 1;
+}
+
+#logo-2d{
+    display: none;
+}
+
+#logo-2d.active{
+    display: flex;
+}
+
+#logo-canvas{
+    display: none;
+}
+
+#logo-canvas.active{
+    display: flex;
+}
+
+header .header-title{
+    font-size: clamp(15px, 1.2vw, 30px);
+    font-weight: 700;
+    color: white;
+}
+
+header .header-title .input{
+    color: var(--input-color);
+}
+
+header .header-title .output{
+    color: red;
+}
+
+header .header-title a{
+    text-decoration: none;
+    color: white;
+}
+
+header nav {
+    padding: var(--header-padding);
+    color: white;
+}
+
+nav a{
+    font-size: clamp(12px, 1vw, 40px);
+    text-decoration: none;
+    color: white;
+}

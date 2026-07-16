@@ -17,24 +17,8 @@ body{
     font-family: 'Jost', 'Zen Kaku Gothic New';
 }    
 
-header{
-    position: fixed;
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    z-index: 1000;
-    margin:0;
-    padding: 10px;
-    width: 100%;
-    height: auto;
-    backdrop-filter: blur(4px);
-    background: linear-gradient(to bottom, rgb(0, 0, 0), rgba(0, 0, 0, 0))
-}
-
-header p{
-    font-size: clamp(10px, 1vw, 20px);
-    font-weight: 200;
-    color: white;
+main{
+    scrollbar-width: 0;
 }
 
 .column-box{
@@ -43,6 +27,17 @@ header p{
     gap:20px;
     transition: opacity 1s ease, transform 1s ease, filter 1s ease;
 }
+
+@media (max-width: 700px){
+    .column-box{
+        flex-direction: column;
+    }
+}
+
+.column-box.items-center{
+    align-items: center;
+}
+
 
 .column-box.margin{
     margin: 40px 0 40px 0;
@@ -95,25 +90,6 @@ header p{
     min-width: 0px;
 }
 
-.logo-2d{
-    width: clamp(50px, 8vw, 60px);
-    height: clamp(50px, 8vw, 60px);
-    margin: 10px;
-}
-
-.logo-2d.hidden{
-    display: none;
-}
-
-.logo3d-hidden{
-    display: none;
-}
-
-#logo-canvas{
-    width: clamp(50px, 10vw, 100px);
-    height: clamp(50px, 10vw, 100px);
-    margin: 10px;
-}
 
 .hero{
     display: block;
@@ -138,10 +114,13 @@ header p{
     width: auto;
     height: 100vh;
     margin: 20px;
+    transform-style: preserve-3d;
+
 }
 
 .title-1-hidden{
-    transform: translateX(-100vw);
+    transform: translate3d(-100%, 0 ,0), rotate3d(1, 1, 1, 20deg);
+    transform-style: preserve-3d;
     opacity: 0;
     filter: blur(40px);
 }
@@ -295,9 +274,12 @@ header p{
     border-radius: 30px;
     border: dashed 5px white;
     z-index: 100;
-    transition: 0.2s cubic-bezier(0.2, 0, 0.3, 1);
+    transition: transform 0.2s cubic-bezier(0.2, 0, 0.3, 1);
 }
 
+.work:hover .work-thumbnail{
+    filter: brightness(0.5);
+}
 
 .work-thumbnail{
     width: 100%;
@@ -305,6 +287,7 @@ header p{
     transition: transform 0.1s ease;
     margin-top: 20px;
     margin-bottom: 20px;
+    transition: 0.5s ease;
 }
 
 
@@ -396,6 +379,18 @@ header p{
     
 }
 
+.profile h2{
+    color: white;
+    font-size: clamp(24px, 5vw, 50px);
+    transition: 1s ease;
+}
+
+.profile h2.hidden{
+    opacity: 0;
+    translate: 0 50%;
+    filter: blur(20px);
+}
+
 .profile-section{
     color: white;
     font-size: clamp(12px, 10vw, 100px);
@@ -474,4 +469,177 @@ header p{
 .profile span.underline{
     text-decoration: underline;
     text-decoration-thickness: 2px;
+}
+
+div.line{
+    position: relative;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 1px;
+    background-color: transparent;
+    transition: width 2s ease, filter 2s ease;
+    margin: 5px 0 5px 0;
+}
+
+div.line::before{
+    position: absolute;
+    content: '';
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    opacity: 0.3;
+}
+
+div.line.hidden{
+    width: 0%;
+}
+
+div.gauge{
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 40px;
+    margin: 10px 0 10px 0;
+    --percent: 0;
+    --color: white;
+}
+
+div.gauge::before{
+    position: absolute;
+    content: '';
+    width: 100%;
+    height: 10%;
+    background-color: rgba(255, 255, 255, 0.264);
+    
+    transition: width 1s ease;
+}
+
+div.gauge::after{
+    position: absolute;
+    content:'';
+    width: var(--percent);
+    height: 10%;
+    background-color: var(--color);
+    transition: width 2s ease;
+}
+
+div.gauge.hidden::before{
+    width: 0%;
+    height: 100%;
+}
+
+div.gauge.hidden::after{
+    width: 0%;
+    height: 100%;
+}
+
+div.skill-container{
+    display: flex;
+    width: 100%;
+    gap: 20px;
+    align-items: center;
+    cursor: pointer;
+}
+
+div.skill-container .label-container{
+    display: flex;
+    align-items: center;
+    flex: 1;
+    gap: 20px;
+    min-width: 0px;
+}
+
+div.block-box div.skill-container .label-container img{
+    width: clamp(30px, 2vw, 40px);
+}
+
+div.skill-container .gauge-container{
+    display: flex;
+    flex: 2;
+    min-width: 0px;
+}
+
+div.skill-container p{
+    margin: 0;
+}
+
+div.skill-media{
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    width: 30vw;
+    height: 0;
+    padding: 20px;
+
+    translate: none;
+    backdrop-filter: blur(20px) brightness(0.5);
+    border-radius: 5px;
+    border: solid 1px white;
+    opacity: 0;
+    transition: 0.5s ease;
+    transition-delay: none;
+
+    pointer-events: none;
+    overflow: hidden;
+    filter: blur(20px);
+
+    z-index: 100;
+}
+
+div.skill-container .skill-media img{
+    width: 10vw;
+}
+
+div.skill-container:hover{
+    background-color: rgba(255, 255, 255, 0.232);
+    border-radius: 5px;
+}
+
+div.skill-container:hover .skill-media{
+    
+    height: 30vw;
+    opacity: 1;
+    transition: 0.5s ease;
+    filter: none;
+    transition-delay: 0.5s;
+}
+
+.hobby-container{
+    width: 100%;
+    height: auto;
+    color: black;
+}
+
+.hobby-container::before{
+    content: '';
+    width: 100%;
+    height: 10vw;
+    position: absolute;
+    z-index: -1;
+    background: linear-gradient(to bottom, black, transparent);
+}
+
+.hobby-container img.paper{
+    position: absolute;
+    width: 90vw;
+    z-index: -2;
+}
+
+.css-is-awesome{
+    display: flex;
+    align-items: center;
+    width: 10vw;
+    height: 10vw;
+    border: solid 1px white;
+    color: white;
+    padding: 5px
+}
+
+.css-is-awesome p{
+    font-size: 2.5vw;
+    line-height: 2.5vw;
 }

@@ -3,45 +3,36 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>ERROR-GW</title>
+        <title>HK / ERROR-GW</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Code:ital,wght,MONO@0,300..800,1;1,300..800,1&family=Jost:ital,wght@0,100..900;1,100..900&family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="../works-g-style.css">
+        <link rel="stylesheet" href="../works-g-style.css?v=ffdsa">
+        <link rel="stylesheet" href="../portfolio-g-header.css?v=3fdsa">
         <link rel="icon" href="https://assets.hkanda.xyz/Logos/hkLOGO.png">
     </head>
     <body>
         <header>
             <canvas id="logo-canvas"></canvas>
-            <img src="https://assets.hkanda.xyz/Logos/hkLOGO.png" alt="" class="logo-2d hidden">
-            <nav>
-                /
-                <a href="../top/">BACK TO TOP</a>
-                /
-                <a href="#title">TITLE</a>
-                /
-                <a href="#summary">SUMMARY</a>
-                /
-                <a href="#tech">TECH</a>
-                /
-                <a href="#the-error">THE "ERROR"</a>
-            </nav>
+            <img src="https://assets.hkanda.xyz/Logos/hkLOGO.png" alt="" id="logo-2d">
+            <p class="header-title"><a href="../top/">/ PORTFOL<span class="input">I</span><span class="output">O</span>'26 /</a> <a href=""></a>WORKS / ERROR:GW</p>
+            
         </header>
         <main>
             <div class="hero-wrap" id="title">
                 <video src="https://assets.hkanda.xyz/error-gw/error-gw-crosswalk-short.mp4" class="hero-video hidden" muted autoplay loop></video>
                 <div class="title-wrap">
-                    <div class="title hidden">ERROR:</div>
-                    <div class="title hidden">GRADUATION WORK</div>
+                    <h1 class="title hidden">ERROR:</h1>
+                    <h1 class="title hidden">GRADUATION WORK</h1>
                 </div>
             </div>
             
             <div class="content-wrap">
                 <section class="content">
 
-                    <p style="opacity: 0.5;">&lt;<span style="color: rgb(133, 133, 253)">section</span> <span style="color: rgb(82, 188, 188)">id</span>=<span style="color: rgb(253, 95, 27)">"summary"</span>&gt;</p>
+                    <div class="tag">&lt;<span class="section">section</span> <span class="id">id</span>=<span class="literal">"summary"</span>&gt;</div>
                     
                     <h1 class="summary-headline hidden" id="summary">/ SUMMARY</h1>
                     <h2 class="hidden" style="transition-delay: 0ms">日常が崩壊するVR体験。</h2>
@@ -97,9 +88,9 @@
                         
                         
                     </section>
-                    <p style="opacity: 0.5; width: 100%; text-align: end;"><br>&lt;/<span style="color: rgb(133, 133, 253)">section</span>&gt;</p>
+                    <div class="tag tag-end">&lt;/<span class="section">section</span>&gt;</div>
                     <section class="tech" id="tech">
-                        <p style="opacity: 0.5;">&lt;<span style="color: rgb(133, 133, 253)">section</span> <span style="color: rgb(82, 188, 188)">id</span>=<span style="color: rgb(253, 95, 27)">"tech"</span>&gt;</p>
+                        <div class="tag">&lt;<span class="section">section</span> <span class="id">id</span>=<span class="literal">"tech"</span>&gt;</div>
 
                         <h1 class="hidden">/ TECH</h1>
                         <h2 class="hidden">Gaussian Splatting</h2>
@@ -117,7 +108,10 @@
                                 <p>さまざまな角度から観察することで、このモデルが粒の集合体であることがわかるかと思う。</p>
                             </div>
                         </div>
-
+                        <h2 class="hidden">なぜGSなのか</h2>
+                        <p class="hidden">この作品は日常風景を扱い、それを歪めることで生まれる体験である。</p>
+                        <p class="hidden">GSで再現されたシーンには空気感が生まれる。ここで通常のメッシュモデルを使用してしまうと</p>
+                        <p class="hidden"></p>
                         <h2 class="hidden">Quest3向けGSレンダラーの実装</h2>
                         <p class="hidden" style="transition-delay: 0ms">開発環境はUnity（C#）。展示での安定性を優先し、Quest3単体で動くアプリケーションの開発を目指した。</p>
                         <p class="hidden" style="transition-delay: 100ms">しかし既存実装はPCVR前提のものが多く、この制作に向いたものを見つけることはできなかった。</p>
@@ -153,13 +147,13 @@
                                 <img src="https://assets.hkanda.xyz/error-gw/Crosswalk_Connection_Flow.svg" alt="構成したネットワークの概念図">
                             </div>
                         </div>
-                        <p style="opacity: 0.5; width: 100%; text-align: end;"><br>&lt;/<span style="color: rgb(133, 133, 253)">section</span>&gt;</p>
+                        <div class="tag tag-end"><br>&lt;/<span class="section">section</span>&gt;</div>
 
                     </section>
 
                     <section class="what-is-error" id="the-error">
 
-                        <p style="opacity: 0.5;">&lt;<span style="color: rgb(133, 133, 253)">section</span> <span style="color: rgb(82, 188, 188)">id</span>=<span style="color: rgb(253, 95, 27)">"the-error"</span>&gt;</p>
+                        <div class="tag">&lt;<span class="section">section</span> <span class="id">id</span>=<span class="literal">"the-error"</span>&gt;</div>
                         <h1 class="hidden">/ THE "ERROR"</h1>
                         <h2 class="hidden" style="transition-delay: 0ms">「エラー」とは何なのか</h2>
                         <div class="column-box">
@@ -176,7 +170,7 @@
                                 <img src="https://assets.hkanda.xyz/error-gw/error-blueprint.png" alt="体験原案スケッチ">
                             </div>
                         </div>
-                        <p style="opacity: 0.5; width: 100%; text-align: end;"><br>&lt;/<span style="color: rgb(133, 133, 253)">section</span>&gt;</p>
+                        <div class="tag tag-end"><br>&lt;/<span class="section">section</span>&gt;</div>
 
                     </section>
 
@@ -199,8 +193,8 @@
             <div class="end-wrap hidden"><div class="end">ERROR</div></div>
         </footer>
     </body>
-    <script src="../works-g-script.js" async defer></script>
-    <script src="../asset/logo.js" type="module" defer></script>
+    <script src="/portfolio/works-g-script.js?v=iifd" defer></script>
+    <script src="/portfolio/asset/logo.js?v=jio" type="module"></script>
 </html>
 
 <!-- 朝に起きてすぐ湯を沸かし、コーヒーを入れる。スマートフォンの通知をチェックし、返信を考える。身だしなみを整え、ドアを開ける。　

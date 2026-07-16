@@ -3,7 +3,7 @@ import { GLTFLoader } from 'https://esm.sh/three@r128/examples/jsm/loaders/GLTFL
 
 
 const canvas = document.querySelector('#logo-canvas');
-const logo2d = document.querySelector('.logo-2d');
+const logo2d = document.getElementById('logo-2d');
 
 
 const scene = new THREE.Scene();
@@ -11,19 +11,22 @@ const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 100);
 
 let renderer;
 
+console.log(logo2d);
 try{
     renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
-
+    
 }catch(e){
-    logo2d.classList.remove('hidden');
-    canvas.classList.add('logo3d-hidden');
+    logo2d.classList.add('active');
+    throw new Error(e);
 }
 
 
+canvas.classList.add('active');
 renderer.setSize(canvas.clientWidth, canvas.clientHeight);
 
 const light1 = new THREE.SpotLight(0xffffff, 100);
 const light2 = new THREE.SpotLight(0xffffff, 100);
+
 const al = new THREE.AmbientLight(0xffffff, 10);
 light1.position.set(3, 3, 3);
 light2.position.set(-3, -3, -4);
@@ -38,10 +41,12 @@ canvas.addEventListener('click', whenClicked);
 document.addEventListener('wheel', whenWheelMove);
 
 const loader = new GLTFLoader();
-loader.load('../asset/hkLOGO.glb', (gltf) => {
+loader.load('/portfolio/asset/hkLOGO.glb', (gltf) => {
     const model = gltf.scene;
     
     scene.add(model);
+
+
 
     let now = 0;
     let prev = null;
@@ -82,6 +87,5 @@ function whenClicked(){
 
 
 function whenWheelMove(e){
-    console.log(e);
     accelation = e.deltaY * 0.1;
 }

@@ -3,29 +3,23 @@
     <head>
         <meta charset="utf-8" lang="ja">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>portfoli/o - HK</title>
+        <title>HK / PORTFOLIO'26</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Code:ital,wght,MONO@0,300..800,1;1,300..800,1&family=Jost:ital,wght@0,100..900;1,100..900&family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="style.css?v=3">
+        <link rel="stylesheet" href="style.css?v=33f">
+        <link rel="stylesheet" href="../portfolio-g-header.css?v=33f">
         <link rel="icon" href="https://assets.hkanda.xyz/Logos/hkLOGO.png">
+
 
     </head>
     <body>
         <header>
             <canvas id="logo-canvas"></canvas>
-            <img src="https://assets.hkanda.xyz/Logos/hkLOGO.png" alt="" class="logo-2d hidden">
-            <p>/</p>
-            <a href="#top"><p id="nav-top">Top</p></a>
-            <p>/</p>
-            <a href="#works"><p id="nav-works">Works</p></a> 
-            <p>/</p>
-            <p id="nav-profile">Profile</p>
-            <p>/</p>
-            <p id="nav-contact">Contact</p>
-            <p>/</p>
+            <img src="https://assets.hkanda.xyz/Logos/hkLOGO.png" alt="" id="logo-2d">
+            <p class="header-title"><a href="./">/ PORTFOL<span class="input">I</span><span class="output">O</span>'26 / </a>TOP</p>
         </header>
         <main>
             <section class="hero" id="top">
@@ -50,7 +44,7 @@
 
             <div class="works-wrap">
                 <p class="tag" style="grid-area: tagstart;">&lt;<span style="color: rgb(126, 159, 255)">section</span> <span style="color: rgb(184, 251, 255)">class</span>=<span style="color: rgb(240, 189, 152)">"works"</span>&gt;</p>
-                <section class="works">
+                <section class="works" id="works">
                     <h1 class="left-hidden" id="works-section">/ WORKS</h1>
                     <h2 class="left-hidden" id="works-featured-section">/ FEATURED</h2>
                     <a class="work hidden" href="../error-gw/">
@@ -90,7 +84,7 @@
                                 </div>                              
                             
                             <div class="tag" style="text-align: end;">&lt;/<span style="color: rgb(126, 159, 255)">article</span>&gt;</div>
-
+                            
                         </article>
                     </a>
 
@@ -133,7 +127,7 @@
             
             <div class="profile-wrap">
                 <section class="profile">
-                    <div class="profile-section hidden">/ PROFILE</div>
+                    <div class="profile-section" id="profile">/ PROFILE</div>
                         
                         <div class="column-box">
                             <div class="block-box flex-1" style="padding: 25px">
@@ -142,22 +136,219 @@
                             <div class="block-box flex-3">
 
                                 <div class="profile-name-en hidden">Hiromu Kanda</div>
-                                <div class="profile-name-jp hidden">神田 大夢</div>
-
-                                <p class="hidden"><br>- 来歴</p>
+                                <h2 class="hidden">神田 大夢</h2>
+                                <div class="line hidden"></div>
+                                
+                                
                                 <p class="hidden"><br>2022 / 03 屋久島おおぞら高等学校 卒業</p>
                                 <p class="hidden">2022 / 04 武蔵野美術大学 造形学部 基礎デザイン学科 入学</p>
                                 <p class="hidden">2025 / 03 株式会社ワントゥーテン 短期インターン</p>
                                 <p class="hidden">2026 / 03 武蔵野美術大学 造形学部 基礎デザイン学科 卒業</p>
+
+                                <p class="hidden">
+                                    <br>大学に入学後、基礎的なデザイン教育を受けるなかでデジタルメディアを用いた作品に取り組んできた。
+                                    <br>近年はヘッドマウントディスプレイを用いたxR体験の設計・アプリケーション実装を行なっている。
+                                    
+                                </p>
+                                <p class="hidden">
+                                    媒体を問わずインタラクティブな作品を制作することが好き。
+                                </p>
+                                
+
+                                
+                            </div>
+                        </div>
+                        <h2 class="hidden">スタック</h2>
+                        <div class="line hidden"></div>
+                        <div class="column-box margin">
+                            <div class="block-box flex-1">
+                                <p class="hidden">- 体験制作</p>
+                                <div class="line hidden"></div>
+                                <div class="skill-container">
+                                    <div class="label-container">
+                                        <img src="" alt="">
+                                        <p class="hidden">Unity</p>
+                                    </div>
+                                    <div class="gauge-container">
+                                        <div class="gauge hidden" style="--percent: 100%; --color: rgb(255, 255, 255);"></div>
+                                    </div>
+                                </div>
+
+                                <div class="skill-container">
+                                    <div class="label-container">
+                                        <img src="" alt="">
+                                        <p class="hidden">Touch Designer</p>
+                                    </div>
+                                    <div class="gauge-container">
+                                        <div class="gauge hidden" style="--percent: 60%; --color: rgb(173, 236, 64);"></div>
+                                    </div>
+                                </div>
+
+                                <div class="skill-container">
+                                    <div class="label-container">
+                                        <img src="" alt="">
+                                        <p class="hidden">Processing</p>
+                                    </div>
+                                    <div class="gauge-container">
+                                        <div class="gauge hidden" style="--percent: 80%; --color: cyan;"></div>
+                                    </div>
+                                </div>
+
+                                <div class="skill-container">
+                                    <div class="label-container">
+                                        <img src="" alt="" class="hidden">
+                                        <p class="hidden">Web<br>(HTML, CSS, JS)</p>
+                                    </div>
+                                    <div class="gauge-container">
+                                        <div class="gauge hidden" style="--percent: 80%; --color: orange;"></div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="block-box flex-1">
+                                <p class="hidden">- 3D Modeling / Rendering</p>
+                                <div class="line hidden"></div>
+
+                                <div class="skill-container">
+                                    <div class="label-container">
+                                        <img src="" alt="">
+                                        <p class="hidden">Blender</p>
+                                    </div>
+                                    <div class="gauge-container">
+                                        <div class="gauge hidden" style="--percent: 100%; --color: orange;"></div>
+                                    </div>
+                                </div>
+
+                                <div class="skill-container">
+                                    <div class="label-container">
+                                        <img src="https://assets.hkanda.xyz/home/c4d-icon.png" alt="">
+                                        <p class="hidden">Cinema4D</p>
+                                    </div>
+                                    <div class="gauge-container">
+                                        
+                                        <div class="gauge hidden" style="--percent: 70%; --color: rgb(118, 152, 237);"></div>
+                                    </div>
+                                    <div class="skill-media">
+                                        <p class="hidden">Blender</p>
+                                        
+                                        <img src="/generatedImages/generated-1779605812926.jpg" alt="">
+                                    </div>
+                                </div>
+
+                                <div class="skill-container">
+                                    <div class="label-container">
+                                        <img src="" alt="">
+                                        <p class="hidden">Fusion360</p>
+                                    </div>
+                                    <div class="gauge-container">
+
+                                        <div class="gauge hidden" style="--percent: 80%; --color: rgb(255, 106, 0);"></div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="column-box">
+                            <div class="block-box flex-1">
+                                <p class="hidden">- グラフィック</p>
+                                <div class="line hidden"></div>
+                                <div class="skill-container">
+                                    <div class="label-container">
+                                        <img src="" alt="">
+                                        <p class="hidden">Adobe Photoshop</p>
+                                    </div>
+                                    <div class="gauge-container">
+                                        <div class="gauge hidden" style="--percent: 70%; --color: blue;"></div>
+                                    </div>
+                                </div>
+                                <div class="skill-container">
+                                    <div class="label-container">
+                                        <img src="" alt="">
+                                        <p class="hidden">
+                                            Adobe illustrator
+                                        </p>
+                                    </div>
+                                    <div class="gauge-container">
+                                        <div class="gauge hidden" style="--percent: 100%; --color: orange"></div>
+                                    </div>
+                                </div>
+
+                                <div class="skill-container">
+                                    <div class="label-container">
+                                        <img src="" alt="">
+                                        <p class="hidden">Affinity</p>
+                                    </div>
+                                    <div class="gauge-container">
+                                        <div class="gauge hidden" style="--percent: 90%; --color: yellowgreen;"></div>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            <div class="block-box flex-1">
+                                <p class="hidden">- プログラミング言語</p>
+                                <div class="line hidden"></div>
+                                <div class="skill-container">
+                                    <div class="label-container">
+                                        <img src="" alt="" class="hidden">
+                                        <p class="hidden">C#</p>
+                                    </div>
+                                    <div class="gauge-container">
+                                        <div class="gauge hidden" style="--percent: 100%; --color: rgb(255, 0, 255);">
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="skill-container">
+                                    <div class="label-container">
+                                        <img src="" alt="" class="hidden">
+                                        <p class="hidden">Javascript</p>
+                                    </div>
+                                    <div class="gauge-container">
+                                        <div class="gauge hidden" style="--percent: 75%; --color: rgb(255, 204, 0);">
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="skill-container">
+                                    <div class="label-container">
+                                        <img src="" alt="" class="hidden">
+                                        <p class="hidden">Python</p>
+                                    </div>
+                                    <div class="gauge-container">
+                                        <div class="gauge hidden" style="--percent: 70%; --color: rgb(46, 46, 238);">
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="skill-container">
+                                    <div class="label-container">
+                                        <img src="" alt="" class="hidden">
+                                        <p class="hidden">HLSL / GLSL</p>
+                                    </div>
+                                    <div class="gauge-container">
+                                        <div class="gauge hidden" style="--percent: 80%; --color: rgb(255, 115, 0);">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="column-box">
+                            <div class="block-box flex-1">
                                 <p class="hidden"><br>- 論文業績</p>
+                                <div class="line hidden"></div>
                                 <p class="hidden"><br>Takashi Yamazoe, Ren Okubo, Nayoung Lim, <span class="underline">Hiromu Kanda</span>, Yushi Ouchida</p>
                                 <p class="hidden">"Effects of delayed mirror image response in virtual reality on immersive correspondence"</p>
                                 <p class="hidden">Proceedings of The Thirteenth International Workshop on Image Media Quality and its Applications </p>
                                 <p class="hidden">pp. 32–37, 2026</p>
                             </div>
+                            <div class="block-box flex-1">
+
+                            </div>
                         </div>
-                    
+                        
                 </section>
+                
             </div>
             
         </main>
@@ -166,7 +357,7 @@
         </footer>
         
 
-        <script src="../asset/logo.js" type="module" defer></script>
-        <script src="script.js?v=1" defer></script>
+        <script src="../asset/logo.js?v=23ff" type="module" defer></script>
+        <script src="script.js?v=13f" defer></script>
     </body>
 </html>

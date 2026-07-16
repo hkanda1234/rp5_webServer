@@ -30,18 +30,6 @@ body{
 
     --hidden-filter: blur(20px);
 
-    --header-gap: 10px;
-    --header-margin: 0px;
-    --header-padding: 10px;
-    --header-filter: blur(4px);
-    --header-background: linear-gradient(to bottom, rgb(0, 0, 0), rgba(0, 0, 0, 0));
-
-    --header-logo-size: clamp(50px, 10vw, 80px);
-    --header-logo-margin: 10px;
-
-    --header-height: calc(var(--header-logo-size) + var(--header-logo-margin) * 2 + var(--header-padding) * 2);
-
-    --main-top-margin: var(--header-height);
 
     --hero-height: 100vh;
     --hero-gradient-height: 40vh;
@@ -75,34 +63,22 @@ body{
     
 }
 
-header{
-    position: fixed;
-    display: flex;
-    gap: var(--header-gap);
-    align-items: center;
-    z-index: 1000;
-    margin: var(--header-margin);
-    padding: var(--header-padding);
-    width: 100%;
-    height: auto;
-    backdrop-filter: var(--header-filter);
-    background: var(--header-background);
-}
-
-header nav {
-    font-size: clamp(10px, 1vw, 20px);
-    font-weight: 400;
-    color: white;
-}
-
-a{
-    color: white;
-    text-decoration: none;
-}
 
 .content video{
     border: solid 1px white;
-    
+    transition: 1s ease;
+}
+
+.content video.hidden.bottom{
+    opacity: 0;
+    translate: 0 100px;
+    filter: blur(20px);
+}
+
+.content video.hidden.right{
+    opacity: 0;
+    translate: 100px 0;
+    filter: blur(20px);
 }
 
 p span.dim{
@@ -143,25 +119,6 @@ p span.green{
     color: black;
 }
 
-.logo-2d{
-    width: var(--header-logo-size);
-    height: var(--header-logo-size);
-    margin: 10px;
-}
-
-.logo-2d.hidden{
-    display: none;
-}
-
-.logo3d-hidden{
-    display: none;
-}
-
-#logo-canvas{
-    width: var(--header-logo-size);
-    height: var(--header-logo-size);
-    margin: 10px;
-}
 
 .column-box{
     display: flex;
@@ -226,10 +183,28 @@ p span.green{
 } */
 
 .tag{
+    
     font-family: 'Google Sans Code';
     font-size: var(--g-p-size);
-    color: white;
-    opacity: 0.3;
+    color: rgb(168, 168, 168);
+    opacity: 0.6;
+}
+
+.tag .section{
+    color: rgb(118, 118, 241);
+}
+
+.tag .id{
+    color: rgb(112, 183, 223);
+}
+
+.tag .literal{
+    color: rgb(255, 142, 97);
+}
+
+.tag.tag-end{
+    width: 100%;
+    text-align: end;
 }
 
 .hero-wrap{
@@ -251,7 +226,7 @@ p span.green{
 
 .title-wrap{
     position: absolute;
-    top: var(--main-top-margin);
+    top: 0;
     left: 0;
     width: 100%;
     height: auto;

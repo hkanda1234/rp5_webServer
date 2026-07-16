@@ -1,0 +1,166 @@
+html{
+    
+    /* global */
+    --background-color: black;
+    --primary-color: white;
+    --input-color: rgb(45, 152, 223);
+    --output-color: red;
+
+    --secondary-color: rgba(255, 255, 255, 0.5);
+
+    --tag-font-size: clamp(12px, 1.5vw, 20px);
+    --tag-opacity: 0.6;
+
+    /* hero */
+    --title-container-width: 100%;
+    --title-container-height: 100vh;
+    --title-font-size: 10vw;
+
+    /* statement */
+    --statement-font-family: 'DM Serif Display';
+    --statement-font-size: 10vw;
+    --statement-transition: 2s ease;
+    
+    /* content */
+    --content-width: 80vw;
+    --content-gap: 20px;
+
+    --content-h1-size: clamp(30px, 8vw, 100px);
+    
+    scroll-behavior: smooth;
+
+}
+
+*{
+    margin: 0;
+    padding: 0;
+    color: var(--primary-color);
+    font-family: 'Jost', 'Zen Kaku Gothic';
+}
+
+body{
+    background-color: var(--background-color);
+}
+
+
+div.column-box{
+    --gap: 20px;
+    --margin: 0 0 0 0;
+    --padding: 0 0 0 0;
+    display: flex;
+    gap: var(--gap);
+}
+
+div.row-box{
+    --gap: 20px;
+    --margin: 0 0 0 0;
+    --padding: 0 0 0 0;
+
+    display: flex;
+    flex-direction: column;
+    min-width: 0px;
+}
+
+div.row-box.flex-1{
+    flex: 1;
+}
+
+div.row-box.flex-2{
+    flex: 2;
+}
+
+div.row-box.flex-3{
+    flex: 3;
+}
+
+div.tag{
+   font-family: 'Google Sans Code';
+   font-size: var(--tag-font-size);
+   color: var(--secondary-color);
+   opacity: var(--tag-opacity);
+}
+
+div.tag span.section{
+    color: rgb(118, 118, 241);
+}
+
+div.tag span.id{
+    color: rgb(112, 183, 223);
+}
+
+div.tag span.literal{
+    color: rgb(255, 142, 97);
+}
+
+section.title-container{
+    width: var(--title-container-width);
+    height: var(--title-container-height);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+}
+
+section.title-container h1.title{
+    
+    width: 100%;
+    
+    font-size: var(--title-font-size);
+    transition: 3s ease;
+}
+
+section.title-container h1.title.hidden{
+    --translate: none;
+    opacity: 0;
+    translate: var(--translate);
+    filter: blur(20px);
+}
+
+section.title-container h1.title span.input{
+    color: var(--input-color);
+}
+
+section.title-container h1.title span.output{
+    color: var(--output-color);
+}
+
+section.statement{
+    width: 100%;
+    height: auto;
+    overflow: hidden;
+}
+
+section.statement h1{
+    width: 100%;
+    text-align: end;
+    font-family: var(--statement-font-family);
+    font-size: var(--statement-font-size);
+    line-height: var(--statement-font-size);
+    transition: var(--statement-transition);
+    letter-spacing: calc(var(--statement-font-size) * 0.05);
+}
+
+section.statement h1.hidden{
+    --translate: 100% 0;
+    --filter: blur(20px);
+    opacity: 0;
+    translate: var(--translate);
+    filter: var(--filter);
+    letter-spacing: calc(var(--statement-font-size) * -0.5);
+    
+}
+
+div.content-wrap{
+    display: flex;
+    align-items: center;
+}
+
+div.content{
+    display: flex;
+    flex-direction: column;
+    gap: var(--content-gap);
+}
+
+div.content h1{
+    font-size: var(--content-h1-size);
+}

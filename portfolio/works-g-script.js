@@ -1,3 +1,11 @@
+const header = document.querySelector('header');
+const title = document.querySelector('.title-wrap');
+
+document.addEventListener('DOMContentLoaded', () => {
+
+    title.style.cssText = `translate: 0 ${header.clientHeight}px`;
+})
+
 
 
 const hiddens = document.querySelectorAll('.hidden');
@@ -88,14 +96,16 @@ function updateCarousel(demoWrap, index){
 
 }
 
+
+
 const footerEnd = document.querySelector('.end');
 let prevWindowWidth = window.innerWidth;
-window.addEventListener('load',justifyFooterEnd);
+justifyFooterEnd();
+
 window.addEventListener('resize', () => {
     if(prevWindowWidth === window.innerWidth)return;
     justifyFooterEnd();
 });
-
 
 function getCarouselIndex(demoWrap){
     const carousel = demoWrap.querySelector('.carousel');
@@ -125,8 +135,10 @@ function justifyFooterEnd(){
     const vpw = document.body.clientWidth;
     let celw = el.clientWidth;
     let size = 0;
+    
     while(true){
         size++;
+        if(size > 1000)break;
         el.style = `font-size: ${size}px`;
         celw = el.clientWidth;
         if(celw >= vpw){
