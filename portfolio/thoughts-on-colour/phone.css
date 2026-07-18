@@ -1,0 +1,171 @@
+
+
+.phone-container{
+
+    --container-width: 100%;
+    --container-height: 80vh;
+
+
+    --phone-height: 900px;
+    --phone-width: calc(var(--phone-height) * 9 / 19);
+    --phone-border-radius: calc(var(--phone-height) * 0.08);
+
+    --phone-body-thickness: calc(var(--phone-height) * 0.004);
+    --phone-bezel-height: calc(var(--phone-height) - var(--phone-body-thickness) * 2);
+    --phone-bezel-width: calc(var(--phone-width) - var(--phone-body-thickness) * 2);
+    --phone-bezel-radius: calc(var(--phone-border-radius) - var(--phone-body-thickness));
+    
+    --phone-bezel-thickness: calc(var(--phone-height) * 0.015);
+    --phone-screen-width: calc(var(--phone-bezel-width) - var(--phone-bezel-thickness) * 2);
+    --phone-screen-height: calc(var(--phone-bezel-height) - var(--phone-bezel-thickness) * 2);
+    --phone-screen-radius: calc(var(--phone-bezel-radius) - var(--phone-bezel-thickness));
+
+    --phone-button-depth: calc(var(--phone-height) * 0.005);
+
+    --phone-power-button-top: calc(var(--phone-height) * 0.3);
+    --phone-power-button-height: calc(var(--phone-height) * 0.15);
+
+    --phone-volume-button-top: calc(var(--phone-height) * 0.25);
+    --phone-volume-button-height: calc(var(--phone-height) * 0.1);
+    --phone-volume-button-gap: calc(var(--phone-height) * 0.05);
+
+    --phone-action-button-top: calc(var(--phone-height) * 0.15);
+    --phone-action-button-height: calc(var(--phone-height) * 0.05);
+    
+
+    --phone-island-width: calc(var(--phone-width) * 0.3);
+    --phone-island-height: calc(var(--phone-height) * 0.04);
+    --phone-island-top: calc(var(--phone-height) * 0.01);
+
+    --phone-camera-base-width: calc(var(--phone-island-height) * 0.7);
+
+    --phone-app-top: calc(var(--phone-island-height) + var(--phone-island-top) * 2);
+
+    display: flex;
+    width: var(--container-width);
+    height: var(--container-height);
+    align-items: center;
+    justify-content: center;
+}
+
+.phone-base{
+    position: absolute;
+    
+    height: var(--phone-height);
+    width: var(--phone-width);
+    border-radius: var(--phone-border-radius);
+    background: linear-gradient(120deg, white, rgb(117, 117, 117));
+    scale: calc(var(--container-height) / var(--phone-height));
+}
+
+.phone-power-button{
+    position: absolute;
+    width: var(--phone-button-depth);
+    height: var(--phone-power-button-height);
+    background-color: rgb(116, 116, 116);
+    right: calc(var(--phone-button-depth) * -1);
+    top: var(--phone-power-button-top);
+}
+
+.phone-volume-button{
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    width: var(--phone-button-depth);
+    left: calc(var(--phone-button-depth) * -1);
+    top: var(--phone-volume-button-top);
+    gap: var(--phone-volume-button-gap);
+}
+
+.phone-volume-button::before{
+    content:'';
+    width: var(--phone-button-depth);
+    height: var(--phone-volume-button-height);
+    background-color: rgb(180, 180, 180);
+}
+
+.phone-volume-button::after{
+    content:'';
+    width: var(--phone-button-depth);
+    height: var(--phone-volume-button-height);
+    background-color: rgb(158, 158, 158);
+}
+
+.phone-action-button{
+    position: absolute;
+    width: var(--phone-button-depth);
+    height: var(--phone-action-button-height);
+    background-color: rgb(175, 175, 175);
+    left: calc(var(--phone-button-depth) * -1);
+    top: var(--phone-action-button-top);
+}
+
+.phone-bezel{
+    position: absolute;
+    height: var(--phone-bezel-height);
+    width: var(--phone-bezel-width);
+    border-radius: var(--phone-bezel-radius);
+    top: var(--phone-body-thickness);
+    left: var(--phone-body-thickness);
+    background: linear-gradient(120deg, rgb(70, 70, 70), black);
+}
+
+.phone-screen{
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    width: var(--phone-screen-width);
+    height: var(--phone-screen-height);
+    border-radius: var(--phone-screen-radius);
+    top: var(--phone-bezel-thickness);
+    left: var(--phone-bezel-thickness);
+    background: white;
+    overflow: hidden;
+}
+
+.phone-screen iframe{
+    position: absolute;
+    width: var(--phone-screen-width);
+    height: calc(var(--phone-screen-height) - var(--phone-app-top));
+    top: var(--phone-app-top);
+}
+
+.phone-island{
+    position: absolute;
+    display: flex;
+    align-items: center;
+    width: var(--phone-island-width);
+    height: var(--phone-island-height);
+    top : var(--phone-island-top);
+    border-radius: calc(var(--phone-island-height) * 0.5);
+    background: rgb(47, 47, 47);
+}
+
+.phone-camera-base{
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: var(--phone-camera-base-width);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    right: calc((var(--phone-island-height) - var(--phone-camera-base-width)) / 2);
+    background-color: rgb(59, 59, 59);
+}
+
+.phone-camera-iris{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: calc(var(--phone-camera-base-width) / 2);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background-color: rgb(41, 41, 41);
+}
+
+.phone-camera-highlight{
+    width: calc(var(--phone-camera-base-width) / 8);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.107);
+}
