@@ -60,7 +60,24 @@
                                     <div class="phone-action-button"></div>
                                     <div class="phone-bezel">
                                         <div class="phone-screen">
-                                            <iframe src="/color-dictionary" frameborder="0"></iframe>
+                                            <iframe src="/color-dictionary?bottom-margin=100px" frameborder="0" id="phone-app"></iframe>
+                                            <div class="phone-bottom-ui-container">
+                                                <div class="phone-back-button">
+                                                    <img src="https://assets.hkanda.xyz/tocolor/back-icon-2.svg" alt="">
+                                                </div>
+                                                <div class="phone-url-bar">
+                                                    <div class="phone-menu-button">
+                                                        <img src="https://assets.hkanda.xyz/tocolor/menu-icon.svg" alt="">
+                                                    </div>
+                                                    hkanda.xyz
+                                                    <div class="phone-reload-button" id="phone-reload-button">
+                                                        <img src="https://assets.hkanda.xyz/tocolor/reload-icon.svg" alt="">
+                                                    </div>
+                                                </div>
+                                                <div class="phone-three-dots-button">
+                                                    <img src="https://assets.hkanda.xyz/tocolor/tab-icon-2.svg" alt="">
+                                                </div>
+                                            </div>
                                             <div class="phone-island">
                                                 <div class="phone-camera-base">
                                                     <div class="phone-camera-iris">
@@ -68,11 +85,35 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            <div class="phone-top-right-ui-container">
+                                                <img src="https://assets.hkanda.xyz/tocolor/cellar-icon-2.svg" alt="">
+                                                <img src="https://assets.hkanda.xyz/tocolor/wifi-icon.svg" alt="">
+                                                <img src="https://assets.hkanda.xyz/tocolor/battery-icon-3.svg" id="battery" alt="">
+                                            </div>
+                                            <div class="phone-top-clock-container">
+                                                <p>9:41</p>
+                                                <img src="https://assets.hkanda.xyz/tocolor/muted-icon-2.svg" id="battery" alt="">
+
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
+                                <script defer>
+                                    const reloadButton = document.getElementById("phone-reload-button");
+                                    const app = document.getElementById("phone-app");
+                                    reloadButton.addEventListener('click', () => {
+                                        
+                                        app.contentWindow.location.reload();
+                                        reloadButton.style.animation = 'reload 1s ease'
+                                    })
+                                    
+                                    reloadButton.addEventListener('animationend', () => {
+                                        reloadButton.style.animation = null;
+                                    })
+                                </script>
                             </div>
                         </div>
+
                     </div>
                     
                     <section class="tech" id="tech">
@@ -99,8 +140,8 @@
             <div class="end-wrap hidden"><div class="end">THOUGHTS ON COLOUR</div></div>
         </footer>
 
-        
+
+        <script src="../works-g-script.js" defer></script>
+        <script src="../asset/logo.js" type="module" defer></script>
     </body>
-    <script src="../works-g-script.js" async defer></script>
-    <script src="../asset/logo.js" type="module" defer></script>
 </html>

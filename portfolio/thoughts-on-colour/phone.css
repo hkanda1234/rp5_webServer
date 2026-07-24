@@ -41,11 +41,41 @@
 
     --phone-app-top: calc(var(--phone-island-height) + var(--phone-island-top) * 2);
 
+    --phone-top-clock-container-left: calc(var(--phone-screen-width) * 0.12);
+    --phone-top-clock-font-color: black;
+    --phone-top-clock-font-size: calc(var(--phone-screen-width) * 0.05);
+    --phone-top-clock-container-width: calc(var(--phone-screen-width) * 0.15);
+
+    --phone-top-ui-container-right: calc(var(--phone-screen-width) * 0.065);
+    --phone-top-ui-gap: calc(var(--phone-screen-width) * 0.02); 
+
+    --phone-bottom-ui-container-height: calc(var(--phone-screen-height) * 0.1);
+    --phone-bottom-ui-container-background-color: white;
+    --phone-bottom-ui-container-box-shadow: none;
+    --phone-bottom-ui-height: calc(var(--phone-bottom-ui-container-height) * 0.5);
+    --phone-bottom-ui-border-radius: calc(var(--phone-bottom-ui-container-height) / 2);
+    
+    --phone-bottom-ui-backdrop-filter: blur(10px);
+    --phone-bottom-ui-border: solid 1px rgba(0, 0, 0, 0.147);
+
+    --phone-bottom-ui-gap: calc(var(--phone-screen-width) * 0.05);
+
+    --phone-bottom-ui-back-button-width: calc(var(--phone-screen-width) * 0.2);
+    --phone-bottom-ui-url-bar-width: auto;
+    --phone-bottom-ui-url-font-size: calc(var(--phone-screen-width) * 0.05);
+    
+
+    --phone-bottom-ui-three-dots-button-width: var(--phone-bottom-ui-height);
+
+    --phone-bottom-ui-box-shadow: 0 0 100px rgba(0, 0, 0, 0.504);
+
+
     display: flex;
     width: var(--container-width);
     height: var(--container-height);
     align-items: center;
     justify-content: center;
+    user-select: none;
 }
 
 .phone-base{
@@ -168,4 +198,142 @@
     aspect-ratio: 1;
     border-radius: 50%;
     background-color: rgba(255, 255, 255, 0.107);
+}
+
+.phone-top-clock-container{
+    position: absolute;
+    display: flex;
+    gap: var(--phone-top-ui-gap);
+    align-items: center;
+    justify-content: center;
+    top: var(--phone-island-top);
+    left: var(--phone-top-clock-container-left);
+    width: var(--phone-top-clock-container-width);
+    height: var(--phone-island-height);
+}
+
+.phone-top-clock-container p{
+    color: var(--phone-top-clock-font-color);
+    font-size: var(--phone-top-clock-font-size);
+}
+.phone-top-clock-container img{
+    height: 60%;
+}
+
+.phone-top-right-ui-container{
+    position: absolute;
+    display: flex;
+    gap: var(--phone-top-ui-gap);
+    top: var(--phone-island-top);
+    right: var(--phone-top-ui-container-right);
+    display: flex;
+    align-items: center;
+    height: var(--phone-island-height);
+
+}
+
+.phone-top-right-ui-container img{
+    height: 60%;
+}
+
+.phone-top-right-ui-container #battery{
+    height: 100%;
+}
+
+.phone-bottom-ui-container{
+    position: absolute;
+    display: flex;
+    gap: var(--phone-bottom-ui-gap);
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: var(--phone-bottom-ui-container-height);
+    bottom: 0;
+    background-color: var(--phone-bottom-ui-container-background-color);
+    box-shadow: var(--phone-bottom-ui-container-box-shadow);
+}
+
+.phone-back-button{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: var(--phone-bottom-ui-height);
+    aspect-ratio: 1;
+    border-radius: var(--phone-bottom-ui-border-radius);
+    border: var(--phone-bottom-ui-border);
+    backdrop-filter: var(--phone-bottom-ui-backdrop-filter);
+    box-shadow: var(--phone-bottom-ui-box-shadow);
+    
+}
+
+.phone-back-button img{
+    height: 60%;
+    translate: -5% 0;
+}
+
+.phone-url-bar{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--phone-bottom-ui-url-font-size);
+    width: var(--phone-bottom-ui-url-bar-width);
+    height: var(--phone-bottom-ui-height);
+    border-radius: var(--phone-bottom-ui-border-radius);
+    border: var(--phone-bottom-ui-border);
+    backdrop-filter: var(--phone-bottom-ui-backdrop-filter);
+    box-shadow: var(--phone-bottom-ui-box-shadow);
+}
+
+.phone-reload-button{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: var(--phone-bottom-ui-height);
+    aspect-ratio: 1;
+    cursor: pointer;
+    transform-origin: 50% 55%;
+}
+
+@keyframes reload{
+    0%{
+        rotate: 0deg;
+    }
+    50%{
+        rotate: -20deg;
+    }
+    100%{
+        rotate: 359deg;
+    }
+}
+
+.phone-reload-button img{
+    height: 60%;
+}
+
+.phone-menu-button{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: var(--phone-bottom-ui-height);
+    aspect-ratio: 1;
+}
+
+.phone-menu-button img{
+    height: 60%;
+}
+
+.phone-three-dots-button{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--phone-bottom-ui-three-dots-button-width);
+    aspect-ratio: 1;
+    border-radius: var(--phone-bottom-ui-height);
+    border: var(--phone-bottom-ui-border);
+    backdrop-filter: var(--phone-bottom-ui-backdrop-filter);
+    box-shadow: var(--phone-bottom-ui-box-shadow);
+}
+
+.phone-three-dots-button img{
+    height: 60%;
 }

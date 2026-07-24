@@ -228,7 +228,7 @@ p span.green{
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
+    width: auto;
     height: auto;
     z-index: 2;
 }

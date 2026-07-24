@@ -93,5 +93,17 @@
 
         </main>
         <script src="script/app.js?v=43" type="module" defer></script>
+        <script defer>
+            const params = new URLSearchParams(window.location.search);
+            const value = params.get("bottom-margin");
+            if(value){
+                const credit = document.querySelector('.credit');
+                const navigation = document.querySelectorAll('.navigation');
+                credit.style.marginBottom = value;
+                navigation.forEach((e) => {
+                    e.style.marginBottom = value;
+                })
+            }
+        </script>
     </body>
 </html>
