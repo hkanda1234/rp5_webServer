@@ -10,7 +10,6 @@ header{
     width: 100%;
     height: auto;
 
-    padding: 10px;
     gap: 20px;
 
     z-index: 1000;
@@ -27,6 +26,7 @@ header{
 header img{
     width: auto;
     height: var(--icon-height);
+    scale: 0.8;
 }
 
 header canvas{

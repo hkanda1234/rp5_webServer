@@ -375,6 +375,11 @@ section#works article.work-card a.work-link{
     z-index: 1;
 }
 
+#profile-canvas{
+    width: 100%;
+    height: 100%;
+}
+
 
 div.line{
     --color: var(--line-color);

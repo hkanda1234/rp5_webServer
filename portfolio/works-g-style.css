@@ -33,8 +33,20 @@ body{
 
     --hero-height: 100vh;
     --hero-gradient-height: 40vh;
+
+    --stack-card-container-width: 80vw;
+    --stack-card-container-height: auto;
+
+    --stack-card-width: 5vw;
+    --stack-card-margin: 20px 20px 20px 0px;
+    --stack-card-padding: 10px 20px 10px 20px;
+    --stack-card-border: solid 1px rgba(255, 255, 255, 0.251);
+    --stack-card-border-radius: 0px;
+    --stack-card-background: rgba(255, 255, 255, 0);
+
     
     --demo-height: 60vh;
+    --demo-margin: 50px 0 50px 0;
     --carousel-height: 60vh;
     --carousel-card-width: 40vw;
     --carousel-card-height: 55vh;
@@ -339,10 +351,48 @@ p span.green{
     filter: var(--hidden-filter);
 }
 
+div.stack-card-container{
+    display: flex;
+    flex-wrap: wrap;
+    width: var(--stack-card-container-width);
+}
+
+div.stack-card{
+    display: block;
+    min-width: var(--stack-card-width);
+    margin: var(--stack-card-margin);
+    padding: var(--stack-card-padding);
+    border: var(--stack-card-border);
+    border-radius: var(--stack-card-border-radius);
+    background: var(--stack-card-background);
+    transition: 1s ease;
+    transform-origin: 100%  50%;
+}
+
+div.stack-card.hidden{
+    opacity: 0;
+    transform: translate(-100px, 0) rotate(-10deg);
+    filter: blur(20px);
+}
+
+div.stack-card p{
+    margin: 0;
+}
+
+div.stack-card p.stack-card-title{
+    position: relative;
+    --color: white;
+    color: var(--color);
+    margin-bottom: var(--g-p-margin);
+}
+
+
+
 .demo{
     position: relative;
     width: 100%;
     height: var(--demo-height);
+    margin: var(--demo-margin);
     transition: transform 1s ease, opacity 1s ease, filter 1s ease;
 }
 
@@ -459,6 +509,7 @@ p span.green{
     align-items: center;
     width: 100%;
     height: var(--carousel-height);
+    margin: var(--carousel-margin);
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
