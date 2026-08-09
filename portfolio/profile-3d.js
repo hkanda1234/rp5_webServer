@@ -1,5 +1,7 @@
 import * as THREE from 'https://esm.sh/three@r128';
 import { GLTFLoader } from 'https://esm.sh/three@r128/examples/jsm/loaders/GLTFLoader.js';
+import GUI from 'https://cdn.jsdelivr.net/npm/lil-gui@0.19/dist/lil-gui.esm.min.js';
+
 
 const modelURI = "/portfolio/hkanda-head.glb";
 const root_max_angle = {
@@ -16,20 +18,61 @@ const eye_max_angle = {
     x: 20,
     y: 10,
 }
+let model = null;
+let headMesh = null;
+let hairMesh = null;
+let eyeMesh = {
+    l: null,
+    r: null
+}
+let glassesMesh = null;
 
+let meshes = [
+    {mesh: null, name: "Head", castShadow = true, receiveShadow = true},
+    {mesh: null, name: "hair", castShadow = true, receiveShadow = false},
+    {mesh: null, name: "EyeL", castShadow = false, receiveShadow = true},
+    {mesh: null, name: "EyeR", castShadow = false, receiveShadow = true},
+    {mesh: null, name: "Glasses", castShadow = true, receiveShadow = false},
+]
+
+let shoulder = null;
+let head = null;
+let leftEye = null;
+let rightEye = null;
 
 
 const canvas = document.getElementById("profile-canvas");
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(50, getCanvasAspect(), 0.1, 100);
-camera.position.set(0, 0, 1.5)
-const sun = new THREE.DirectionalLight(0xffffff, 2);
+camera.position.set(0, 0, 1.4);
+const sun = new THREE.DirectionalLight(0xffffff, 3);
+sun.position.set(0, 0.4, 1);
+sun.target.position.set(0, 0, 0);
+scene.add(sun.target);
 sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048);
+sun.shadow.camera.near = 0.8;
+sun.shadow.camera.far = 1.5;
+sun.shadow.camera.left = -0.4;
+sun.shadow.camera.right = 0.4;
+sun.shadow.camera.top = -0.4;
+sun.shadow.camera.bottom = 0.4;
+sun.shadow.bias = -0.003;
+sun.shadow.normalBias = 0;
+sun.shadow.camera.updateProjectionMatrix();
+
+
+
 const al = new THREE.AmbientLight(new THREE.Color(1, 0.8, 0.7), 1);
 scene.add(sun);
 scene.add(al);
 
+canvas.addEventListener("resize", () => {
+    camera.aspect = getCanvasAspect();
+    renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+    console.log('resize');
+});
 
 
 let renderer;
@@ -46,69 +89,108 @@ renderer.setSize(canvas.clientWidth, canvas.clientHeight);
 
 const loader = new GLTFLoader();
 
-let model = null;
-let headMesh = null;
-let shoulder = null;
-let head = null;
-let leftEye = null;
-let rightEye = null;
 
 loader.load(modelURI, (gltf) => {
     model = gltf.scene;
     scene.add(model);
     model.traverse((obj) => {
-        if(obj.name == "Head") headMesh = obj;
-        if(obj.name == "bone_root") shoulder = obj;
-        if(obj.name == "bone_head") head = obj;
-        if(obj.name == "eye_left") leftEye = obj;
-        if(obj.name == "eye_right") rightEye = obj;
+        switch(obj.name){
+            case "Head" :
+                headMesh = obj
+                break;
+            case "Glasses" :
+                glassesMesh = obj
+                break;
+            case "hair" : 
+                hairMesh = obj;
+                break;
+            case "EyeL" :
+                eyeMesh.l = obj;
+                break;
+            case "EyeR" :
+                eyeMesh.r = obj;
+                break;
+            case "bone_root" :
+                shoulder = obj;
+                break;
+            case "bone_head" :
+                head = obj;
+                break;
+            case "eye_left" :
+                leftEye = obj;
+                break;
+            case "eye_right" :
+                rightEye = obj;
+                break;
+        }
     });
-    console.log(shoulder, head);
-    shoulder.position.y = -0.5;
+    headMesh.castShadow = true;
+    headMesh.receiveShadow = true;
+    eyeMesh.l.receiveShadow = true;
+    eyeMesh.r.receiveShadow = true;
+    console.log(hairMesh, eyeMesh);
+    hairMesh.children.forEach((m) => {
+        m.castShadow = true;
+        //m.receiveShadow = true;
+        m.material.alphaTest = 0.5;
+    })
+    shoulder.position.y = -0.4;
+
+
+
     animate();
 });
 
+
+const leftEyeFront = new THREE.Vector3(-0.07, 1, 0).normalize();
+const rightEyeFront = new THREE.Vector3(0.05, 1, 0).normalize();
+sun.rotateX(0);
 
 
 const profileSection = document.getElementById('profile');
 profileSection.addEventListener("mousemove", screenToNDC);
 
-let rot = 0;
 let ndc = null;
 let world = null;
 
 function animate(){
-    //rot -= 0.01;
     requestAnimationFrame(animate);
     renderer.render(scene, camera);
 }
 
-function eyesLookAt(){
-    leftEye.parent.updateMatrixWorld();
-    leftEye.lookAt(world);
-    leftEye.rotateX(Math.PI / 2.3);
-    rightEye.lookAt(world);
-    rightEye.rotateX(Math.PI / 2);
+function worldLookAt(bone, parent, forward = new THREE.Vector3(0, 0, -1)){
+    parent.updateMatrixWorld(true);
+    const worldPos = bone.getWorldPosition(new THREE.Vector3());
+    const direction = world.clone().sub(worldPos).normalize();
+    const worldQuat = new THREE.Quaternion().setFromUnitVectors(forward, direction);
+    const parentWorldQuat = parent.getWorldQuaternion(new THREE.Quaternion());
+    const localQuat = parentWorldQuat.clone().invert().multiply(worldQuat);
+    bone.quaternion.copy(localQuat);
 }
 
 function screenToNDC(event) {
   const rect = canvas.getBoundingClientRect();
   const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-  const y = -((event.clientY - rect.top) / rect.height) * 2 + 1; // Y反転注意
+  const y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
   ndc = {x: x, y: y};
-  ndcToWorld(ndc, camera, 0.5);
+  ndcToWorld(ndc, camera, 1);
   
-  shoulder.rotation.y = ndc.x / 20;
-  shoulder.rotation.x = - ndc.y / 15;
-  head.rotation.y = ndc.x / 10;
-  head.rotation.x = - ndc.y / 8;
+  shoulder.rotation.y = ndc.x / 5;
+  shoulder.rotation.x = - ndc.y / 5;
+  head.rotation.y = ndc.x / 5;
+  head.rotation.x = - ndc.y / 4;
   
-  //eyesLookAt();
+  worldLookAt(leftEye, head, leftEyeFront);
+  worldLookAt(rightEye, head, rightEyeFront);
+
 }
 
 function ndcToWorld(ndc, camera, z) {
-  const vector = new THREE.Vector3(ndc.x, ndc.y, z);
+  const vector = new THREE.Vector3(ndc.x, ndc.y, camera.near);
   vector.unproject(camera);
+  vector.x *= 12;
+  vector.y *= 9;
+  vector.z = z;
   world = vector;
 }
 

@@ -157,7 +157,7 @@ section.title-container h1.title{
     
     width: 100%;
     font-size: var(--title-font-size);
-    transition: 3s ease;
+    transition: translate 3s ease, opacity 3s ease, filter 3s ease;
 }
 
 section.title-container h1.title.hidden{
@@ -245,7 +245,7 @@ div.content{
 
 div.content h1{
     font-size: var(--content-h1-size);
-    transition: 1s ease-out;
+    transition: translate 1s ease, opacity 1s ease, filter 1s ease;
 }
 
 div.content h1.hidden{
@@ -258,7 +258,7 @@ div.content h1.hidden{
 
 div.content h2{
     font-size: var(--content-h2-size);
-    transition: 1s ease-out;
+    transition: translate 1s ease, opacity 1s ease, filter 1s ease;
 }
 
 div.content h2.hidden{
@@ -271,7 +271,7 @@ div.content h2.hidden{
 
 div.content h3{
     font-size: var(--content-h3-size);
-    transition: 1s ease-out;
+    transition: translate 1s ease, opacity 1s ease, filter 1s ease;
 }
 
 div.content h3.hidden{
@@ -293,7 +293,7 @@ div.content h2.hidden{
 div.content p{
     font-size: var(--content-p-size);
     font-weight: var(--content-p-weight);
-    transition: 1s ease;
+    transition: translate 1s ease, opacity 1s ease, filter 1s ease;
 }
 
 div.content p.hidden{
@@ -317,7 +317,7 @@ section#works article.work-card{
     height: 100%;
     gap: var(--work-card-margin);
     border: solid 1px var(--primary-color);
-    transition: 1s ease;
+    transition: translate 1s ease, opacity 1s ease, filter 1s ease;
 }
 
 
@@ -334,12 +334,12 @@ section#works article.work-card div.thumbnail h3.message{
     width: 100%;
     text-align: center;
     opacity: 0;
-    transition: 1s ease;
+    transition: translate 1s ease, opacity 1s ease, filter 1s ease;
 }
 
 section#works article.work-card div.thumbnail img{
     width: var(--work-card-thumbnail-width);
-    transition: 1s ease;
+    transition: translate 1s ease, opacity 1s ease, filter 1s ease;
     border-radius: var(--work-card-thumbnail-radius);
 }
 
@@ -350,7 +350,7 @@ section#works article.work-card:hover img{
 section#works article.work-card:hover h3.message{
     position: absolute;
     opacity: 0.8 !important;
-    transition: 1s ease;
+    transition: translate 1s ease, opacity 1s ease, filter 1s ease;
     mix-blend-mode: screen;
 }
 
@@ -403,7 +403,7 @@ div.line::before{
     width: 100%;
     height: 100%;
     background-color: var(--color);
-    transition: 1s ease;
+    transition: width 1s ease;
 }
 
 div.line.hidden::before{
@@ -422,7 +422,7 @@ div.gauge{
     position: relative;
     width: var(--width);
     height: var(--height);
-    transition: 1s ease;
+    transition: width 1s ease;
 }
 
 div.gauge::before{
