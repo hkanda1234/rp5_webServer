@@ -156,7 +156,7 @@ const canvasElement = document.querySelector("#colorPickerCanvas");
 const glCanvas = new e.GLCanvas(canvasElement);
 const gl = glCanvas.gl;
 
-if(!gl) alert('WebGL is not supported on this browser!\nPlease turn on gpu accelation on browser settings.');
+if(!gl) alert('WebGL is not supported on this browser!\nPlease turn on gpu acceleration on browser settings.');
 
 const scene = new e.Scene(gl);
 const camera = new e.Camera(canvasElement);
@@ -510,7 +510,7 @@ async function generateContent(color){
 async function generateText(color){
 
     const hex = rgbToHex(color);
-    const res = await fetch(`https://hkanda.xyz/colorAnalyze?hex=${hex}&rgb=${color}`);
+    const res = await fetch(`https://hkanda.xyz/colorAnalyze?model=claude&hex=${hex}&rgb=${color}`);
     const json = await res.json();
     return json;
 

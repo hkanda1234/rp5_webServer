@@ -8,7 +8,7 @@ html{
 
     --secondary-color: rgba(255, 255, 255, 0.5);
 
-    --tag-font-size: clamp(12px, 1.5vw, 20px);
+    --tag-font-size: 10px;
     --tag-padding: 10px;
     --tag-opacity: 0.6;
 
@@ -34,11 +34,11 @@ html{
     --content-width: 80vw;
     --content-gap: 20px;
 
-    --content-h1-size: clamp(50px, 8vw, 120px);
-    --content-h2-size: clamp(30px, 5vw, 80px);
-    --content-h3-size: clamp(20px, 3vw, 50px);
+    --content-h1-size: 55px;
+    --content-h2-size: 45px;
+    --content-h3-size: 30px;
 
-    --content-p-size: clamp(12px, 1.2vw, 20px);
+    --content-p-size: 16px;
     --content-p-weight: 400;
     --content-p-strong-weight: 600;
     --content-p-text-decoration: solid 2px var(--primary-color);
@@ -53,7 +53,7 @@ html{
 
     /* profile */
     --gauge-width: 100%;
-    --gauge-height: 5px;
+    --gauge-height: 3px;
     --gauge-background-color: var(--primary-color);
     --gauge-background-opacity: 0.3;
     --gauge-transition-delay: 0.2s;

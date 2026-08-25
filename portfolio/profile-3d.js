@@ -18,6 +18,7 @@ const eye_max_angle = {
     x: 20,
     y: 10,
 }
+
 let model = null;
 let headMesh = null;
 let hairMesh = null;
@@ -27,13 +28,13 @@ let eyeMesh = {
 }
 let glassesMesh = null;
 
-let meshes = [
-    {mesh: null, name: "Head", castShadow = true, receiveShadow = true},
-    {mesh: null, name: "hair", castShadow = true, receiveShadow = false},
-    {mesh: null, name: "EyeL", castShadow = false, receiveShadow = true},
-    {mesh: null, name: "EyeR", castShadow = false, receiveShadow = true},
-    {mesh: null, name: "Glasses", castShadow = true, receiveShadow = false},
-]
+const meshesShadowConfig = [
+    {name: "Head", castShadow : true, receiveShadow : true},
+    {name: "hair", castShadow : true, receiveShadow : false},
+    {name: "EyeL", castShadow : false, receiveShadow : true},
+    {name: "EyeR", castShadow : false, receiveShadow : true},
+    {name: "Glasses", castShadow : true, receiveShadow : false},
+];
 
 let shoulder = null;
 let head = null;
@@ -45,7 +46,7 @@ const canvas = document.getElementById("profile-canvas");
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(50, getCanvasAspect(), 0.1, 100);
-camera.position.set(0, 0, 1.4);
+camera.position.set(0, 0, 1.5);
 const sun = new THREE.DirectionalLight(0xffffff, 3);
 sun.position.set(0, 0.4, 1);
 sun.target.position.set(0, 0, 0);
@@ -58,13 +59,13 @@ sun.shadow.camera.left = -0.4;
 sun.shadow.camera.right = 0.4;
 sun.shadow.camera.top = -0.4;
 sun.shadow.camera.bottom = 0.4;
-sun.shadow.bias = -0.003;
+sun.shadow.bias = -0.005;
 sun.shadow.normalBias = 0;
 sun.shadow.camera.updateProjectionMatrix();
 
 
 
-const al = new THREE.AmbientLight(new THREE.Color(1, 0.8, 0.7), 1);
+const al = new THREE.AmbientLight(new THREE.Color(1, 0.8, 0.7), 0.5);
 scene.add(sun);
 scene.add(al);
 
@@ -88,7 +89,9 @@ try{
 renderer.setSize(canvas.clientWidth, canvas.clientHeight);
 
 const loader = new GLTFLoader();
-
+let mixer = null;
+const actions = {};
+const timer = new THREE.Timer();
 
 loader.load(modelURI, (gltf) => {
     model = gltf.scene;
@@ -101,7 +104,7 @@ loader.load(modelURI, (gltf) => {
             case "Glasses" :
                 glassesMesh = obj
                 break;
-            case "hair" : 
+            case "hair1" : 
                 hairMesh = obj;
                 break;
             case "EyeL" :
@@ -129,17 +132,23 @@ loader.load(modelURI, (gltf) => {
     eyeMesh.l.receiveShadow = true;
     eyeMesh.r.receiveShadow = true;
     console.log(hairMesh, eyeMesh);
-    hairMesh.children.forEach((m) => {
-        m.castShadow = true;
-        //m.receiveShadow = true;
-        m.material.alphaTest = 0.5;
-    })
+    hairMesh.castShadow = true;
+    hairMesh.material.alphaTest = 0.55;
     shoulder.position.y = -0.4;
 
+    mixer = new THREE.AnimationMixer(model);
+    gltf.animations.forEach((clip) => {
+        actions[clip.name] = mixer.clipAction(clip);
+        actions[clip.name].setLoop(THREE.LoopOnce);
+    });
 
-
+    console.log(actions);
+    
     animate();
 });
+
+
+
 
 
 const leftEyeFront = new THREE.Vector3(-0.07, 1, 0).normalize();
@@ -152,10 +161,28 @@ profileSection.addEventListener("mousemove", screenToNDC);
 
 let ndc = null;
 let world = null;
+let humid = 0;
 
 function animate(){
     requestAnimationFrame(animate);
+    timer.update();
+    const delta = timer.getDelta();
+    updateHumid(delta);
+    mixer.update(delta);
     renderer.render(scene, camera);
+
+}
+
+function updateHumid(delta){
+    humid -= delta;
+    if(humid <= 0){
+        playBlink();
+        humid = Math.random() * 5;
+    }
+}
+
+function playBlink(){
+    actions["blink"].reset().play();
 }
 
 function worldLookAt(bone, parent, forward = new THREE.Vector3(0, 0, -1)){
