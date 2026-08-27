@@ -13,11 +13,11 @@ body{
     --background-color: black;
     --text-color: white;
 
-    --g-h1-size: clamp(50px, 5vw, 200px);
+    --g-h1-size: 70px;
     --g-h1-weight: 700;
-    --g-h2-size: clamp(30px, 3.5vw, 150px);
+    --g-h2-size: 50px;
     --g-h2-weight: 600;
-    --g-p-size: clamp(12px, 1vw, 25px);
+    --g-p-size: 20px;
     --g-p-lineheight: 1.8;
     --g-p-weight: 400;
 
