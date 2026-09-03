@@ -23,7 +23,7 @@
         </header>
         <main>
             <div class="hero-wrap" id="title">
-                <img class="hero-img" src="https://assets.hkanda.xyz/litter-to-glitter/litterToGlitter_thumbnail.png" alt="">
+                <video src="https://assets.hkanda.xyz/litter-to-glitter/kichijoji_hero_vid.mp4" class="hero-video" autoplay muted loop></video>
                 <div class="title-wrap">
                     <div class="tag">&lt;<span class="section">h1</span> <span class="id">class</span>=<span class="literal">"hero-title"</span>&gt;</div>
                     
@@ -81,15 +81,16 @@
                             
                             </div>
                             <div class="block-box flex-1">
-                                
+                                <h2 class="hidden">「ゴミ拾い」を「花火」に変える</h3>
                                 <p class="hidden">
-                                    "Litters to Glitter"は、「ゴミを拾う」という地味な身体動作が「花火」という煌びやかな現象を起こすという、大きな飛躍から生まれる楽しさを感じさせる作品である。
+                                    "Litter to Glitter"は、<span class="white strong">「ゴミを拾う」という地味な身体動作</span>によって<span class="white strong">「花火」という煌びやかな体験</span>を立ち上がらせる作品である。
                                 </p>
                                 <p class="hidden">
-                                    <br>三年次「テクストインフォメーション」授業にて、「吉祥寺を『響』という言葉で再構築する」という課題のもと制作した。
+                                    <br>VR空間に広がる吉祥寺に落ちているタバコの吸い殻を拾う（触れる）と、そこから花火が打ち上がる。
                                 </p>
                                 <p class="hidden">
-                                    <br>
+                                    <br>三年次「テクストインフォメーション」授業にて、「吉祥寺を『響』という言葉で再構築する」という課題のもと、
+                                    <br>企画、チームビルディング、フィールドワーク、UnityでのVRアプリケーション開発まで担当し、制作を行なった。
                                 </p>
                             
                             </div>
@@ -99,20 +100,57 @@
                     <section id="concept">
                         <div class="tag">&lt;<span class="section">section</span> <span class="id">id</span>=<span class="literal">"concept"</span>&gt;</div>
                         <h1 class="hidden">/ CONCEPT</h1>
-                        
+                        <h2 class="hidden">
+                            「消えた場所」を「出発点」に変える
+                            <br>
+                        </h2>
+                        <div class="column-box">
+                            <div class="block-box flex-2">
+                                
+                                <p class="hidden">
+                                    街中に落ちているタバコの吸い殻には、<span class="white strong">どこかで点火され、街を移動し、そこで消えたというストーリー</span>がある。
+                                </p>
+                                <p class="hidden">
+                                    <br>これに近いストーリーを持つ存在として、打ち上げ花火があることに気がついた。
+                                    <br>打ち上げ花火もまた、ある地点で着火され、空間を移動し、最後に消える。
+                                </p>
+                                <p class="hidden">
+                                    <br>タバコの吸い殻が"消えた場所"を、花火が"生まれる場所"に反転させる。<br>終着点を新たな現象の起点とすることで、そこで終わったはずの存在を生き返らせる。それが、この作品のコンセプトだ。
+                                </p>
+                            </div>
+                        </div>
                         <div class="tag tag-end">&lt;/<span class="section">section</span>&gt;</div>
                     </section>
-                    <section id="production">
+                    <section id="development">
                         <div class="tag">&lt;<span class="section">section</span> <span class="id">id</span>=<span class="literal">"development"</span>&gt;</div>
-
-                        <h1 class="hidden">/ DEVELOPMENT</h1>
-                        <h2 class="hidden">吉祥寺</h2>
+                        
+                        <h1 class="hidden">/ PRODUCTION</h1>
                         <div class="column-box">
                             <div class="block-box flex-1">
-                                <p class="hidden">授業にて実際に赴いた吉祥寺</p>
+                                
+                                <img src="https://assets.hkanda.xyz/litter-to-glitter/garbage.png" alt="">
                             </div>
                             <div class="block-box flex-1">
-                                <img src="https://assets.hkanda.xyz/litter-to-glitter/blender-gis.png" alt="">
+                                <img src="https://assets.hkanda.xyz/litter-to-glitter/location-record-app.png" alt="">
+                                
+                            </div>
+                            <div class="block-box flex-3">
+                                <h2 class="hidden">データ収集</h2>
+                                <p class="hidden">
+                                    ポイ捨てゴミを扱い、それをビジュアライズすることに決定したため、<br>
+                                    グループ内に”Route History”というスマホアプリを共有した。
+                                </p>
+                                <p class="hidden">
+                                    位置情報とともにメモを記録できるシンプルなアプリで、データをXML形式でエクスポートすることができる。
+                                </p>
+                                <p class="hidden">
+                                    <br>
+                                    フィールドワークとして、実際に吉祥寺を歩き、ゴミ拾いをしながらその種類をメモした。
+                                </p>
+                                <p class="hidden">
+                                    <br>
+                                    
+                                </p>
                             </div>
                         </div>
                         <h2 class="hidden">データ収集・マッピング</h2>
@@ -121,15 +159,13 @@
                                 
                                 <p class="hidden">できるだけ多くのデータを収集するため、グループ内で共通のアプリケーション"Route History"を使用した。</p>
                                 <p class="hidden">自分の位置情報とともにメモを残すことができるシンプルなアプリであり、データをXML形式でエクスポートできる。</p>
-
-                            </div>
-                            <div class="block-box flex-1">
-                                <img src="https://assets.hkanda.xyz/litter-to-glitter/location-record-app.png" alt="">
                                 
                             </div>
                             <div class="block-box flex-1">
-                                <img src="https://assets.hkanda.xyz/litter-to-glitter/garbage.png" alt="">
                                 
+                            </div>
+                            <div class="block-box flex-1">
+                                <img src="https://assets.hkanda.xyz/litter-to-glitter/blender-gis.png" alt="">
                             </div>
                         </div>
                         <h2 class="hidden">花火</h2>
