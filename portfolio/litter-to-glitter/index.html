@@ -36,7 +36,7 @@
             </div>
             <div class="content-wrap">
                 <div class="content">
-                                        <div class="tag">&lt;<span class="section">div</span> <span class="id">class</span>=<span class="literal">"stack-card-container"</span>&gt;</div>
+                    <div class="tag">&lt;<span class="section">div</span> <span class="id">class</span>=<span class="literal">"stack-card-container"</span>&gt;</div>
 
                     <div class="stack-card-container">
                         <div class="stack-card hidden" style="transition-delay: 0ms;"> 
@@ -128,10 +128,10 @@
                         <div class="column-box">
                             <div class="block-box flex-1">
                                 
-                                <img src="https://assets.hkanda.xyz/litter-to-glitter/garbage.png" alt="">
+                                <img class="openable" src="https://assets.hkanda.xyz/litter-to-glitter/garbage.png" alt="">
                             </div>
                             <div class="block-box flex-1">
-                                <img src="https://assets.hkanda.xyz/litter-to-glitter/location-record-app.png" alt="">
+                                <img class="openable" src="https://assets.hkanda.xyz/litter-to-glitter/location-record-app.png" alt="">
                                 
                             </div>
                             <div class="block-box flex-3">
@@ -145,7 +145,9 @@
                                 </p>
                                 <p class="hidden">
                                     <br>
-                                    フィールドワークとして、実際に吉祥寺を歩き、ゴミ拾いをしながらその種類をメモした。
+                                    グループで分担したエリアを歩き、見つけたポイ捨てゴミの種類を逐一メモしていくことで、データを収集した。
+                                    <br><span class="dim">(私は実際にゴミ拾いをしながらデータを収集してみた。)</span>
+
                                 </p>
                                 <p class="hidden">
                                     <br>
@@ -153,30 +155,52 @@
                                 </p>
                             </div>
                         </div>
-                        <h2 class="hidden">データ収集・マッピング</h2>
+                        <h2 class="hidden">モデル作成</h2>
                         <div class="column-box">
-                            <div class="block-box flex-3">
+                            <div class="block-box flex-2">
                                 
-                                <p class="hidden">できるだけ多くのデータを収集するため、グループ内で共通のアプリケーション"Route History"を使用した。</p>
-                                <p class="hidden">自分の位置情報とともにメモを残すことができるシンプルなアプリであり、データをXML形式でエクスポートできる。</p>
+                                <p class="hidden">
+                                    収集したデータをビジュアライズするにあたって、正確な吉祥寺駅周辺のモデルが必要だった。
+                                </p>
+                                <p class="hidden">
+                                    そのため、GoogleMapのOSMデータから街並みを再現できるBlenderGISを使用し、3Dモデルを作成した。
+                                </p>
                                 
                             </div>
+                            
+                            <div class="block-box flex-1">
+                                <img class="openable" src="https://assets.hkanda.xyz/litter-to-glitter/blender-gis.png" alt="">
+                            </div>
+                        </div>
+                        <div class="column-box">
                             <div class="block-box flex-1">
                                 
                             </div>
-                            <div class="block-box flex-1">
-                                <img src="https://assets.hkanda.xyz/litter-to-glitter/blender-gis.png" alt="">
+                            <div class="block-box flex-2">
+                                <h2 class="hidden">
+                                    マッピング
+                                </h2>
+                                <p class="hidden">
+                                    <br>
+                                    収集したデータはXML形式のため、C#で扱えるようにこれを構造体リストへ変換するスクリプトを作成した。
+                                </p>
                             </div>
                         </div>
                         <h2 class="hidden">花火</h2>
-                        
+                        <p class="hidden">
+                            花火のビジュアルはパーティクルシステムを利用して作成した。
+                        </p>
 
                         <div class="tag tag-end">&lt;/<span class="section">section</span>&gt;</div>
 
                     </section>
                 </div>
             </div>
-
+            <div class="image-modal image-modal-hidden">
+                <img class="image-modal-view" src=""></img>
+                <div class="image-modal-close-button"></div>
+            </div>
+            
         </main>
         <footer>
             <div class="back-to-top-button-wrap">
@@ -192,7 +216,10 @@
             <div class="end-wrap hidden"><div class="end">LITTER TO GLITTER</div></div>
         </footer>
         
-        <script src="/portfolio/works-g-script.js" defer></script>
+        <div class="cursor-follower">
+            <svg id="cursor-follower-svg" version="1.1" width="50" height="50"></svg>
+        </div>
+        <script src="/portfolio/works-g-script.js" defer type="module"></script>
         <script src="/portfolio/asset/logo.js" defer type="module"></script>
     </body>
 </html>
