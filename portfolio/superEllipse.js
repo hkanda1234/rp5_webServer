@@ -2,7 +2,7 @@
 
 export const superEllipse = {
 
-    create: (svgElement, r = {x: 1, y: 1}, k = 2, segment, strokeWidth = 1, strokeColor = 'black', fillColor = 'white') => {
+    create: (svgElement, r = 1, k = 2, segment, strokeWidth = 1, strokeColor = 'black', fillColor = 'white') => {
         
         const se = {
 
@@ -38,8 +38,8 @@ export const superEllipse = {
 
                 for(let t = 0; t < se.segment; t ++){
                     tt = t / se.segment * TWOPI;
-                    se.raw.x.push(Math.sign(Math.cos(tt)) * Math.pow(Math.abs(Math.cos(tt)), 2 / se.k) * se.r.x);
-                    se.raw.y.push(Math.sign(Math.sin(tt)) * Math.pow(Math.abs(Math.sin(tt)), 2 / se.k) * se.r.y);
+                    se.raw.x.push(Math.sign(Math.cos(tt)) * Math.pow(Math.abs(Math.cos(tt)), 2 / se.k) * se.r);
+                    se.raw.y.push(Math.sign(Math.sin(tt)) * Math.pow(Math.abs(Math.sin(tt)), 2 / se.k) * se.r);
                     i++;
                 }
             },
@@ -57,7 +57,6 @@ export const superEllipse = {
                     path += line;
                 }
                 path += "z";
-                console.log(se.k);
                 se.svg.text = `<path stroke="${se.sc}" stroke-width="${se.sw}" fill="${se.fc}" d="${path}" />`;
             },
 
@@ -100,7 +99,7 @@ export const superEllipse = {
                 }
 
                 se.changeRAnimStart = se.r;
-                se.changeKAnimTarget = target;
+                se.changeRAnimTarget = target;
                 se.changeRAnimDuration = duration;
                 se.changeRAnimStartTime = performance.now();
                 se.changeRAnim();
@@ -138,12 +137,12 @@ export const superEllipse = {
             changeRAnim: (timestamp) => {
 
                 se.changeRAnimStop = requestAnimationFrame(se.changeRAnim);
-                if(!timestamp) return;
+                const now = performance.now();
 
                 const start = se.changeRAnimStart;
                 const target = se.changeRAnimTarget;
                 const range = target - start;
-                const t = ((timestamp - se.changeRAnimStartTime) / 1000) / se.changeRAnimDuration;
+                const t = ((now - se.changeRAnimStartTime) / 1000) / se.changeRAnimDuration;
 
                 const current = t * t;
 
@@ -246,7 +245,9 @@ export const superEllipse = {
                 se.changeWHAnimStop = null;
                 se.update();
 
-            }
+            },
+
+            
 
 
 

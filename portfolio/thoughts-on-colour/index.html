@@ -19,11 +19,8 @@
         <header>
             <canvas id="logo-canvas"></canvas>
             <img src="https://assets.hkanda.xyz/Logos/hkLOGO.png" alt="" id="logo-2d">
-            <nav>
-                /
-                <a href="../top/">BACK TO TOP</a>
-                
-            </nav>
+            <p class="header-title"><a href="/portfolio/">/ PORTFOL<span class="input">I</span><span class="output">O</span>'26 /</a> <a href=""></a>WORKS / THOUGHTS ON COLOUR</p>
+            
         </header>
         <main>
             <div class="hero-wrap" id="title">
@@ -39,19 +36,10 @@
                 <section class="content">
 
                     
-                    <h1 class="summary-headline hidden" id="summary">/ SUMMARY</h1>
-                    <h2 class="summary-sub-headline hidden">AIの考える「色」とは</h2>
-                    <p class="summary hidden" style="transition-delay: 0ms">
-                        ユーザーが選択した「色」と「物」の関係について、世界を見たことのないLLMがどんな解釈をするのか。<br>それを確かめる体験をWebアプリケーションに落とし込んだ作品。
-                    </p>
 
                     
-
-                    <h1 class="hidden">/DEMO</h1>
                     <div class="column-box hidden">
-                        <div class="block-box flex-1">
-                            <p>a</p>
-                        </div>
+                        <!-- demo -->
                         <div class="block-box flex-1">
                             <div class="phone-container">
                                 <div class="phone-base">
@@ -112,9 +100,34 @@
                                     })
                                 </script>
                             </div>
+                            <p class="center">この埋め込みから実際に体験できる。</p>
+                            <p class="center">
+                                デスクトップ版: <a href="/color-dictionary/">https://hkanda.xyz/color-dictionary</a>
+                            </p>
+                        </div>
+                        <!-- demo -->
+
+                        <div class="block-box flex-1">
+                            <h1 class="hidden">/SUMMARY</h1>
+                            <h2 class="hidden">AIが「色」を考える。</h2>
+                            <p class="hidden">
+                                "THOUGHTS ON COLOUR"は、鑑賞者が選んだ色から世界の事物を、ことばとしてAIに連想させる作品である。<br>世界を体験したことのない存在が導く、「色」と「ことば」の関係が、そこに現れる。
+                            </p>
+
+                            <p class="hidden">
+                                <br>3次元空間に表現された色空間から選択されたひとつの色について、<br>AIに7つのことばを連想させる。
+                                <br>最終的にもっとも相応しいと判断されたことばが採用され、生成されたビジュアルが表示される。
+                            </p>
                         </div>
 
+
                     </div>
+
+                    <section id="concept">
+                        <h1 class="hidden">
+                            /CONCEPT
+                        </h1>
+                    </section>
                     
                     <section class="tech" id="tech">
                         <h1 class="hidden">/TECH</h1>
@@ -130,7 +143,7 @@
             <div class="back-to-top-button-wrap">
                 
                 <div class="back-to-top-button hidden">
-                    <a href="../top/"></a>
+                    <a href="../"></a>
                     &lt;&lt;&lt; BACK TO TOP
                 </div>
             </div>
@@ -149,7 +162,7 @@
             <svg id="cursor-follower-svg" version="1.1" width="50" height="50"></svg>
         </div>
 
-        <script src="../works-g-script.js" type="module"></script>
+        <script src="../works-g-script.js?v=fff" type="module"></script>
         <script src="../asset/logo.js" type="module" defer></script>
     </body>
 </html>

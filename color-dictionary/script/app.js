@@ -510,7 +510,7 @@ async function generateContent(color){
 async function generateText(color){
 
     const hex = rgbToHex(color);
-    const res = await fetch(`https://hkanda.xyz/colorAnalyze?model=claude&hex=${hex}&rgb=${color}`);
+    const res = await fetch(`https://hkanda.xyz/colorAnalyze?model=gemini&hex=${hex}&rgb=${color}`);
     const json = await res.json();
     return json;
 

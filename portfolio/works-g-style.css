@@ -28,6 +28,8 @@ body{
     
     --g-p-margin: 10px;
 
+    --g-a-color: rgb(16, 140, 242);
+
     --hidden-filter: blur(20px);
 
 
@@ -139,6 +141,15 @@ p span.white{
 p span.green{
     background: rgb(97, 255, 128);
     color: black;
+}
+
+p.center{
+    width: 100%;
+    text-align: center;
+}
+
+a {
+    color: var(--g-a-color);
 }
 
 

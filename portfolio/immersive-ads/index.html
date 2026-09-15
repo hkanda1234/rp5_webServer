@@ -65,7 +65,7 @@
                         <div class="column-box">
                             <div class="block-box flex-1"></div>
                             <div class="block-box flex-1">
-                                <img src="https://assets.hkanda.xyz/immersive-ads/immersiveads-animations.gif" alt="">
+                                <img class="openable" src="https://assets.hkanda.xyz/immersive-ads/immersiveads-animations.gif" alt="">
                             </div>
                         </div>
                         <p style="opacity: 0.5; width: 100%; text-align: end;"><br>&lt;/<span style="color: rgb(133, 133, 253)">section</span>&gt;</p>
@@ -82,6 +82,10 @@
                     
                 </section>
             </div>
+            <div class="image-modal image-modal-hidden">
+                <img class="image-modal-view" src=""></img>
+                <div class="image-modal-close-button"></div>
+            </div>
 
         </main>
         <footer>
@@ -97,6 +101,9 @@
             </div>
             <div class="end-wrap hidden"><div class="end">IMMERSIVE ADS</div></div>
         </footer>
+        <div class="cursor-follower">
+            <svg id="cursor-follower-svg" version="1.1" width="50" height="50"></svg>
+        </div>
     </body>
     <script src="/portfolio/works-g-script.js" async defer type="module"></script>
     <script src="../asset/logo.js?v-1" type="module" defer></script>
