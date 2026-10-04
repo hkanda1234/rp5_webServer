@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>PORTFOLIO'26 LOADING</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+                <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Code:ital,wght,MONO@0,300..800,1;1,300..800,1&family=Jost:ital,wght@0,100..900;1,100..900&family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="./style.css">
+    </head>
+    <style>
+        .loading-container{
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+        }
+        .loading-guage{
+            width: 250px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .loading-guage::before{
+            
+            content: '';
+            position: absolute;
+            width: inherit;
+            height: 2px;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.308);
+
+        }
+
+        .loading-guage::after{
+            
+            
+            content: '';
+            
+
+            width: 50%;
+            height: 2px;
+            z-index: 11;
+            background: rgb(255, 255, 255);
+
+        }
+
+
+    </style>
+    <body>
+        <div class="loading-container">
+            <p>Loading...</p>
+            <div class="loading-guage">
+
+            </div>
+        </div>
+        
+        <script src="" async defer></script>
+    </body>
+</html>

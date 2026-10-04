@@ -11,7 +11,6 @@ const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 100);
 
 let renderer;
 
-console.log(logo2d);
 try{
     renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
     

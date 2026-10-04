@@ -15,9 +15,9 @@ body{
 
     --g-h1-size: 70px;
     --g-h1-weight: 700;
-    --g-h2-size: 50px;
+    --g-h2-size: 40px;
     --g-h2-weight: 600;
-    --g-p-size: 20px;
+    --g-p-size: 16px;
     --g-p-lineheight: 1.8;
     --g-p-weight: 400;
 
@@ -295,13 +295,11 @@ a {
 }
 
 .hero-video {
-    width: 100%;
-    transition: 1s ease;
+    width: 100vw;
 }
 
 .hero-video.hidden{
     width: 100%;
-    transition: 1s ease;
 }
 
 .hero-gradient{
@@ -328,7 +326,6 @@ a {
 }
 
 .content h1{
-    margin-top: var(--g-h1-margin);
     margin-bottom: var(--g-h1-margin);
     font-size: var(--g-h1-size);
     font-weight: var(--g-h1-weight);
@@ -337,7 +334,6 @@ a {
 }
 
 .content h2{
-    margin-top: var(--g-h2-margin);
     margin-bottom: var(--g-h2-margin);
     font-size: var(--g-h2-size);
     font-weight: var(--g-h2-weight);
@@ -793,4 +789,30 @@ img.image-modal-view{
 
 #cursor-follower-svg{
     translate: -50% -50%;
+}
+
+#loading-screen{
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    background: var(--background-color);
+    width: 100vw;
+    height: 100vh;
+    z-index: 100;
+
+    font-family: 'Jost';
+    color: white;
+}
+
+#loading-screen.hidden{
+    display: none;
+}
+
+#loading-status{
+
 }

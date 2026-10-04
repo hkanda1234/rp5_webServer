@@ -50,3 +50,67 @@ workCardElements.forEach((card) => {
         card.style.transform = '';
     })
 })
+
+
+const Loading = {
+    
+    dom: false,
+    load: false,
+    fonts: false,
+
+    lodingScreen: document.getElementById('loading-screen'),
+    log: document.getElementById('loading-status'),
+    main: document.querySelector('main'),
+
+    setMainDisplayNone: function(){
+        this.main.style.display = 'none';
+    },
+
+    setMainDisplayBlock: function(){
+        this.main.style.display = '';
+    },
+
+    setLoadingScreenDisplayNone: function(){
+        this.lodingScreen.style.display = 'none';
+    },
+
+    setEvents: function(){
+
+        this.setMainDisplayNone();
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log(document.readyState);
+            this.dom = true;
+            this.checkStatus();
+            this.addLog('DOM load done.')
+        })
+        window.addEventListener('load', (e) => {
+            console.log(document.readyState);
+            this.load = true
+            this.checkStatus();
+            this.addLog('ready state compreted.')
+        })
+        document.fonts.ready.then(() => {
+            console.log('fonts done');
+            this.fonts = true;
+            this.checkStatus();
+            this.addLog('fonts ready.')
+        })
+    },
+
+    addLog(t){
+        this.log.innerHTML = `${this.log.innerHTML}${t}<br>`;
+    },
+
+    checkStatus: function(){
+        if(this.dom && this.load && this.fonts){
+            this.onDone();
+        }
+    },
+
+    onDone: function(){
+        this.setMainDisplayBlock();
+        this.setLoadingScreenDisplayNone();
+    }
+}
+
+Loading.setEvents();

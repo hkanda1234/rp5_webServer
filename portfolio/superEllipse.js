@@ -2,7 +2,7 @@
 
 export const superEllipse = {
 
-    create: (svgElement, r = 1, k = 2, segment, strokeWidth = 1, strokeColor = 'black', fillColor = 'white') => {
+    create: (svgElement, r = {x: 1, y: 1}, k = 2, segment, strokeWidth = 1, strokeColor = 'black', fillColor = 'white') => {
         
         const se = {
 
@@ -38,8 +38,8 @@ export const superEllipse = {
 
                 for(let t = 0; t < se.segment; t ++){
                     tt = t / se.segment * TWOPI;
-                    se.raw.x.push(Math.sign(Math.cos(tt)) * Math.pow(Math.abs(Math.cos(tt)), 2 / se.k) * se.r);
-                    se.raw.y.push(Math.sign(Math.sin(tt)) * Math.pow(Math.abs(Math.sin(tt)), 2 / se.k) * se.r);
+                    se.raw.x.push(Math.sign(Math.cos(tt)) * Math.pow(Math.abs(Math.cos(tt)), 2 / se.k) * se.r.x);
+                    se.raw.y.push(Math.sign(Math.sin(tt)) * Math.pow(Math.abs(Math.sin(tt)), 2 / se.k) * se.r.y);
                     i++;
                 }
             },
@@ -98,8 +98,8 @@ export const superEllipse = {
                     se.cancelChangeRAnim();
                 }
 
-                se.changeRAnimStart = se.r;
-                se.changeRAnimTarget = target;
+                se.changeRAnimStart = {x: se.r.x, y: se.r.y};
+                se.changeRAnimTarget = {x: target.x, y: target.y};
                 se.changeRAnimDuration = duration;
                 se.changeRAnimStartTime = performance.now();
                 se.changeRAnim();
@@ -124,12 +124,21 @@ export const superEllipse = {
                     se.cancelChangeWHAnim();
                 }
 
+                const max = Math.max(target.w, target.h);
+
                 se.changeWHAnimStart.w = se.width;
                 se.changeWHAnimStart.h = se.height;
-                se.changeWHAnimTarget.w = target.w;
-                se.changeWHAnimTarget.h = target.h;
+                se.changeWHAnimTarget.w = max;
+                se.changeWHAnimTarget.h = max;
                 se.changeWHAnimDuration = duration;
                 se.changeWHAnimStartTime = performance.now();
+
+                const r = {
+                    x: target.w / Math.max(target.w, target.h),
+                    y: target.h / Math.max(target.w, target.h)
+                }
+
+                se.changeR(r, duration);
                 se.changeWHAnim();
 
             },
@@ -141,7 +150,10 @@ export const superEllipse = {
 
                 const start = se.changeRAnimStart;
                 const target = se.changeRAnimTarget;
-                const range = target - start;
+                const range = {
+                    x: target.x - start.x,
+                    y: target.y - start.y
+                }
                 const t = ((now - se.changeRAnimStartTime) / 1000) / se.changeRAnimDuration;
 
                 const current = t * t;
@@ -151,7 +163,9 @@ export const superEllipse = {
                     return;
                 }
 
-                se.r = start + range * current;
+                se.r.x = start.x + range.x * current;
+                se.r.y = start.y + range.y * current;
+
                 se.update();
 
             },
@@ -205,7 +219,8 @@ export const superEllipse = {
 
             stopChangeRAnim: () => {
                 cancelAnimationFrame(se.changeRAnimStop);
-                se.r = se.changeKAnimTarget;
+                se.r.x = se.changeRAnimTarget.x;
+                se.r.y = se.changeRAnimTarget.y;
                 se.changeRAnimStop = null;
                 se.update();
 
@@ -216,7 +231,6 @@ export const superEllipse = {
                 se.k = se.changeKAnimTarget;
                 se.changeKAnimStop = null;
                 se.update();
-                console.log('stop');
             },
 
             stopChangeWHAnim: () => {
@@ -237,7 +251,6 @@ export const superEllipse = {
                 cancelAnimationFrame(se.changeKAnimStop);
                 se.changeKAnimStop = null;
                 se.update();
-                console.log('cancel');
             },
 
             cancelChangeWHAnim: () => {

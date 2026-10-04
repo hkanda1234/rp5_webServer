@@ -19,7 +19,7 @@ export const cursor = {
                 h: 50
             },
             defaultSESegment: 50,
-            defaultSER: 1,
+            defaultSER: {x: 1, y: 1},
             defaultSEK: 2,
             defaultSESW: 1,
             defaultSESC: 'white',
@@ -34,12 +34,13 @@ export const cursor = {
             moveDuration: null,
             
             fullShrinkDistance: 100,
-            fullShrinkSER: 0.1,
+            fullShrinkSER: {x: 0.1, y: 0.1},
             
             isHovering: false,
+            hoveringTarget: null,
             hoverMoveDuration: 200,
             hoverMargin: 50,
-            hoverK: 8,
+            hoverK: 12,
 
 
 
@@ -47,13 +48,24 @@ export const cursor = {
                 c.se = superEllipse.create(c.svgElm, c.defaultSER, c.defaultSEK, c.defaultSESegment, c.defaultSESW, c.defaultSESC, c.defaultSEFC),
                 c.moveDuration = c.defaultMoveDuration;
                 document.querySelector('body').addEventListener('mousemove', c.onMousemove);
-                this.addHoverCallback(hoverTargets);
+                c.addHoverCallback(hoverTargets);
+                c.addScrollendCallback();
             },
 
             addHoverCallback: function(targets){
                 targets.forEach((e) => {
                     e.addEventListener('mouseenter', c.onMouseenter);
                     e.addEventListener('mouseout', c.onMouseout);
+                })
+            },
+
+            addScrollendCallback :function(){
+                document.addEventListener('scroll', () => {
+                    if(!this.isHovering)return;
+                    c.fixHovering();
+                    requestAnimationFrame((t) => c.firstFrame(t));
+
+                    console.log('fix')
                 })
             },
 
@@ -67,17 +79,18 @@ export const cursor = {
                 const x = rect.x + rect.width / 2;
                 const y = rect.y + rect.height / 2;
 
+                c.hoveringTarget = t;
+
                 c.targetXY = {
                     x: x,
                     y: y
                 }
 
                 c.startXY = {
-                    x: c.currentXY.x,
-                    y: c.currentXY.y
+                    x: x,
+                    y: y
                 }
 
-                console.log(rect);
                 c.moveDuration = c.hoverMoveDuration;
                 c.isHovering = true;
 
@@ -90,6 +103,11 @@ export const cursor = {
             onMouseout: function(e){
                 c.moveDuration = c.defaultMoveDuration;
                 c.isHovering = false;
+                c.targetXY = {
+                    x: e.x,
+                    y: e.y
+                }
+                requestAnimationFrame((t) => c.firstFrame(t));
 
                 c.se.changeWH(c.defaultSEWH, c.moveDuration / 1000);
                 c.se.changeK(c.defaultSEK, c.moveDuration / 1000);
@@ -115,11 +133,25 @@ export const cursor = {
                         x: e.x,
                         y: e.y
                     }
+                } else {
+                    c.fixHovering();
                 }
 
                 
 
                 requestAnimationFrame((t) => c.firstFrame(t));
+            },
+
+            fixHovering(){
+                const r = c.hoveringTarget.getBoundingClientRect();
+                const l = r.x;
+                const t = r.y;
+                const w = r.width;
+                const h = r.height;
+                c.targetXY = {
+                    x: l + w / 2,
+                    y: t + h / 2
+                }
             },
 
             firstFrame: function(t){
@@ -139,7 +171,6 @@ export const cursor = {
                 }
 
                 const ease = c.easeIn(c.normalized);
-                console.log(ease);
 
                 const x = s.x + vec.x * ease;
                 const y = s.y + vec.y * ease;
@@ -154,8 +185,8 @@ export const cursor = {
 
                 if(!c.isHovering){
                     
-                    const r = Math.max(1 - Math.sqrt(vec.x * vec.x + vec.y * vec.y) / c.fullShrinkDistance, c.fullShrinkSER);
-                    c.se.r = r;
+                    const r = Math.max(1 - Math.sqrt(vec.x * vec.x + vec.y * vec.y) / c.fullShrinkDistance, c.fullShrinkSER.x);
+                    c.se.r = {x: r, y: r};
                     c.se.update();
                 } else {
                     c.se.r = c.defaultSER;
