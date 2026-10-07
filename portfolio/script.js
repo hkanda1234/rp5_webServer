@@ -48,6 +48,12 @@ workCardElements.forEach((card) => {
     card.addEventListener('mouseout', (e) => {
         card.classList.remove('prevent-default');
         card.style.transform = '';
+        card.style.transition = 'transform 0.5s';
+
+        setTimeout(() => {
+            card.style.transition = 'none';
+        }, 500);
+
     })
 })
 

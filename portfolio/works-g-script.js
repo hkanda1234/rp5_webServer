@@ -1,9 +1,4 @@
-
 import { cursor } from "./cursor.js";
-
-
-
-
 const appearanceAnimator = {
     hiddens: document.querySelectorAll('.hidden'),
     observer: new IntersectionObserver((entries, observer) => {
@@ -30,19 +25,13 @@ function startImageModalInteraction(){
     const view = document.querySelector('.image-modal-view');
     
     imageElements.forEach((element) => {
-        if(element.classList.contains('image-modal-view')) return;
-    
-        
-            
+        if(element.classList.contains('image-modal-view')) return;  
         element.addEventListener('click', (e) => {
             
             const src = element.src;
             view.src = src;
             imageModal.classList.remove('image-modal-hidden');
-        })
-    
-        
-            
+        })        
     })
     
     imageModal.addEventListener('click', (e) => {
@@ -105,7 +94,11 @@ const Loading = {
     },
 
     setLoadingScreenDisplayNone: function(){
-        this.lodingScreen.style.display = 'none';
+        const ls = this.lodingScreen;
+        ls.classList.add('hidden');
+        setTimeout(() => {
+            ls.style.display = 'none';
+        }, 1000);
     },
 
     setEvents: function(){

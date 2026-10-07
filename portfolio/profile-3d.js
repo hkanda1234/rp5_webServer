@@ -1,6 +1,5 @@
 import * as THREE from 'https://esm.sh/three@r128';
 import { GLTFLoader } from 'https://esm.sh/three@r128/examples/jsm/loaders/GLTFLoader.js';
-import GUI from 'https://cdn.jsdelivr.net/npm/lil-gui@0.19/dist/lil-gui.esm.min.js';
 
 
 const modelURI = "/portfolio/hkanda-head.glb";
@@ -69,13 +68,6 @@ const al = new THREE.AmbientLight(new THREE.Color(1, 0.8, 0.7), 0.5);
 scene.add(sun);
 scene.add(al);
 
-canvas.addEventListener("resize", () => {
-    camera.aspect = getCanvasAspect();
-    renderer.setSize(canvas.clientWidth, canvas.clientHeight);
-    console.log('resize');
-});
-
-
 let renderer;
 try{
     renderer = new THREE.WebGLRenderer({canvas : canvas, antialias: true, alpha: true});
@@ -86,7 +78,17 @@ try{
     alert(e);
 }
 
-renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+function resizeRenderer(){
+    const w = canvas.clientWidth;
+    const h = canvas.clientHeight;
+    if(w === 0 || h === 0) return;
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+}
+new ResizeObserver(resizeRenderer).observe(canvas);
+resizeRenderer();
 
 const loader = new GLTFLoader();
 let mixer = null;

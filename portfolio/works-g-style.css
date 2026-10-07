@@ -30,7 +30,7 @@ body{
 
     --g-a-color: rgb(16, 140, 242);
 
-    --hidden-filter: blur(20px);
+    --hidden-filter: none;
 
 
     --hero-height: 100vh;
@@ -96,13 +96,13 @@ img.openable:hover{
 .content video.hidden.bottom{
     opacity: 0;
     translate: 0 100px;
-    filter: blur(20px);
+    /* filter: blur(20px); */
 }
 
 .content video.hidden.right{
     opacity: 0;
     translate: 100px 0;
-    filter: blur(20px);
+    /* filter: blur(20px); */
 }
 
 p span.dim{
@@ -807,12 +807,10 @@ img.image-modal-view{
 
     font-family: 'Jost';
     color: white;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
 }
 
 #loading-screen.hidden{
-    display: none;
-}
-
-#loading-status{
-
+    opacity: 0;
 }
