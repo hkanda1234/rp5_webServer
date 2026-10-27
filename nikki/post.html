@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <title>日記</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Code:ital,wght,MONO@0,300..800,1;1,300..800,1&family=Jost:ital,wght@0,100..900;1,100..900&family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <header>
+            <div class="header-inner">
+                <a class="site-title" href="./">やった方がいいやつ（日記）</a>
+                <div class="header-actions" id="owner-actions" hidden>
+                    <a class="button" id="edit-button">編集</a>
+                </div>
+            </div>
+        </header>
+        <main>
+            <article>
+                <h1 class="post-title" id="title"></h1>
+                <div class="meta" id="meta"></div>
+                <div class="post-body" id="body"></div>
+            </article>
+            <div class="post-footer">
+                <a class="button" href="./">← 一覧へ</a>
+            </div>
+        </main>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
+        <script src="common.js"></script>
+        <script>
+            const id = new URLSearchParams(location.search).get('id');
+
+            const load = async () => {
+                try{
+                    const post = await api(`/posts/${encodeURIComponent(id)}`);
+                    const title = post.title || '無題';
+                    document.title = `${title} | 日記`;
+                    document.getElementById('title').textContent = title;
+                    document.getElementById('meta').innerHTML = `<time datetime="${post.createdAt}">${formatDate(post.createdAt)}</time>`;
+                    document.getElementById('body').innerHTML = renderMarkdown(post.body);
+                } catch {
+                    document.getElementById('title').textContent = '見つかりませんでした';
+                }
+            };
+
+            isLoggedIn().then(ok => {
+                if(!ok) return;
+                document.getElementById('owner-actions').hidden = false;
+                document.getElementById('edit-button').href = `write.html?id=${encodeURIComponent(id)}`;
+            });
+
+            load();
+        </script>
+    </body>
+</html>

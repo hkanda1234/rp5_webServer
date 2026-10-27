@@ -26,7 +26,7 @@ body{
     --g-h1-margin: 40px;
     --g-h2-margin: 30px;
     
-    --g-p-margin: 10px;
+    --g-p-margin: 24px;
 
     --g-a-color: rgb(16, 140, 242);
 
@@ -299,7 +299,7 @@ a {
 }
 
 .hero-video.hidden{
-    width: 100%;
+    width: 100vw;
 }
 
 .hero-gradient{
@@ -403,166 +403,15 @@ div.stack-card p.stack-card-title{
     margin-bottom: var(--g-p-margin);
 }
 
-
-
-.demo{
-    position: relative;
-    width: 100%;
-    height: var(--demo-height);
-    margin: var(--demo-margin);
-    transition: transform 1s ease, opacity 1s ease, filter 1s ease;
-}
-
-.demo.hidden{
-    transform: translateY(100px);
-    opacity: 0;
-    filter: var(--hidden-filter);
-}
-
-.carousel-button-overlay{
-    position: absolute;
+#carousel{
     display: flex;
-    align-items: center;
-    width: 100%;
-    height: var(--carousel-height);
-    z-index: 100;
-    pointer-events: none;
-}
-
-.carousel-button-left{
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    width: calc((100% - var(--carousel-card-width)) / 2);
-    height: 100%;
-    background: linear-gradient(to right, rgb(0, 0, 0), transparent);
-    pointer-events: auto;
-    
-}
-
-
-
-.carousel-button-right{
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    position: absolute;
-    width: calc((100% - var(--carousel-card-width)) / 2);
-    height: 100%;
-    right: 0px;
-    background: linear-gradient(to right, transparent, rgb(0, 0, 0));
-    pointer-events: auto;
-    
-}
-
-.carousel-button-left-arrow{
-    color: white;
-    font-family: 'Jost';
-    font-size: clamp(10px, 5vw, 200px);
-    transition: transform 0.2s ease, opacity 0.5s ease, filter 0.5s ease;
-    user-select: none;
-}
-
-.carousel-button-right-arrow{
-    color: white;
-    font-family: 'Jost';
-    font-size: clamp(10px, 5vw, 200px);
-    transition: transform 0.2s ease, opacity 0.5s ease, filter 0.5s ease;
-    user-select: none;
-
-}
-
-.carousel-button-left:hover .carousel-button-left-arrow{
-    transform: scale(1.2) translateX(-50px);
-}
-
-.carousel-button-right:hover .carousel-button-right-arrow{
-    transform: scale(1.2) translateX(50px);
-}
-
-.carousel-button-left-arrow.inactive{
-    opacity: 0;
-    filter: blur(20px);
-}
-
-.carousel-button-right-arrow.inactive{
-    opacity: 0;
-    filter: blur(20px);
-}
-
-.carousel-indicator-overlay{
-    position: absolute;
-    width: 100%;
-    height: var(--demo-height);
-}
-.carousel-indicator-container{
-    position: absolute;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: var(--carousel-indicator-height);
-    bottom: 0;
-}
-
-.carousel-indicator{
-    background-color: white;
-    width: 0.5vw;
-    height: 0.5vw;
-    margin-right: 1vw;
-    margin-left: 1vw;
-    border-radius: 50%;
-    transition: transform 0.2s ease;
-    opacity: 0.5;
-}
-
-.carousel-indicator.active{
-    opacity: 1;
-}
-
-.carousel{
-    position: absolute;
-    display: flex;
-    align-items: center;
-    width: 100%;
-    height: var(--carousel-height);
-    margin: var(--carousel-margin);
-    overflow-x: auto;
+    scroll-behavior: smooth;
+    overflow-x: scroll;
     scroll-snap-type: x mandatory;
-    scrollbar-width: none;
 }
 
-.carousel-spacer{
-    display: flex;
-    flex: 0 0 calc((100vw - var(--carousel-card-width)) / 2);
-    height: var(--carousel-card-height);
-}
-.carousel-card{
-    display: flex;
-    flex: 0 0 var(--carousel-card-width);
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: var(--carousel-card-height);
+#carousel *{
     scroll-snap-align: center;
-    transition: opacity 0.2s ease, transform 0.2s ease;
-}
-
-.carousel-card.inactive{
-    opacity: 1;
-    transform: scale(0.9);
-}
-
-.carousel-card video{
-    height: 80%;
-    max-width: 90%;
-    
-}
-
-.carousel-card p{
-    font-size: var(--carousel-card-text-size);
-    color: var(--carousel-card-text-color);
-    opacity: var(--carousel-card-text-opacity);
 }
 
 

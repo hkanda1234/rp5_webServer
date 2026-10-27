@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <title>やった方がいいやつ（日記）</title>
+        <meta name="description" content="日記">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Code:ital,wght,MONO@0,300..800,1;1,300..800,1&family=Jost:ital,wght@0,100..900;1,100..900&family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <header>
+            <div class="header-inner">
+                <a class="site-title" href="./">やった方がいいやつ（日記）</a>
+                <div class="header-actions">
+                    <a class="button primary" href="write.html" id="write-button">書く</a>
+                </div>
+            </div>
+        </header>
+        <main>
+            <ul class="post-list" id="post-list"></ul>
+        </main>
+
+        <script src="common.js"></script>
+        <script>
+            const list = document.getElementById('post-list');
+
+            const escape = (s) => s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+
+            const load = async () => {
+                try{
+                    const posts = await api('/posts');
+                    if(posts.length === 0){
+                        list.innerHTML = '<li class="empty">まだ何も書いてない</li>';
+                        return;
+                    }
+                    list.innerHTML = posts.map(p => `
+                        <li class="post-card">
+                            <a href="${p.draft ? 'write.html' : 'post.html'}?id=${encodeURIComponent(p.id)}">
+                                <div class="post-card-text">
+                                    <h2>${escape(p.title || '無題')}</h2>
+                                    <p>${escape(p.excerpt)}</p>
+                                    <div class="meta">
+                                        <time datetime="${p.createdAt}">${formatDate(p.createdAt)}</time>
+                                        ${p.draft ? '<span class="badge">下書き</span>' : ''}
+                                    </div>
+                                </div>
+                                ${p.thumbnail ? `<img src="${escape(p.thumbnail)}" alt="" loading="lazy">` : ''}
+                            </a>
+                        </li>`).join('');
+                } catch {
+                    list.innerHTML = '<li class="empty">読み込めませんでした</li>';
+                }
+            };
+
+            load();
+        </script>
+    </body>
+</html>

@@ -23,7 +23,7 @@
         </header>
         <main>
             <div class="hero-wrap" id="title">
-                <video src="https://assets.hkanda.xyz/litter-to-glitter/kichijoji_hero_vid.mp4" class="hero-video" autoplay muted loop></video>
+                <video src="https://assets.hkanda.xyz/litter-to-glitter/kichijoji_hero_vid.mp4" class="hero-video hidden" autoplay muted loop></video>
                 <div class="title-wrap">
                     <div class="tag">&lt;<span class="section">h1</span> <span class="id">class</span>=<span class="literal">"hero-title"</span>&gt;</div>
                     
@@ -86,10 +86,10 @@
                                     "Litter to Glitter"は、<span class="white strong">「ゴミを拾う」という地味な身体動作</span>によって<span class="white strong">「花火」という煌びやかな体験</span>を立ち上がらせる作品である。
                                 </p>
                                 <p class="hidden">
-                                    <br>VR空間に広がる吉祥寺に落ちているタバコの吸い殻を拾う（触れる）と、そこから花火が打ち上がる。
+                                    VR空間に広がる吉祥寺に落ちているタバコの吸い殻を拾う（触れる）と、そこから花火が打ち上がる。
                                 </p>
                                 <p class="hidden">
-                                    <br>三年次「テクストインフォメーション」授業にて、「吉祥寺を『響』という言葉で再構築する」という課題のもと、
+                                    三年次「テクストインフォメーション」授業にて、「吉祥寺を『響』という言葉で再構築する」という課題のもと、
                                     <br>企画、チームビルディング、フィールドワーク、UnityでのVRアプリケーション開発まで担当し、制作を行なった。
                                 </p>
                             
@@ -101,22 +101,21 @@
                         <div class="tag">&lt;<span class="section">section</span> <span class="id">id</span>=<span class="literal">"concept"</span>&gt;</div>
                         <h1 class="hidden">/ CONCEPT</h1>
                         <h2 class="hidden">
-                            「消えた場所」を「出発点」に変える
-                            <br>
+                            「響」を解釈し、構造をつくる。
                         </h2>
                         <div class="column-box">
                             <div class="block-box flex-2">
+                                <p class="hidden">
+                                    「響」という言葉を解釈していく中で、まず「残響」に着目した。残響とは、音源が消えたあとも空間に残り続ける音のことである。<br>
+                                    街にもまた、人がさった後に残り続けるものがある。ポイ捨てされたゴミだ。<br>
+                                    ここで、吉祥寺に落ちているゴミのことを「誰かがそこにいた」ことを示す街の残響だと考えた。
+                                </p>
+                                <p class="hidden">
+                                    実際に吉祥寺を歩いて調べてみると、最も多く見つかったのがタバコの吸い殻だった。<br>
+                                    吸い殻には、<span class="strong">どこかで点火され、そこで消えた</span>という物語がある。
+                                </p>
                                 
-                                <p class="hidden">
-                                    街中に落ちているタバコの吸い殻には、<span class="white strong">どこかで点火され、街を移動し、そこで消えたというストーリー</span>がある。
-                                </p>
-                                <p class="hidden">
-                                    <br>これに近いストーリーを持つ存在として、打ち上げ花火があることに気がついた。
-                                    <br>打ち上げ花火もまた、ある地点で着火され、空間を移動し、最後に消える。
-                                </p>
-                                <p class="hidden">
-                                    <br>タバコの吸い殻が"消えた場所"を、花火が"生まれる場所"に反転させる。<br>終着点を新たな現象の起点とすることで、そこで終わったはずの存在を生き返らせる。それが、この作品のコンセプトだ。
-                                </p>
+                                
                             </div>
                         </div>
                         <div class="tag tag-end">&lt;/<span class="section">section</span>&gt;</div>
@@ -219,6 +218,8 @@
         <div class="cursor-follower">
             <svg id="cursor-follower-svg" version="1.1" width="50" height="50"></svg>
         </div>
+
+        <div id="loading-screen"><p id="loading-status"></p></div>
         <script src="/portfolio/works-g-script.js" defer type="module"></script>
         <script src="/portfolio/asset/logo.js" defer type="module"></script>
     </body>

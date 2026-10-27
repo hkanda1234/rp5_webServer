@@ -31,7 +31,7 @@ function startImageModalInteraction(){
             const src = element.src;
             view.src = src;
             imageModal.classList.remove('image-modal-hidden');
-        })        
+        })
     })
     
     imageModal.addEventListener('click', (e) => {
@@ -83,7 +83,11 @@ const Loading = {
 
     lodingScreen: document.getElementById('loading-screen'),
     log: document.getElementById('loading-status'),
+    body: document.querySelector('body'),
     main: document.querySelector('main'),
+
+    screenHTML: `<div id="loading-screen"><p id="loading-status"></p></div>`,
+    
 
     setMainDisplayNone: function(){
         this.main.style.display = 'none';
@@ -143,5 +147,33 @@ const Loading = {
         this.setLoadingScreenDisplayNone();
     }
 }
+
+const carousel = {
+
+    wrappers: null,
+    
+    contents: [],
+
+    contentWidth: null,
+
+    resizeObserver: new ResizeObserver((entries) => {
+
+    }),
+
+    create: function(){
+        this.wrappers = [...document.querySelectorAll('#carousel')];
+        this.wrappers.forEach(w => {
+            
+            this.contents.push([...w.children]);
+        });
+        
+        
+    },
+
+
+
+}
+
+carousel.create();
 
 Loading.setEvents();

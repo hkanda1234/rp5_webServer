@@ -1,6 +1,6 @@
 {
     "livePreview.portNumber": 3007,
-    "livePreview.defaultPreviewPath": "/portfolio/index.html",
+    "livePreview.defaultPreviewPath": "/portfolio/litter-to-glitter/index.html",
     "auto-run-command.rules": [
         {
             "condition": "always",

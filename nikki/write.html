@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <title>書く | 日記</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noindex">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Code:ital,wght,MONO@0,300..800,1;1,300..800,1&family=Jost:ital,wght@0,100..900;1,100..900&family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <header>
+            <div class="header-inner">
+                <a class="site-title" href="./">← 日記</a>
+                <div class="header-actions">
+                    <span class="status" id="status"></span>
+                    <button class="button" id="draft-button">下書き保存</button>
+                    <button class="button primary" id="publish-button">公開する</button>
+                </div>
+            </div>
+        </header>
+        <main>
+            <div class="editor" id="editor">
+                <textarea class="title-input" id="title" rows="1" placeholder="タイトル"></textarea>
+                <textarea class="body-input" id="body" placeholder="ご自由にお書きください（画像は貼り付け・ドラッグでOK）"></textarea>
+            </div>
+            <div class="post-body" id="preview" hidden></div>
+            <div class="post-footer" id="delete-area" hidden>
+                <span></span>
+                <button class="button danger" id="delete-button">この記事を削除</button>
+            </div>
+        </main>
+        <div class="toolbar">
+            <button class="button" id="image-button" title="画像を追加">画像</button>
+            <button class="button" id="preview-button" title="プレビュー">プレビュー</button>
+        </div>
+        <input type="file" id="file-input" accept="image/jpeg,image/png,image/gif,image/webp" multiple hidden>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
+        <script src="common.js"></script>
+        <script>
+            const titleInput = document.getElementById('title');
+            const bodyInput = document.getElementById('body');
+            const editor = document.getElementById('editor');
+            const preview = document.getElementById('preview');
+            const status = document.getElementById('status');
+            const draftButton = document.getElementById('draft-button');
+            const publishButton = document.getElementById('publish-button');
+            const previewButton = document.getElementById('preview-button');
+            const fileInput = document.getElementById('file-input');
+
+            let id = new URLSearchParams(location.search).get('id');
+            let isDraft = true;
+            let dirty = false;
+            const localKey = () => `nikki-draft-${id || 'new'}`;
+
+            // ---- textarea ----
+
+            const autoGrow = (el) => {
+                el.style.height = 'auto';
+                el.style.height = `${el.scrollHeight}px`;
+            };
+
+            const saveLocal = () => {
+                try{
+                    localStorage.setItem(localKey(), JSON.stringify({ title: titleInput.value, body: bodyInput.value }));
+                } catch {}
+            };
+
+            const clearLocal = () => {
+                try{ localStorage.removeItem(localKey()); } catch {}
+            };
+
+            for(const el of [titleInput, bodyInput]){
+                el.addEventListener('input', () => {
+                    autoGrow(el);
+                    dirty = true;
+                    status.textContent = '';
+                    saveLocal();
+                });
+            }
+            titleInput.addEventListener('keydown', (e) => {
+                if(e.key === 'Enter' && !e.isComposing){
+                    e.preventDefault();
+                    bodyInput.focus();
+                }
+            });
+
+            const insertAtCursor = (text) => {
+                const { selectionStart: start, selectionEnd: end, value } = bodyInput;
+                bodyInput.value = value.slice(0, start) + text + value.slice(end);
+                bodyInput.selectionStart = bodyInput.selectionEnd = start + text.length;
+                bodyInput.dispatchEvent(new Event('input'));
+            };
+
+            // ---- images ----
+
+            const uploadImages = async (files) => {
+                for(const file of files){
+                    if(!file.type.startsWith('image/')) continue;
+                    const placeholder = `![アップロード中…]()`;
+                    insertAtCursor(`\n${placeholder}\n`);
+                    try{
+                        const { url } = await api('/images', { method: 'POST', body: file, headers: { 'Content-Type': file.type } });
+                        bodyInput.value = bodyInput.value.replace(placeholder, `![](${url})`);
+                    } catch {
+                        bodyInput.value = bodyInput.value.replace(placeholder, '');
+                        alert('画像をアップロードできませんでした');
+                    }
+                    bodyInput.dispatchEvent(new Event('input'));
+                }
+            };
+
+            document.getElementById('image-button').addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', () => {
+                uploadImages([...fileInput.files]);
+                fileInput.value = '';
+            });
+            bodyInput.addEventListener('paste', (e) => {
+                const files = [...e.clipboardData.files];
+                if(files.length){
+                    e.preventDefault();
+                    uploadImages(files);
+                }
+            });
+            editor.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                editor.classList.add('dragging');
+            });
+            editor.addEventListener('dragleave', () => editor.classList.remove('dragging'));
+            editor.addEventListener('drop', (e) => {
+                e.preventDefault();
+                editor.classList.remove('dragging');
+                bodyInput.focus();
+                uploadImages([...e.dataTransfer.files]);
+            });
+
+            // ---- preview ----
+
+            previewButton.addEventListener('click', () => {
+                const showing = preview.hidden;
+                if(showing){
+                    preview.innerHTML = `<h1 class="post-title">${DOMPurify.sanitize(titleInput.value) || '無題'}</h1>` + renderMarkdown(bodyInput.value);
+                }
+                preview.hidden = !showing;
+                editor.hidden = showing;
+                previewButton.classList.toggle('active', showing);
+            });
+
+            // ---- save ----
+
+            const save = async (draft) => {
+                if(!titleInput.value.trim() && !bodyInput.value.trim()) return;
+                draftButton.disabled = publishButton.disabled = true;
+                status.textContent = '保存中…';
+                const payload = JSON.stringify({ title: titleInput.value, body: bodyInput.value, draft });
+                try{
+                    let post;
+                    if(id){
+                        post = await api(`/posts/${encodeURIComponent(id)}`, { method: 'PUT', body: payload });
+                    } else {
+                        clearLocal();
+                        post = await api('/posts', { method: 'POST', body: payload });
+                        id = post.id;
+                        history.replaceState(null, '', `?id=${encodeURIComponent(id)}`);
+                        document.getElementById('delete-area').hidden = false;
+                    }
+                    clearLocal();
+                    dirty = false;
+                    isDraft = post.draft;
+                    updateButtons();
+                    if(!draft){
+                        location.href = `post.html?id=${encodeURIComponent(id)}`;
+                        return;
+                    }
+                    status.textContent = '保存しました';
+                } catch(err) {
+                    if(err.status === 401 && await askLogin()) return save(draft);
+                    saveLocal();
+                    status.textContent = '保存できませんでした';
+                } finally {
+                    draftButton.disabled = publishButton.disabled = false;
+                }
+            };
+
+            const updateButtons = () => {
+                publishButton.textContent = isDraft ? '公開する' : '更新する';
+                draftButton.textContent = isDraft ? '下書き保存' : '非公開にする';
+            };
+
+            draftButton.addEventListener('click', () => save(true));
+            publishButton.addEventListener('click', () => save(false));
+            document.addEventListener('keydown', (e) => {
+                if((e.metaKey || e.ctrlKey) && e.key === 's'){
+                    e.preventDefault();
+                    save(isDraft);
+                }
+            });
+
+            document.getElementById('delete-button').addEventListener('click', async () => {
+                if(!confirm('この記事を削除しますか？')) return;
+                try{
+                    await api(`/posts/${encodeURIComponent(id)}`, { method: 'DELETE' });
+                    clearLocal();
+                    location.href = './';
+                } catch {
+                    alert('削除できませんでした');
+                }
+            });
+
+            window.addEventListener('beforeunload', (e) => {
+                if(dirty) e.preventDefault();
+            });
+
+            // ---- init ----
+
+            const init = async () => {
+                if(!await isLoggedIn() && !await askLogin()){
+                    location.href = './';
+                    return;
+                }
+                if(id){
+                    try{
+                        const post = await api(`/posts/${encodeURIComponent(id)}`);
+                        titleInput.value = post.title;
+                        bodyInput.value = post.body;
+                        isDraft = post.draft;
+                        document.getElementById('delete-area').hidden = false;
+                    } catch {
+                        status.textContent = '記事が見つかりません';
+                    }
+                }
+                // サーバーに保存されていない書きかけがあれば復元
+                try{
+                    const local = JSON.parse(localStorage.getItem(localKey()));
+                    if(local && (local.title !== titleInput.value || local.body !== bodyInput.value)){
+                        titleInput.value = local.title;
+                        bodyInput.value = local.body;
+                        dirty = true;
+                        status.textContent = '書きかけを復元しました';
+                    }
+                } catch {}
+                updateButtons();
+                autoGrow(titleInput);
+                autoGrow(bodyInput);
+                (titleInput.value ? bodyInput : titleInput).focus();
+            };
+
+            init();
+        </script>
+    </body>
+</html>
