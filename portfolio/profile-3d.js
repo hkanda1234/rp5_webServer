@@ -1,5 +1,5 @@
-import * as THREE from 'https://esm.sh/three@r128';
-import { GLTFLoader } from 'https://esm.sh/three@r128/examples/jsm/loaders/GLTFLoader.js';
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 
 const modelURI = "/portfolio/hkanda-head.glb";
