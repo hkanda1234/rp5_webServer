@@ -1,0 +1,122 @@
+html{
+    --standard-margin: 20px;
+    --standard-padding: 0;
+    --standard-border: none;
+
+    --standard-p-size: 20px; 
+    --standard-h1-size: 100px;
+    --standard-h2-size: 75px;
+    --standard-h3-size: 50px;
+
+    --header-height: 100px;
+
+    --main-width: 80vw;
+
+    --standard-background: black;
+    --standard-color: white;
+
+    --header-title-size: 25px;
+    --header-title-margin: 0 10px 0px 10px;
+    --header-title-weight: 700;
+
+    color: var(--standard-color);
+    font-family: 'Jost','Zen Kaku Gothic New';   
+}
+
+
+
+body{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: var(--standard-background);    
+}
+
+header{
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    height: var(--header-height);
+    background: var(--standard-background);
+
+}
+
+header div.title{
+    margin: var(--header-title-margin);
+    font-size: var(--header-title-size);
+    font-weight: var(--header-title-weight);
+}
+
+main{
+
+    width: var(--main-width);
+    margin-top: var(--header-height);
+}
+
+p{
+    font-size: var(--standard-p-size);
+
+}
+
+h1{
+    font-size: var(--standard-h1-size);
+
+}
+
+h2{
+    font-size: var(--standard-h2-size);
+}
+
+h3{
+    font-size: var(--standard-h3-size);
+}
+
+p.right{
+    text-align: right;
+}
+
+div.column{
+    display: flex;
+    flex-direction: column;
+}
+
+div.flex-1{
+    flex: 1;
+}
+
+div.flex-2{
+    flex: 2;
+}
+
+div.flex-3{
+    flex: 3;
+}
+
+div.row{
+    display: flex;
+}
+
+div.tag{
+    --first: '<';
+    --align: left;
+    width: 100%;
+    font-size: calc(var(--standard-p-size) / 2);
+    text-align: var(--align);
+    font-family: 'Google Sans Code';
+    opacity: 0.5;
+}
+
+div.tag::before{
+    content: var(--first);
+
+}
+
+div.tag::after{
+    content:'>'
+}
+
+div.tag span.tag{
+    color: rgb(56, 123, 255);
+}

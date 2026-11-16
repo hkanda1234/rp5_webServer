@@ -1,13 +1,5 @@
 {
     "livePreview.portNumber": 3007,
-    "livePreview.defaultPreviewPath": "/portfolio/litter-to-glitter/index.html",
-    "auto-run-command.rules": [
-        {
-            "condition": "always",
-            "command": "livePreview.start",
-            "message": "livePreview started"
-        }
-    ],
     "cSpell.words": [
         "COLOUR",
         "GLSL",
