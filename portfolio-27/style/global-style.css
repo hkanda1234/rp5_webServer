@@ -1,58 +1,111 @@
 html{
-    --standard-margin: 20px;
-    --standard-padding: 0;
+    --standard-margin: 10px;
+    --standard-padding: 5px;
     --standard-border: none;
 
-    --standard-p-size: 20px; 
-    --standard-h1-size: 100px;
-    --standard-h2-size: 75px;
-    --standard-h3-size: 50px;
+    --standard-p-size: 12px; 
+    --standard-h1-size: 55px;
+    --standard-h2-size: 40px;
+    --standard-h3-size: 25px;
 
     --header-height: 100px;
 
-    --main-width: 80vw;
+    --main-width: 100%;
 
     --standard-background: black;
     --standard-color: white;
 
     --header-title-size: 25px;
-    --header-title-margin: 0 10px 0px 10px;
     --header-title-weight: 700;
+    --header-background: var(--standard-background);
+
+    --hero-title-container-height: 80vh;
+    --hero-title-paragraph-size: 11vw;
+    --hero-title-paragraph-weight: 600;
+
+    --title-input-color: rgb(44, 153, 255);
+    --title-output-color: rgb(255, 76, 40);
+
+    --statement-color: rgb(255, 77, 28);
+    --statement-font-weight: 500;
+    --statement-font-size: 50px;
+    --statement-line-height: calc(var(--statement-font-size) * 1.1);
+    --statement-blinking-cursor-width: 2px;
+    --statemetn-blinking-cursor-height: calc(var(--statement-font-size) * 0.8);
+    --statement-blinking-cursor-color: white;
+    --statement-section-height: 80vh;
+
+    --work-card-border: solid 1px rgba(255, 255, 255, 0.5);
+    --work-card-border-radius: 0px;
+
+    --work-title-font-family: 'Jost';
+
+    --work-title-font-size: 50px;
+    --work-title-font-weight: 700;
+
+    --header-z-index: 100;
+    --overlay-z-index: 1000;
+
 
     color: var(--standard-color);
-    font-family: 'Jost','Zen Kaku Gothic New';   
+    font-family: 'Jost','Zen Kaku Gothic New';
+
+    scrollbar-width: none;
 }
 
 
+@media(min-width: 1000px) {
+    html{
+        --statement-font-size: 100px;
+    }
+}
+
 
 body{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    margin: 10px;
     background: var(--standard-background);    
 }
 
 header{
     position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--header-height);
+    background: var(--header-background);
+    z-index: var(--header-z-index);
+}
+
+div.header-content-wrapper{
     display: flex;
     flex-direction: column;
     justify-content: center;
-    width: 100%;
-    height: var(--header-height);
-    background: var(--standard-background);
+    margin-left: var(--standard-margin);
+    margin-right: var(--standard-margin);
+    height: 100%;
+}
 
+div.header-spacer{
+    height: var(--header-height);
 }
 
 header div.title{
-    margin: var(--header-title-margin);
     font-size: var(--header-title-size);
     font-weight: var(--header-title-weight);
+
+}
+
+span.title-input{
+    color: var(--title-input-color);
+}
+
+span.title-output{
+    color: var(--title-output-color);
 }
 
 main{
 
     width: var(--main-width);
-    margin-top: var(--header-height);
 }
 
 p{
@@ -98,25 +151,193 @@ div.row{
     display: flex;
 }
 
+div.render-tag-wrapper{
+    display: block;
+}
 div.tag{
-    --first: '<';
     --align: left;
     width: 100%;
-    font-size: calc(var(--standard-p-size) / 2);
+    font-size: calc(var(--standard-p-size) * .6);
     text-align: var(--align);
     font-family: 'Google Sans Code';
     opacity: 0.5;
+    user-select: none;
 }
 
-div.tag::before{
-    content: var(--first);
-
+div.tag.start{
+    text-align: left;
 }
 
-div.tag::after{
-    content:'>'
+div.tag.start::before{
+    content: '<';
+}
+
+div.tag.start::after{
+    content: '>';
+}
+
+div.tag.end{
+    text-align: right;
+}
+
+div.tag.end::before{
+    content: '</';
+}
+
+div.tag.end::after{
+    content: '>';
+}
+
+div.tag span.value{
+    color: rgb(219, 125, 62);
 }
 
 div.tag span.tag{
-    color: rgb(56, 123, 255);
+    color: rgb(93, 147, 255);
 }
+
+div.tag span.attribute{
+    color: rgb(139, 201, 255);
+}
+
+section.hero-title{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: var(--hero-title-container-height);
+}
+
+div.hero-title-paragraph{
+    font-size: var(--hero-title-paragraph-size);
+    font-weight: var(--hero-title-paragraph-weight);
+
+}
+
+div.hero-title-paragraph.left{
+    text-align: left;
+}
+
+div.hero-title-paragraph.right{
+    text-align: right;
+}
+
+section.statement{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    height: var(--statement-section-height);
+}
+
+div.statement-container{
+    display: block;
+}
+
+div.statement-paragraph{
+    color: var(--statement-color);
+    font-size: var(--statement-font-size);
+    font-weight: var(--statement-font-weight);
+    line-height: var(--statement-line-height);
+    text-align: right;
+    transition: opacity 1s ease, translate 1s ease;
+}
+
+div.statement-paragraph.hidden{
+    opacity: 0;
+    translate: 100% 0;
+    
+    transition: none;
+}
+
+div.statement-paragraph span.blinking-cursor{
+    display: inline-flex;
+    width: var(--statement-blinking-cursor-width);
+    height: var(--statemetn-blinking-cursor-height);
+    background: var(--statement-blinking-cursor-color);
+    animation: cursor-blink 1s infinite;
+}
+
+@keyframes cursor-blink{
+    0%{
+        opacity: 1;
+    }
+    49%{
+        opacity: 1;
+    }
+    50%{
+        opacity: 0;
+    }
+    99%{
+        opacity: 0;
+    }
+    100%{
+        opacity: 1;
+    }
+}
+
+
+div.work-card{
+    position: relative;
+    border: var(--work-card-border);
+    border-radius: var(--work-card-border-radius);
+    padding: 20px;
+}
+
+article.work{
+    
+    padding: var(--standard-padding);
+}
+
+div.work-title{
+    font-family: var(--work-title-font-family);
+    font-size: var(--work-title-font-size);
+    font-weight: var(--work-title-font-weight);
+}
+
+article.work img{
+    width: 100%;
+
+}
+
+div.work-card a.work-anchor{
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    
+    
+}
+
+div.overlay{
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: var(--overlay-z-index);
+    pointer-events: all;
+}
+
+div.work-iframe-container{
+    position: absolute;
+    top: 100px;
+    
+}
+
+div.work-iframe-container iframe{
+    border: solid 1px white;
+    border-radius: 10px;
+}
+
+div.overlay.hidden{
+    display: none;
+}
+
+div.overlay div.loading-screen-container{
+    width: 100vw;
+    height: 100vh;
+
+}
+

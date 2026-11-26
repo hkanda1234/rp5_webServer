@@ -10,7 +10,7 @@ dotenv.config({ path: '/etc/colorDictionary/.env'});
 const port = 3001;
 const app = express();
 const ai = new GoogleGenAI({});
-const model = "gemini-2.5-flash-image";
+const model = "gemini-3.1-flash-image";
 const imagesPath = '/var/www/html/generatedImages/';
 const extention = '.jpg';
 app.use(cors());
@@ -26,30 +26,37 @@ app.post('/imageGenerate', async(req, res) => {
 
     console.log(req.body);
 
-    const response = await ai.models.generateContent({
-        model : model,
-        contents : prompt,
-    });
+    try {
+        const response = await ai.models.generateContent({
+            model : model,
+            contents : prompt,
+            config : {
+                responseModalities : ['IMAGE'],
+                imageConfig : {
+                    aspectRatio : '1:1',
+                    outputMimeType : 'image/jpeg',
+                },
+            },
+        });
 
-    const parts = response.candidates[0].content.parts;
+        const parts = response.candidates?.[0]?.content?.parts ?? [];
+        const imagePart = parts.find(part => part.inlineData?.data);
 
-    
-    for(const part of parts){
-        if(part.text){
-            console.log(part.text);
-        } else if(part.inlineData){
-            const imageData = part.inlineData.data;
-            const buffer = Buffer.from(imageData, "base64");
-            fs.writeFileSync(filePath, buffer);
-            console.log(`image saved as ${filePath}`);
+        if(!imagePart){
+            throw new Error(`no image returned (finishReason: ${response.candidates?.[0]?.finishReason})`);
         }
-    }
-    
-    const json = {
-        imageURL : `https://hkanda.xyz/generatedImage/${fileName}`
-    }
 
-    res.json(json);
+        const buffer = Buffer.from(imagePart.inlineData.data, "base64");
+        await fs.promises.writeFile(filePath, buffer);
+        console.log(`image saved as ${filePath}`);
+
+        res.json({
+            imageURL : `https://hkanda.xyz/generatedImage/${fileName}`
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'image generation failed' });
+    }
 
 });
 

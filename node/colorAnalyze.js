@@ -75,17 +75,22 @@ app.get('/colorAnalyze', async(req, res) => {
     const model = req.query.model;
     console.log(model, rgb, hex);
 
-    let answer;
+    try {
+        let answer;
 
-    if(model == 'gemini'){
-        answer = await geminiRes(hex, rgb);
+        if(model == 'gemini'){
+            answer = await geminiRes(hex, rgb);
+        } else if (model == 'claude'){
+            answer = await claudeRes(hex, rgb);
+        } else {
+            return res.status(400).json({ error: 'unknown model' });
+        }
 
-    } else if (model == 'claude'){
-        answer = await claudeRes(hex, rgb);
+        res.json(answer);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'analyze failed' });
     }
-    
-    
-    res.json(answer);
     
 });
 
@@ -114,17 +119,17 @@ async function claudeRes(hex, rgb){
 async function geminiRes(hex, rgb){
     
     const response = await ai.models.generateContent({
-        model: "gemini-3.1-flash-lite",
+        model: "gemini-3.5-flash-lite",
         contents: prompt.inject(hex, rgb),
         config: {
             responseMimeType: "application/json",
             responseJsonSchema: z.toJSONSchema(analyzeSchema)
         },
     });
-    
-    const raw = response.text ?? response.candidates?.[0]?.content?.parts?.[0];
+
+    const raw = response.text;
     if(!raw) {
-        throw new Error("response text is empty");
+        throw new Error(`response text is empty (finishReason: ${response.candidates?.[0]?.finishReason})`);
     }
     
     const parsed = JSON.parse(raw);
